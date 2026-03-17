@@ -280,3 +280,24 @@ All 8 workflow types verified with from-scratch compilation:
 | 6 | upscale | 4 | 12s | ✅ |
 | 7 | fusion (CN+LoRA+Upscale) | 14 | 11s | ✅ |
 | 8 | flux-style | 7 | 12s | ✅ |
+
+## Extended Verification Results (Round 2)
+
+### New Pipelines
+| Test | Pipeline | Nodes | Time | Status |
+|------|----------|-------|------|--------|
+| 9 | Qwen-style Img Edit (WuJi + cfg=1) | 8 | 45s | ✅ |
+| 10 | WuJi + 可爱娃娃手办 LoRA | 8 | 11s | ✅ |
+
+### Fusion Combinations (Novel Topologies)
+| Test | Fusion | Nodes | Time | Status |
+|------|--------|-------|------|--------|
+| 11 | Img2Img + LoRA | 9 | 10s | ✅ |
+| 12 | Img2Img + ControlNet | 11 | 11s | ✅ |
+| 13 | Inpaint + Upscale | 10 | 10s | ✅ |
+| 14 | **Text2Img + LoRA + ControlNet + Upscale (4-way)** | 14 | 10s | ✅ |
+| 15 | Outpaint + Upscale | 11 | 10s | ✅ |
+| 16 | Multi-LoRA(x2) + ControlNet | 13 | 10s | ✅ |
+| 17 | WuJi(Flux) + LoRA + Upscale | 10 | 10s | ✅ |
+
+### Total: 17/17 tests passed (8 original + 9 extended)
