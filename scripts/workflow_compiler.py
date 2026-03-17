@@ -1007,55 +1007,139 @@ def compile_pipeline(pipeline: str, params: dict) -> dict:
     return builder(**params)
 
 
-def save_and_execute(api_format: dict, workspace_id: str = WORKSPACE_ID) -> dict:
-    """Save compiled workflow to workspace and execute."""
-    token = get_token()
+# =========================================================================
+# Execution Engine v2: Three reliable paths (workspace setContent REMOVED)
+# =========================================================================
+# Path A: Template + nodeInfoList (image tasks, most reliable)
+# Path B: Standard API via runninghub.py (video/audio/3D, 179 endpoints)
+# Path C: AI App via runninghub_app.py (complex workflows like motion transfer)
+# =========================================================================
+
+# Template → pipeline mapping
+TEMPLATE_MAP = {
+    "text2img": "9999",
+    "img2img": "9997",
+    "text2img_lora": "9998",
+    "img2img_lora": "9995",
+    "img2img_upscale": "9996",
+}
+
+# Pipeline → template node mapping (nodeId + fieldName for each parameter)
+TEMPLATE_NODES = {
+    "9999": {  # text2img
+        "prompt":    {"nodeId": "6",  "fieldName": "text"},
+        "negative":  {"nodeId": "7",  "fieldName": "text"},
+        "width":     {"nodeId": "5",  "fieldName": "width"},
+        "height":    {"nodeId": "5",  "fieldName": "height"},
+        "steps":     {"nodeId": "3",  "fieldName": "steps"},
+        "cfg":       {"nodeId": "3",  "fieldName": "cfg"},
+        "seed":      {"nodeId": "3",  "fieldName": "seed"},
+        "sampler":   {"nodeId": "3",  "fieldName": "sampler_name"},
+        "scheduler": {"nodeId": "3",  "fieldName": "scheduler"},
+        "checkpoint": {"nodeId": "4", "fieldName": "ckpt_name"},
+    },
+    "9997": {  # img2img
+        "image":     {"nodeId": "10", "fieldName": "image"},
+        "prompt":    {"nodeId": "21", "fieldName": "text1"},
+        "negative":  {"nodeId": "7",  "fieldName": "text"},
+        "denoise":   {"nodeId": "3",  "fieldName": "denoise"},
+        "steps":     {"nodeId": "3",  "fieldName": "steps"},
+        "cfg":       {"nodeId": "3",  "fieldName": "cfg"},
+        "seed":      {"nodeId": "3",  "fieldName": "seed"},
+        "sampler":   {"nodeId": "3",  "fieldName": "sampler_name"},
+        "checkpoint": {"nodeId": "4", "fieldName": "ckpt_name"},
+    },
+    "9998": {  # text2img + lora
+        "prompt":    {"nodeId": "6",  "fieldName": "text"},
+        "negative":  {"nodeId": "7",  "fieldName": "text"},
+        "width":     {"nodeId": "5",  "fieldName": "width"},
+        "height":    {"nodeId": "5",  "fieldName": "height"},
+        "steps":     {"nodeId": "3",  "fieldName": "steps"},
+        "cfg":       {"nodeId": "3",  "fieldName": "cfg"},
+        "seed":      {"nodeId": "3",  "fieldName": "seed"},
+        "lora":      {"nodeId": "10", "fieldName": "lora_name"},
+        "lora_strength": {"nodeId": "10", "fieldName": "strength_model"},
+        "checkpoint": {"nodeId": "4", "fieldName": "ckpt_name"},
+    },
+    "9995": {  # img2img + lora
+        "image":     {"nodeId": "12", "fieldName": "image"},
+        "prompt":    {"nodeId": "21", "fieldName": "text1"},
+        "negative":  {"nodeId": "7",  "fieldName": "text"},
+        "denoise":   {"nodeId": "3",  "fieldName": "denoise"},
+        "steps":     {"nodeId": "3",  "fieldName": "steps"},
+        "cfg":       {"nodeId": "3",  "fieldName": "cfg"},
+        "seed":      {"nodeId": "3",  "fieldName": "seed"},
+        "lora":      {"nodeId": "10", "fieldName": "lora_name"},
+        "lora_strength": {"nodeId": "10", "fieldName": "strength_model"},
+        "checkpoint": {"nodeId": "4", "fieldName": "ckpt_name"},
+    },
+    "9996": {  # img2img + upscale
+        "image":     {"nodeId": "10", "fieldName": "image"},
+        "prompt":    {"nodeId": "21", "fieldName": "text1"},
+        "negative":  {"nodeId": "7",  "fieldName": "text"},
+        "denoise":   {"nodeId": "3",  "fieldName": "denoise"},
+        "steps":     {"nodeId": "3",  "fieldName": "steps"},
+        "cfg":       {"nodeId": "3",  "fieldName": "cfg"},
+        "seed":      {"nodeId": "3",  "fieldName": "seed"},
+        "checkpoint": {"nodeId": "4", "fieldName": "ckpt_name"},
+    },
+}
+
+# AI App workflow IDs for complex tasks
+AI_APP_WORKFLOWS = {
+    "motion_transfer": "1994717321291833345",       # 动作迁移升级版
+    "motion_transfer_v4": "1975951975441412098",     # Wan2.2 Animate V4.1
+    "dance_150": "1933689617772404738",              # 150帧跳舞高清
+    "face_swap": "2027593896020152321",              # AI 换脸
+}
+
+# Locate runninghub scripts (OpenClaw_RH_Skills)
+RH_SKILLS_PATHS = [
+    Path("/tmp/OpenClaw_RH_Skills/runninghub/scripts"),
+    Path.home() / ".openclaw/workspace/skills/runninghub-skills/scripts",
+]
+
+def _find_rh_script(name: str) -> str:
+    """Find runninghub script path."""
+    for base in RH_SKILLS_PATHS:
+        p = base / name
+        if p.exists():
+            return str(p)
+    return name  # fallback to PATH
+
+
+def upload_file(file_path: str) -> str:
+    """Upload a local file to RunningHub, return the remote filename."""
     api_key = resolve_api_key()
-    
-    if not token or not api_key:
-        raise RuntimeError("Missing token or API key")
-    
-    # Save to workspace
-    payload = {
-        "workflowId": workspace_id,
-        "workflowContent": "{}",
-        "promptContent": json.dumps(api_format)
-    }
     r = subprocess.run([
-        'curl', '-s', '-X', 'POST', f'{RH_BASE}/api/workflow/setContent',
-        '-H', 'Content-Type: application/json',
-        '-H', f'Authorization: Bearer {token}',
-        '-d', json.dumps(payload)
+        'curl', '-s', '-X', 'POST', f'{RH_API}/task/openapi/upload',
+        '-F', f'apiKey={api_key}',
+        '-F', f'file=@{file_path}'
     ], capture_output=True, text=True)
-    save_resp = json.loads(r.stdout)
-    if save_resp.get("code") != 0:
-        raise RuntimeError(f"Save failed: {save_resp}")
-    
-    # Execute
-    r2 = subprocess.run([
-        'curl', '-s', '-X', 'POST', f'{RH_API}/task/openapi/create',
-        '-H', 'Content-Type: application/json',
-        '-d', json.dumps({"apiKey": api_key, "workflowId": workspace_id})
-    ], capture_output=True, text=True)
-    run_resp = json.loads(r2.stdout)
-    task_id = run_resp.get("data", {}).get("taskId", "")
-    
-    if not task_id:
-        raise RuntimeError(f"Submit failed: {run_resp}")
-    
-    print(f"📝 Task: {task_id}", file=sys.stderr)
-    
-    # Poll
-    for _ in range(60):
-        time.sleep(8)
+    data = json.loads(r.stdout)
+    fname = data.get('data', {}).get('fileName', '')
+    if not fname:
+        raise RuntimeError(f"Upload failed: {r.stdout[:200]}")
+    return fname
+
+
+def poll_task(task_id: str, max_wait: int = 600, interval: int = 10) -> dict:
+    """Poll a RunningHub task until completion."""
+    api_key = resolve_api_key()
+    elapsed = 0
+    while elapsed < max_wait:
+        time.sleep(interval)
+        elapsed += interval
         sr = subprocess.run([
             'curl', '-s', '-X', 'POST', f'{RH_API}/task/openapi/status',
             '-H', 'Content-Type: application/json',
             '-d', json.dumps({"apiKey": api_key, "taskId": task_id})
         ], capture_output=True, text=True)
         status = json.loads(sr.stdout).get("data", "")
-        print(f"  {status}", file=sys.stderr)
-        
+        if isinstance(status, dict):
+            status = status.get("taskStatus", "")
+        print(f"  [{elapsed}s] {status}", file=sys.stderr)
+
         if status == "SUCCESS":
             out_r = subprocess.run([
                 'curl', '-s', '-X', 'POST', f'{RH_API}/task/openapi/outputs',
@@ -1064,10 +1148,163 @@ def save_and_execute(api_format: dict, workspace_id: str = WORKSPACE_ID) -> dict
             ], capture_output=True, text=True)
             outputs = json.loads(out_r.stdout).get("data", [])
             return {"status": "SUCCESS", "task_id": task_id, "outputs": outputs}
-        elif status == "FAILED":
-            return {"status": "FAILED", "task_id": task_id}
-    
+        elif status in ("FAILED", "TIMEOUT"):
+            return {"status": status, "task_id": task_id}
+
     return {"status": "TIMEOUT", "task_id": task_id}
+
+
+def execute_via_template(pipeline: str, params: dict) -> dict:
+    """Path A: Execute via official template + nodeInfoList (most reliable)."""
+    template_id = TEMPLATE_MAP.get(pipeline)
+    if not template_id:
+        raise ValueError(f"No template for pipeline '{pipeline}'. Available: {list(TEMPLATE_MAP.keys())}")
+
+    node_map = TEMPLATE_NODES.get(template_id, {})
+    api_key = resolve_api_key()
+
+    # Build nodeInfoList from params
+    node_info_list = []
+    for param_name, value in params.items():
+        if param_name in node_map and value is not None:
+            entry = {
+                "nodeId": node_map[param_name]["nodeId"],
+                "fieldName": node_map[param_name]["fieldName"],
+                "fieldValue": str(value),
+            }
+            node_info_list.append(entry)
+
+    # Handle image upload if needed
+    if "image" in params and params["image"] and not params["image"].startswith("api/"):
+        remote = upload_file(params["image"])
+        for entry in node_info_list:
+            if entry["fieldName"] == "image":
+                entry["fieldValue"] = remote
+
+    # Random seed if -1
+    for entry in node_info_list:
+        if entry["fieldName"] == "seed" and entry["fieldValue"] == "-1":
+            entry["fieldValue"] = str(random.randint(0, 2**53))
+
+    print(f"🎯 Path A: Template {template_id} + {len(node_info_list)} params", file=sys.stderr)
+
+    r = subprocess.run([
+        'curl', '-s', '-X', 'POST', f'{RH_API}/task/openapi/create',
+        '-H', 'Content-Type: application/json',
+        '-d', json.dumps({
+            "apiKey": api_key,
+            "workflowId": template_id,
+            "nodeInfoList": node_info_list,
+        })
+    ], capture_output=True, text=True)
+
+    resp = json.loads(r.stdout)
+    task_id = resp.get("data", {}).get("taskId", "") if isinstance(resp.get("data"), dict) else ""
+    if not task_id:
+        raise RuntimeError(f"Template execute failed: {r.stdout[:300]}")
+
+    print(f"📝 Task: {task_id}", file=sys.stderr)
+    return poll_task(task_id)
+
+
+def execute_via_api(endpoint: str, params: dict) -> dict:
+    """Path B: Execute via runninghub.py standard API (179 endpoints)."""
+    script = _find_rh_script("runninghub.py")
+    api_key = resolve_api_key()
+
+    cmd = ["python3", script, endpoint]
+
+    # Map common params to CLI flags
+    if params.get("prompt"):
+        cmd.extend(["--prompt", params["prompt"]])
+    if params.get("image"):
+        cmd.extend(["--image", params["image"]])
+    if params.get("negative"):
+        cmd.extend(["--negative", params["negative"]])
+    if params.get("output"):
+        cmd.extend(["-o", params["output"]])
+
+    env = os.environ.copy()
+    env["RUNNINGHUB_API_KEY"] = api_key
+
+    print(f"🌐 Path B: API endpoint {endpoint}", file=sys.stderr)
+    r = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=600)
+
+    if r.returncode != 0:
+        raise RuntimeError(f"API call failed: {r.stderr[:300]}")
+
+    # Parse output (script prints JSON result)
+    try:
+        return json.loads(r.stdout)
+    except json.JSONDecodeError:
+        return {"status": "SUCCESS", "raw_output": r.stdout[:500]}
+
+
+def execute_via_ai_app(webapp_id: str, nodes: dict = None, files: dict = None,
+                       instance_type: str = "plus", output: str = None) -> dict:
+    """Path C: Execute via runninghub_app.py AI App."""
+    script = _find_rh_script("runninghub_app.py")
+    api_key = resolve_api_key()
+
+    cmd = ["python3", script, "--run", webapp_id]
+
+    # Add node overrides
+    if nodes:
+        for node_spec, value in nodes.items():
+            cmd.extend(["--node", f"{node_spec}={value}"])
+
+    # Add file uploads
+    if files:
+        for node_spec, filepath in files.items():
+            cmd.extend(["--file", f"{node_spec}={filepath}"])
+
+    cmd.extend(["--instance-type", instance_type])
+
+    if output:
+        cmd.extend(["-o", output])
+
+    env = os.environ.copy()
+    env["RUNNINGHUB_API_KEY"] = api_key
+
+    print(f"🔧 Path C: AI App {webapp_id}", file=sys.stderr)
+    r = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=900)
+
+    if r.returncode != 0:
+        raise RuntimeError(f"AI App failed: {r.stderr[:300]}\n{r.stdout[:300]}")
+
+    try:
+        return json.loads(r.stdout)
+    except json.JSONDecodeError:
+        return {"status": "SUCCESS", "raw_output": r.stdout[:500]}
+
+
+def execute(pipeline: str, params: dict) -> dict:
+    """Smart router: pick the best execution path for the given pipeline."""
+    # Path A: template-based (image tasks)
+    if pipeline in TEMPLATE_MAP:
+        return execute_via_template(pipeline, params)
+
+    # Path C: AI App (complex workflows)
+    if pipeline in AI_APP_WORKFLOWS:
+        webapp_id = AI_APP_WORKFLOWS[pipeline]
+        return execute_via_ai_app(webapp_id, params.get("nodes"), params.get("files"),
+                                  params.get("instance_type", "plus"),
+                                  params.get("output"))
+
+    # Path B: Standard API (video/audio/3D by endpoint name)
+    return execute_via_api(pipeline, params)
+
+
+# Legacy alias (DEPRECATED — workspace setContent is unreliable)
+def save_and_execute(api_format: dict, workspace_id: str = WORKSPACE_ID) -> dict:
+    """DEPRECATED: workspace setContent → create is UNRELIABLE.
+    Use execute_via_template() or execute_via_ai_app() instead.
+    This function now raises an error to prevent silent failures."""
+    raise RuntimeError(
+        "⚠️ save_and_execute() is DEPRECATED. workspace setContent execution is unreliable "
+        "(executes cached old workflow, not the newly saved one). "
+        "Use execute_via_template(), execute_via_api(), or execute_via_ai_app() instead."
+    )
 
 
 def main():
@@ -1155,7 +1392,32 @@ def main():
         print(f"💾 Saved to {args.save}", file=sys.stderr)
     
     if args.execute:
-        result = save_and_execute(api_format, args.workspace)
+        # Use new execution engine: template+nodeInfoList for image pipelines
+        template_params = {
+            "prompt": args.prompt,
+            "negative": args.negative,
+            "width": args.width,
+            "height": args.height,
+            "steps": args.steps,
+            "cfg": args.cfg,
+            "seed": args.seed,
+            "denoise": args.denoise,
+            "checkpoint": args.checkpoint,
+            "sampler": args.sampler,
+            "scheduler": args.scheduler,
+        }
+        if args.image:
+            template_params["image"] = args.image
+        if args.lora:
+            template_params["lora"] = args.lora
+            template_params["lora_strength"] = args.lora_strength
+
+        try:
+            result = execute(args.pipeline, template_params)
+        except (ValueError, RuntimeError) as e:
+            print(f"⚠️ Smart execute failed: {e}", file=sys.stderr)
+            print(f"💡 Falling back to JSON output (use template+nodeInfoList manually)", file=sys.stderr)
+            result = {"status": "COMPILE_ONLY", "api_format": api_format}
         print(json.dumps(result, indent=2, ensure_ascii=False))
     elif not args.save:
         print(json.dumps(api_format, indent=2, ensure_ascii=False))
