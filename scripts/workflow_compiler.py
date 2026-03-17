@@ -664,24 +664,335 @@ class WorkflowCompiler:
         return self.compile()
 
 
+    # ===== Flux.2 Klein Text2Img =====
+    def build_flux2_klein(self, prompt: str, negative: str = "",
+                          width: int = 1024, height: int = 1024, steps: int = 20, cfg: float = 5.0,
+                          diffusion_model: str = "flux-2-klein-base-4b-fp8.safetensors",
+                          text_encoder: str = "qwen_3_4b.safetensors",
+                          vae_name: str = "flux2-vae.safetensors",
+                          seed: int = -1, **kwargs) -> dict:
+        """Flux.2 Klein 4B text2img (UNETLoader + CLIPLoader(flux2) + SamplerCustomAdvanced)."""
+        unet = self.add_node("UNETLoader", {"unet_name": diffusion_model, "weight_dtype": "default"})
+        clip = self.add_node("CLIPLoader", {"clip_name": text_encoder, "type": "flux2", "device": "default"})
+        vae = self.add_node("VAELoader", {"vae_name": vae_name})
+        
+        pos = self.add_node("CLIPTextEncode", {"text": prompt})
+        neg_node = self.add_node("CLIPTextEncode", {"text": negative or ""})
+        self.connect(clip, 0, pos, "clip")
+        self.connect(clip, 0, neg_node, "clip")
+        
+        guider = self.add_node("CFGGuider", {"cfg": cfg})
+        self.connect(unet, 0, guider, "model")
+        self.connect(pos, 0, guider, "positive")
+        self.connect(neg_node, 0, guider, "negative")
+        
+        scheduler = self.add_node("Flux2Scheduler", {"steps": steps, "width": width, "height": height})
+        sampler_select = self.add_node("KSamplerSelect", {"sampler_name": "euler"})
+        noise = self.add_node("RandomNoise", {"noise_seed": seed if seed != -1 else random.randint(0, 2**53)})
+        
+        latent = self.add_node("EmptyFlux2LatentImage", {"width": width, "height": height, "batch_size": 1})
+        
+        advanced = self.add_node("SamplerCustomAdvanced", {})
+        self.connect(noise, 0, advanced, "noise")
+        self.connect(guider, 0, advanced, "guider")
+        self.connect(sampler_select, 0, advanced, "sampler")
+        self.connect(scheduler, 0, advanced, "sigmas")
+        self.connect(latent, 0, advanced, "latent_image")
+        
+        vae_dec = self.add_node("VAEDecode", {})
+        self.connect(advanced, 0, vae_dec, "samples")
+        self.connect(vae, 0, vae_dec, "vae")
+        
+        save = self.add_node("SaveImage", {"filename_prefix": "ComfyUI"})
+        self.connect(vae_dec, 0, save, "images")
+        return self.compile()
+
+    # ===== Flux.2 Klein Distilled (4-step) =====
+    def build_flux2_klein_distilled(self, prompt: str, width: int = 1024, height: int = 1024,
+                                     diffusion_model: str = "flux-2-klein-4b-fp8.safetensors",
+                                     text_encoder: str = "qwen_3_4b.safetensors",
+                                     vae_name: str = "flux2-vae.safetensors",
+                                     seed: int = -1, **kwargs) -> dict:
+        """Flux.2 Klein Distilled (4 steps, cfg=1, ~1.2s)."""
+        unet = self.add_node("UNETLoader", {"unet_name": diffusion_model, "weight_dtype": "default"})
+        clip = self.add_node("CLIPLoader", {"clip_name": text_encoder, "type": "flux2", "device": "default"})
+        vae = self.add_node("VAELoader", {"vae_name": vae_name})
+        
+        pos = self.add_node("CLIPTextEncode", {"text": prompt})
+        self.connect(clip, 0, pos, "clip")
+        
+        # Distilled uses ConditioningZeroOut for negative + cfg=1
+        zero_neg = self.add_node("ConditioningZeroOut", {})
+        self.connect(pos, 0, zero_neg, "conditioning")
+        
+        guider = self.add_node("CFGGuider", {"cfg": 1.0})
+        self.connect(unet, 0, guider, "model")
+        self.connect(pos, 0, guider, "positive")
+        self.connect(zero_neg, 0, guider, "negative")
+        
+        scheduler = self.add_node("Flux2Scheduler", {"steps": 4, "width": width, "height": height})
+        sampler_select = self.add_node("KSamplerSelect", {"sampler_name": "euler"})
+        noise = self.add_node("RandomNoise", {"noise_seed": seed if seed != -1 else random.randint(0, 2**53)})
+        latent = self.add_node("EmptyFlux2LatentImage", {"width": width, "height": height, "batch_size": 1})
+        
+        advanced = self.add_node("SamplerCustomAdvanced", {})
+        self.connect(noise, 0, advanced, "noise")
+        self.connect(guider, 0, advanced, "guider")
+        self.connect(sampler_select, 0, advanced, "sampler")
+        self.connect(scheduler, 0, advanced, "sigmas")
+        self.connect(latent, 0, advanced, "latent_image")
+        
+        vae_dec = self.add_node("VAEDecode", {})
+        self.connect(advanced, 0, vae_dec, "samples")
+        self.connect(vae, 0, vae_dec, "vae")
+        
+        save = self.add_node("SaveImage", {"filename_prefix": "ComfyUI"})
+        self.connect(vae_dec, 0, save, "images")
+        return self.compile()
+
+    # ===== Flux Kontext Image Edit =====
+    def build_flux_kontext(self, prompt: str, image_file: str,
+                           diffusion_model: str = "flux1-dev-kontext_fp8_scaled.safetensors",
+                           clip_l: str = "clip_l.safetensors",
+                           t5xxl: str = "t5xxl_fp8_e4m3fn_scaled.safetensors",
+                           vae_name: str = "ae.safetensors",
+                           width: int = 1024, height: int = 1024,
+                           steps: int = 20, guidance: float = 2.5,
+                           seed: int = -1, **kwargs) -> dict:
+        """Flux Kontext single-image edit."""
+        unet = self.add_node("UNETLoader", {"unet_name": diffusion_model, "weight_dtype": "default"})
+        clip = self.add_node("DualCLIPLoader", {
+            "clip_name1": clip_l, "clip_name2": t5xxl, "type": "flux"
+        })
+        vae = self.add_node("VAELoader", {"vae_name": vae_name})
+        
+        img = self.add_node("LoadImage", {"image": image_file})
+        vae_enc = self.add_node("VAEEncode", {})
+        self.connect(img, 0, vae_enc, "pixels")
+        self.connect(vae, 0, vae_enc, "vae")
+        
+        ref = self.add_node("ReferenceLatent", {})
+        self.connect(vae_enc, 0, ref, "latent")
+        
+        pos = self.add_node("CLIPTextEncode", {"text": prompt})
+        self.connect(clip, 0, pos, "clip")
+        
+        fg = self.add_node("FluxGuidance", {"guidance": guidance})
+        self.connect(pos, 0, fg, "conditioning")
+        
+        zero_neg = self.add_node("ConditioningZeroOut", {})
+        self.connect(pos, 0, zero_neg, "conditioning")
+        
+        latent = self.add_node("EmptySD3LatentImage", {"width": width, "height": height, "batch_size": 1})
+        
+        if seed == -1: seed = random.randint(0, 2**53)
+        ks = self.add_node("KSampler", {
+            "seed": seed, "steps": steps, "cfg": 1.0,
+            "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0
+        })
+        self.connect(unet, 0, ks, "model")
+        self.connect(fg, 0, ks, "positive")
+        self.connect(zero_neg, 0, ks, "negative")
+        self.connect(ref, 0, ks, "latent_image")
+        
+        vae_dec = self.add_node("VAEDecode", {})
+        self.connect(ks, 0, vae_dec, "samples")
+        self.connect(vae, 0, vae_dec, "vae")
+        
+        save = self.add_node("SaveImage", {"filename_prefix": "ComfyUI"})
+        self.connect(vae_dec, 0, save, "images")
+        return self.compile()
+
+    # ===== Qwen Image Edit =====
+    def build_qwen_edit(self, prompt: str, image_file: str,
+                        diffusion_model: str = "qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+                        text_encoder: str = "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+                        vae_name: str = "qwen_image_vae.safetensors",
+                        lora_name: str = "Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors",
+                        steps: int = 4, seed: int = -1, **kwargs) -> dict:
+        """Qwen Image Edit with Lightning LoRA (4 steps)."""
+        unet = self.add_node("UNETLoader", {"unet_name": diffusion_model, "weight_dtype": "default"})
+        clip = self.add_node("CLIPLoader", {"clip_name": text_encoder, "type": "qwen_image", "device": "default"})
+        vae = self.add_node("VAELoader", {"vae_name": vae_name})
+        
+        cfg_norm = self.add_node("CFGNorm", {"strength": 1})
+        self.connect(unet, 0, cfg_norm, "model")
+        
+        aura = self.add_node("ModelSamplingAuraFlow", {"shift": 3.0})
+        self.connect(cfg_norm, 0, aura, "model")
+        
+        lora = self.add_node("LoraLoaderModelOnly", {"lora_name": lora_name, "strength_model": 1.0})
+        self.connect(aura, 0, lora, "model")
+        
+        img = self.add_node("LoadImage", {"image": image_file})
+        scale = self.add_node("ImageScaleToTotalPixels", {"upscale_method": "lanczos", "megapixels": 1.0})
+        self.connect(img, 0, scale, "image")
+        
+        vae_enc = self.add_node("VAEEncode", {})
+        self.connect(scale, 0, vae_enc, "pixels")
+        self.connect(vae, 0, vae_enc, "vae")
+        
+        pos = self.add_node("TextEncodeQwenImageEditPlus", {"text": prompt})
+        self.connect(clip, 0, pos, "clip")
+        self.connect(scale, 0, pos, "image")
+        
+        neg_node = self.add_node("TextEncodeQwenImageEditPlus", {"text": ""})
+        self.connect(clip, 0, neg_node, "clip")
+        self.connect(scale, 0, neg_node, "image")
+        
+        if seed == -1: seed = random.randint(0, 2**53)
+        ks = self.add_node("KSampler", {
+            "seed": seed, "steps": steps, "cfg": 1.0,
+            "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0
+        })
+        self.connect(lora, 0, ks, "model")
+        self.connect(pos, 0, ks, "positive")
+        self.connect(neg_node, 0, ks, "negative")
+        self.connect(vae_enc, 0, ks, "latent_image")
+        
+        vae_dec = self.add_node("VAEDecode", {})
+        self.connect(ks, 0, vae_dec, "samples")
+        self.connect(vae, 0, vae_dec, "vae")
+        
+        save = self.add_node("SaveImage", {"filename_prefix": "ComfyUI"})
+        self.connect(vae_dec, 0, save, "images")
+        return self.compile()
+
+    # ===== ACE-Step Audio (Text-to-Song) =====
+    def build_audio_song(self, prompt: str, duration: float = 60.0,
+                         checkpoint: str = "ace_step_v1_3.5b.safetensors",
+                         seed: int = -1, **kwargs) -> dict:
+        """ACE-Step text-to-song generation."""
+        ckpt = self.add_node("CheckpointLoaderSimple", {"ckpt_name": checkpoint})
+        
+        pos = self.add_node("TextEncodeAceStepAudio", {"text": prompt})
+        self.connect(ckpt, 1, pos, "clip")
+        
+        zero_neg = self.add_node("ConditioningZeroOut", {})
+        self.connect(pos, 0, zero_neg, "conditioning")
+        
+        empty = self.add_node("EmptyAceStepLatentAudio", {"seconds": duration, "batch_size": 1})
+        
+        # Apply CFG operation
+        cfg_op = self.add_node("LatentApplyOperationCFG", {})
+        reinhard = self.add_node("LatentOperationTonemapReinhard", {})
+        self.connect(reinhard, 0, cfg_op, "operation")
+        
+        sampling = self.add_node("ModelSamplingSD3", {"shift": 1.0})
+        self.connect(ckpt, 0, sampling, "model")
+        self.connect(cfg_op, 0, sampling, "model")
+        
+        if seed == -1: seed = random.randint(0, 2**53)
+        ks = self.add_node("KSampler", {
+            "seed": seed, "steps": 50, "cfg": 5.0,
+            "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0
+        })
+        self.connect(sampling, 0, ks, "model")
+        self.connect(pos, 0, ks, "positive")
+        self.connect(zero_neg, 0, ks, "negative")
+        self.connect(empty, 0, ks, "latent_image")
+        
+        dec = self.add_node("VAEDecodeAudio", {})
+        self.connect(ks, 0, dec, "samples")
+        self.connect(ckpt, 2, dec, "vae")
+        
+        save = self.add_node("SaveAudio", {"filename_prefix": "ComfyUI"})
+        self.connect(dec, 0, save, "audio")
+        return self.compile()
+
+    # ===== Hunyuan3D (Image-to-3D) =====
+    def build_3d_hunyuan(self, image_file: str,
+                         checkpoint: str = "hunyuan_3d_v2.1.safetensors",
+                         steps: int = 30, cfg: float = 5.0, seed: int = -1, **kwargs) -> dict:
+        """Hunyuan3D 2.1 image-to-3D mesh generation."""
+        ckpt = self.add_node("ImageOnlyCheckpointLoader", {"ckpt_name": checkpoint})
+        
+        img = self.add_node("LoadImage", {"image": image_file})
+        vision_enc = self.add_node("CLIPVisionEncode", {})
+        self.connect(ckpt, 1, vision_enc, "clip_vision")  # CLIP_VISION from checkpoint
+        self.connect(img, 0, vision_enc, "image")
+        
+        cond = self.add_node("Hunyuan3Dv2Conditioning", {})
+        self.connect(vision_enc, 0, cond, "clip_vision_output")
+        
+        aura = self.add_node("ModelSamplingAuraFlow", {"shift": 1.0})
+        self.connect(ckpt, 0, aura, "model")
+        
+        empty = self.add_node("EmptyLatentHunyuan3Dv2", {"resolution": 384, "batch_size": 1})
+        
+        if seed == -1: seed = random.randint(0, 2**53)
+        ks = self.add_node("KSampler", {
+            "seed": seed, "steps": steps, "cfg": cfg,
+            "sampler_name": "euler", "scheduler": "normal", "denoise": 1.0
+        })
+        self.connect(aura, 0, ks, "model")
+        self.connect(cond, 0, ks, "positive")
+        self.connect(cond, 1, ks, "negative")
+        self.connect(empty, 0, ks, "latent_image")
+        
+        vae_dec = self.add_node("VAEDecodeHunyuan3D", {})
+        self.connect(ks, 0, vae_dec, "samples")
+        self.connect(ckpt, 2, vae_dec, "vae")
+        
+        mesh = self.add_node("VoxelToMesh", {"threshold": 0.5})
+        self.connect(vae_dec, 0, mesh, "voxel")
+        
+        return self.compile()
+
+
 PIPELINE_BUILDERS = {
+    # Standard SD/SDXL
     "text2img": "build_text2img",
-    "img2img": "build_img2img", 
+    "text2img_sdxl": "build_text2img",
+    "img2img": "build_img2img",
+    "img2img_sdxl": "build_img2img",
     "text2img_lora": "build_text2img_lora",
     "text2img+lora": "build_text2img_lora",
+    "lora_sdxl": "build_text2img_lora",
     "controlnet": "build_controlnet",
+    "controlnet_sdxl": "build_controlnet",
     "text2img+controlnet": "build_controlnet",
-    "flux": "build_flux_text2img",
-    "flux_text2img": "build_flux_text2img",
-    "inpaint": "build_inpaint",
-    "outpaint": "build_outpaint",
-    "upscale": "build_upscale",
-    "text2img+upscale": "build_text2img_upscale",
     "multi_controlnet": "build_multi_controlnet",
     "controlnet+controlnet": "build_multi_controlnet",
+    "inpaint": "build_inpaint",
+    "inpaint_sdxl": "build_inpaint",
+    "outpaint": "build_outpaint",
+    "outpaint_sdxl": "build_outpaint",
+    "upscale": "build_upscale",
+    "upscale_esrgan": "build_upscale",
+    "text2img+upscale": "build_text2img_upscale",
+    # Flux.1
+    "flux": "build_flux_text2img",
+    "flux_text2img": "build_flux_text2img",
+    "text2img_flux1": "build_flux_text2img",
+    # Flux.2 Klein
+    "flux2_klein": "build_flux2_klein",
+    "text2img_flux2_klein": "build_flux2_klein",
+    "flux2_klein_base": "build_flux2_klein",
+    "flux2_klein_distilled": "build_flux2_klein_distilled",
+    "text2img_flux2_distilled": "build_flux2_klein_distilled",
+    # Flux Kontext
+    "flux_kontext": "build_flux_kontext",
+    "img_edit_flux_kontext": "build_flux_kontext",
+    "kontext": "build_flux_kontext",
+    # Qwen Image Edit
+    "qwen_edit": "build_qwen_edit",
+    "img_edit_qwen": "build_qwen_edit",
+    "qwen": "build_qwen_edit",
+    # Video
     "wan_t2v": "build_wan_t2v",
     "wan_i2v": "build_wan_i2v",
+    "video_wan21_t2v": "build_wan_t2v",
+    "video_wan21_i2v": "build_wan_i2v",
     "video": "build_wan_t2v",
+    # Audio
+    "audio_song": "build_audio_song",
+    "audio_t2a": "build_audio_song",
+    "ace_step": "build_audio_song",
+    # 3D
+    "3d_hunyuan": "build_3d_hunyuan",
+    "hunyuan3d": "build_3d_hunyuan",
+    "image_to_3d": "build_3d_hunyuan",
 }
 
 
