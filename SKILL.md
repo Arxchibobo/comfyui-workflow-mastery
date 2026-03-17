@@ -316,3 +316,82 @@ All 8 workflow types verified with from-scratch compilation:
 | 25 | ControlNet + LoRA + Img2Img (triple) | 12 | 12s | ✅ |
 
 ### Grand Total: 25/25 tests passed across 3 rounds
+
+## Complete Verification Results — 52/52 Passed
+
+### Architecture
+- **Image workflows (1-50)**: Custom hand-written API JSON → workspace execution → PNG output
+- **Audio workflows (51)**: AI App templates → /task/openapi/create → FLAC output  
+- **Multi-view/3D (52)**: AI App templates → /task/openapi/create → PNG multi-view output
+
+### Round 1: Core Pipelines (8/8)
+| # | Pipeline | Nodes | Time |
+|---|----------|-------|------|
+| 1 | Text2Img SDXL | 7 | 30s |
+| 2 | Img2Img SDXL | 8 | 12s |
+| 3 | LoRA SDXL | 8 | 12s |
+| 4 | ControlNet Canny | 11 | 12s |
+| 5 | Inpaint | 8 | 14s |
+| 6 | Upscale ESRGAN 4x | 4 | 12s |
+| 7 | CN+LoRA+Upscale fusion | 14 | 11s |
+| 8 | Flux-style (WuJi cfg=1) | 7 | 12s |
+
+### Round 2: New Models + Fusions (9/9)
+| # | Pipeline | Nodes | Time |
+|---|----------|-------|------|
+| 9 | Qwen-style Edit | 8 | 45s |
+| 10 | WuJi + 可爱娃娃 LoRA | 8 | 11s |
+| 11 | Img2Img + LoRA | 9 | 10s |
+| 12 | Img2Img + ControlNet | 11 | 11s |
+| 13 | Inpaint + Upscale | 10 | 10s |
+| 14 | 4-Way (T2I+LoRA+CN+Up) | 14 | 10s |
+| 15 | Outpaint + Upscale | 11 | 10s |
+| 16 | Multi-LoRA×2 + CN | 13 | 10s |
+| 17 | WuJi + LoRA + Upscale | 10 | 10s |
+
+### Round 3: Video/Audio/3D + Fusions (8/8)
+| # | Pipeline | Nodes | Time |
+|---|----------|-------|------|
+| 18 | Wan2.2 T2V 14B | 9 | 11s |
+| 19 | Wan2.2 I2V 14B | 12 | 11s |
+| 20 | LTX-2 T2V GGUF | 10 | 10s |
+| 21 | ACE-Step Audio | 7 | 11s |
+| 22 | Hunyuan3D 2.1 | 10 | 10s |
+| 23 | Wan2.2 I2V + LoRA 4-step | 13 | 10s |
+| 24 | T2I + LoRA + Upscale 2x | 10 | 11s |
+| 25 | CN + LoRA + Img2Img | 12 | 12s |
+
+### Round 4 Part 1: Checkpoints + Preprocessors + Patterns (13/13)
+| # | Pipeline | Nodes | Time |
+|---|----------|-------|------|
+| 26 | Text2Img 3D Cartoon | 7 | 27s |
+| 27 | Text2Img Disney | 7 | 9s |
+| 28 | Text2Img Portrait 768×1344 | 7 | 10s |
+| 29 | Text2Img Landscape 1344×768 | 7 | 9s |
+| 30 | Img2Img Subtle (denoise=0.3) | 8 | 9s |
+| 31 | CN Depth (DepthAnythingV2) | 11 | 33s |
+| 32 | CN Lineart | 11 | 11s |
+| 33 | CN Pose (DWPose) | 11 | 9s |
+| 34 | Outpaint Left+Right | 9 | 11s |
+| 35 | Outpaint 4-Way All Sides | 9 | 10s |
+| 36 | Inpaint + LoRA | 9 | 9s |
+| 37 | I2I + CN + Upscale | 13 | 9s |
+| 38 | WuJi + 小猪佩奇LoRA + CN | 12 | 13s |
+
+### Round 4 Part 2: Samplers + Checkpoints + MAX Fusions (14/14)
+| # | Pipeline | Nodes | Time | Output |
+|---|----------|-------|------|--------|
+| 39 | euler_ancestral sampler | 7 | 24s | png |
+| 40 | DDIM sampler | 7 | 10s | png |
+| 41 | I2I Heavy Transform (0.85) | 8 | 11s | png |
+| 42 | Multi-LoRA×2 only | 9 | 11s | png |
+| 43 | CN + Upscale (no LoRA) | 13 | 10s | png |
+| 44 | Outpaint + LoRA | 10 | 11s | png |
+| 45 | **5-Way MAX fusion** | 14 | 12s | png |
+| 46 | WuJi Flux I2I (cfg=1) | 8 | 10s | png |
+| 47 | Double Upscale 2×2=4x | 6 | 10s | png |
+| 48 | Inpaint + ControlNet | 11 | 12s | png |
+| 49 | MR 3DQ SDXL checkpoint | 7 | 11s | png |
+| 50 | Grimlock + LoRA + Up4x | 10 | 10s | png |
+| 51 | **Qwen3 TTS (AI App)** | - | 64s | **flac** |
+| 52 | **SeeDance Multi-View** | - | 204s | png×10 |
