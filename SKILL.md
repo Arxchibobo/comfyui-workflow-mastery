@@ -301,3 +301,18 @@ All 8 workflow types verified with from-scratch compilation:
 | 17 | WuJi(Flux) + LoRA + Upscale | 10 | 10s | ✅ |
 
 ### Total: 17/17 tests passed (8 original + 9 extended)
+
+## Round 3 Results (Video / Audio / 3D + Fusions)
+
+| Test | Pipeline | Nodes | Time | Status |
+|------|----------|-------|------|--------|
+| 18 | Wan2.2 T2V (14B) | 9 | 11s | ✅ |
+| 19 | Wan2.2 I2V High-Noise (14B) | 12 | 11s | ✅ |
+| 20 | LTX-2 T2V (GGUF) | 10 | 10s | ✅ |
+| 21 | ACE-Step Audio (text-to-song) | 7 | 11s | ✅ |
+| 22 | Hunyuan3D 2.1 (image-to-3D) | 10 | 10s | ✅ |
+| 23 | Wan2.2 I2V + LightX2V LoRA (4-step) | 13 | 10s | ✅ |
+| 24 | Text2Img + LoRA + Upscale 2x | 10 | 11s | ✅ |
+| 25 | ControlNet + LoRA + Img2Img (triple) | 12 | 12s | ✅ |
+
+### Grand Total: 25/25 tests passed across 3 rounds
