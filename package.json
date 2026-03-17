@@ -1,0 +1,16 @@
+{
+  "name": "comfyui-workflow-mastery",
+  "version": "1.0.0",
+  "description": "ComfyUI Workflow Mastery — AI Agent Skill for authoring and executing ComfyUI workflows",
+  "author": "bobooo",
+  "license": "MIT",
+  "keywords": ["comfyui", "workflow", "ai-art", "image-generation", "video-generation", "runninghub"],
+  "skill": {
+    "trigger": ["comfyui", "工作流", "生成图片", "画", "风格转换", "超分", "inpaint", "controlnet", "lora", "视频生成"],
+    "pipelines": ["text2img", "img2img", "text2img+lora", "controlnet", "multi_controlnet", "inpaint", "outpaint", "upscale", "flux", "wan_t2v", "wan_i2v", "fusion"],
+    "nodeTypes": 206,
+    "dataTypes": 65,
+    "testedWorkflows": 8,
+    "allPassed": true
+  }
+}

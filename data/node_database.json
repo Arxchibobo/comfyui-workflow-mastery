@@ -1,0 +1,204 @@
+{
+  "version": "1.0",
+  "description": "ComfyUI Node Database - Data types, inputs/outputs, connection rules",
+  "core_pipelines": {
+    "text2img_basic": {
+      "description": "基础文生图链路",
+      "flow": "CheckpointLoaderSimple → [MODEL→KSampler, CLIP→CLIPTextEncode, VAE→VAEDecode] → SaveImage",
+      "nodes": ["CheckpointLoaderSimple", "CLIPTextEncode", "EmptyLatentImage", "KSampler", "VAEDecode", "SaveImage"],
+      "connections": [
+        ["CheckpointLoaderSimple:MODEL", "KSampler:model"],
+        ["CheckpointLoaderSimple:CLIP", "CLIPTextEncode:clip"],
+        ["CheckpointLoaderSimple:VAE", "VAEDecode:vae"],
+        ["CLIPTextEncode:CONDITIONING", "KSampler:positive"],
+        ["CLIPTextEncode:CONDITIONING", "KSampler:negative"],
+        ["EmptyLatentImage:LATENT", "KSampler:latent_image"],
+        ["KSampler:LATENT", "VAEDecode:samples"],
+        ["VAEDecode:IMAGE", "SaveImage:images"]
+      ]
+    },
+    "img2img_basic": {
+      "description": "基础图生图链路",
+      "flow": "LoadImage → VAEEncode → KSampler(denoise<1) → VAEDecode → SaveImage",
+      "nodes": ["CheckpointLoaderSimple", "LoadImage", "VAEEncode", "CLIPTextEncode", "KSampler", "VAEDecode", "SaveImage"],
+      "connections": [
+        ["CheckpointLoaderSimple:MODEL", "KSampler:model"],
+        ["CheckpointLoaderSimple:CLIP", "CLIPTextEncode:clip"],
+        ["CheckpointLoaderSimple:VAE", "VAEEncode:vae"],
+        ["CheckpointLoaderSimple:VAE", "VAEDecode:vae"],
+        ["LoadImage:IMAGE", "VAEEncode:pixels"],
+        ["VAEEncode:LATENT", "KSampler:latent_image"],
+        ["CLIPTextEncode:CONDITIONING", "KSampler:positive"],
+        ["CLIPTextEncode:CONDITIONING", "KSampler:negative"],
+        ["KSampler:LATENT", "VAEDecode:samples"],
+        ["VAEDecode:IMAGE", "SaveImage:images"]
+      ]
+    },
+    "text2img_lora": {
+      "description": "文生图 + LoRA",
+      "flow": "CheckpointLoaderSimple → LoraLoader → [MODEL→KSampler, CLIP→CLIPTextEncode]",
+      "nodes": ["CheckpointLoaderSimple", "LoraLoader", "CLIPTextEncode", "EmptyLatentImage", "KSampler", "VAEDecode", "SaveImage"],
+      "connections": [
+        ["CheckpointLoaderSimple:MODEL", "LoraLoader:model"],
+        ["CheckpointLoaderSimple:CLIP", "LoraLoader:clip"],
+        ["CheckpointLoaderSimple:VAE", "VAEDecode:vae"],
+        ["LoraLoader:MODEL", "KSampler:model"],
+        ["LoraLoader:CLIP", "CLIPTextEncode:clip"],
+        ["CLIPTextEncode:CONDITIONING", "KSampler:positive"],
+        ["CLIPTextEncode:CONDITIONING", "KSampler:negative"],
+        ["EmptyLatentImage:LATENT", "KSampler:latent_image"],
+        ["KSampler:LATENT", "VAEDecode:samples"],
+        ["VAEDecode:IMAGE", "SaveImage:images"]
+      ]
+    },
+    "controlnet": {
+      "description": "ControlNet 控制生成",
+      "flow": "LoadImage → Preprocessor → ControlNetApply → KSampler",
+      "nodes": ["CheckpointLoaderSimple", "ControlNetLoader", "LoadImage", "AIO_Preprocessor", "ControlNetApplyAdvanced", "CLIPTextEncode", "EmptyLatentImage", "KSampler", "VAEDecode", "SaveImage"],
+      "connections": [
+        ["CheckpointLoaderSimple:MODEL", "KSampler:model"],
+        ["CheckpointLoaderSimple:CLIP", "CLIPTextEncode:clip"],
+        ["CheckpointLoaderSimple:VAE", "VAEDecode:vae"],
+        ["CheckpointLoaderSimple:VAE", "ControlNetApplyAdvanced:vae"],
+        ["ControlNetLoader:CONTROL_NET", "ControlNetApplyAdvanced:control_net"],
+        ["LoadImage:IMAGE", "AIO_Preprocessor:image"],
+        ["AIO_Preprocessor:IMAGE", "ControlNetApplyAdvanced:image"],
+        ["CLIPTextEncode:CONDITIONING", "ControlNetApplyAdvanced:positive"],
+        ["CLIPTextEncode:CONDITIONING", "ControlNetApplyAdvanced:negative"],
+        ["ControlNetApplyAdvanced:CONDITIONING", "KSampler:positive"],
+        ["ControlNetApplyAdvanced:CONDITIONING", "KSampler:negative"],
+        ["EmptyLatentImage:LATENT", "KSampler:latent_image"],
+        ["KSampler:LATENT", "VAEDecode:samples"],
+        ["VAEDecode:IMAGE", "SaveImage:images"]
+      ]
+    },
+    "upscale": {
+      "description": "超分辨率 (img2img + upscale)",
+      "flow": "img2img → UpscaleModelLoader → ImageUpscaleWithModel → KSampler(low denoise) → SaveImage",
+      "extra_nodes": ["UpscaleModelLoader", "ImageUpscaleWithModel"]
+    },
+    "flux_text2img": {
+      "description": "Flux 模型文生图（高级采样器链路）",
+      "flow": "UNETLoader + DualCLIPLoader → FluxGuidance → SamplerCustomAdvanced",
+      "nodes": ["UNETLoader", "DualCLIPLoader", "VAELoader", "CLIPTextEncode", "FluxGuidance", "ConditioningZeroOut", "EmptySD3LatentImage", "RandomNoise", "KSamplerSelect", "BasicScheduler", "CFGGuider", "SamplerCustomAdvanced", "VAEDecode", "SaveImage"]
+    },
+    "wan_video": {
+      "description": "Wan2.x 视频生成",
+      "flow": "WanVideoModelLoader + LoadWanVideoT5TextEncoder → WanVideoTextEncode → WanVideoSampler → WanVideoDecode",
+      "nodes": ["WanVideoModelLoader", "LoadWanVideoT5TextEncoder", "WanVideoVAELoader", "WanVideoTextEncode", "WanVideoSchedulerv2", "WanVideoSamplerv2", "WanVideoDecode", "SaveVideo"]
+    }
+  },
+  "data_types": {
+    "MODEL": {
+      "description": "扩散模型（UNet/DiT）",
+      "producers": ["CheckpointLoaderSimple", "UNETLoader", "LoraLoader", "LoraLoaderModelOnly", "ModelSamplingSD3", "ModelSamplingAuraFlow", "DifferentialDiffusion", "ImageOnlyCheckpointLoader"],
+      "consumers": ["KSampler", "KSamplerAdvanced", "LoraLoader", "LoraLoaderModelOnly", "ModelSamplingSD3", "CFGGuider", "DualCFGGuider", "BasicScheduler", "DifferentialDiffusion"]
+    },
+    "CLIP": {
+      "description": "文本编码器",
+      "producers": ["CheckpointLoaderSimple", "CLIPLoader", "DualCLIPLoader", "LoraLoader", "QuadrupleCLIPLoader"],
+      "consumers": ["CLIPTextEncode", "LoraLoader"]
+    },
+    "VAE": {
+      "description": "变分自编码器（图像↔潜空间）",
+      "producers": ["CheckpointLoaderSimple", "VAELoader", "ImageOnlyCheckpointLoader"],
+      "consumers": ["VAEDecode", "VAEEncode", "ControlNetApplyAdvanced", "InpaintModelConditioning", "VHS_VideoCombine"]
+    },
+    "CONDITIONING": {
+      "description": "条件信息（文本嵌入 + 可选控制信号）",
+      "producers": ["CLIPTextEncode", "ConditioningZeroOut", "FluxGuidance", "ControlNetApplyAdvanced", "unCLIPConditioning"],
+      "consumers": ["KSampler", "KSamplerAdvanced", "ControlNetApplyAdvanced", "CFGGuider", "DualCFGGuider", "InpaintModelConditioning"]
+    },
+    "LATENT": {
+      "description": "潜空间张量",
+      "producers": ["EmptyLatentImage", "EmptySD3LatentImage", "KSampler", "KSamplerAdvanced", "VAEEncode", "SamplerCustomAdvanced", "EmptyHunyuanLatentVideo"],
+      "consumers": ["KSampler", "KSamplerAdvanced", "VAEDecode", "SamplerCustomAdvanced", "SamplerCustom"]
+    },
+    "IMAGE": {
+      "description": "图像张量 [B,H,W,C]",
+      "producers": ["LoadImage", "VAEDecode", "ImageBatch", "ImageScaleToTotalPixels", "GrokImageEditNode"],
+      "consumers": ["SaveImage", "PreviewImage", "VAEEncode", "CLIPVisionEncode", "ControlNetApplyAdvanced", "ImageBatch", "CreateVideo"]
+    },
+    "MASK": {
+      "description": "蒙版（用于局部处理）",
+      "producers": ["LoadImage", "Sam2Segmentation", "ImagePadForOutpaint", "GrowMaskWithBlur"],
+      "consumers": ["InpaintModelConditioning", "ImageCompositeMasked", "GrowMaskWithBlur"]
+    },
+    "CONTROL_NET": {
+      "description": "ControlNet 模型",
+      "producers": ["ControlNetLoader"],
+      "consumers": ["ControlNetApplyAdvanced"]
+    },
+    "AUDIO": {
+      "description": "音频数据",
+      "producers": ["LoadAudio", "RecordAudio", "GetVideoComponents", "ElevenLabsTextToDialogue"],
+      "consumers": ["CreateVideo", "SaveAudioMP3", "SaveAudioOpus", "GeminiNode"]
+    },
+    "VIDEO": {
+      "description": "视频数据",
+      "producers": ["CreateVideo", "LoadVideo", "WanVideoSamplerv2"],
+      "consumers": ["SaveVideo", "GetVideoComponents", "GeminiNode"]
+    }
+  },
+  "node_catalog": {
+    "loaders": {
+      "CheckpointLoaderSimple": {"outputs": ["MODEL", "CLIP", "VAE"], "params": {"ckpt_name": "checkpoint文件名"}},
+      "UNETLoader": {"outputs": ["MODEL"], "params": {"unet_name": "UNet模型", "weight_dtype": "精度"}},
+      "CLIPLoader": {"outputs": ["CLIP"], "params": {"clip_name": "CLIP模型", "type": "sd/flux"}},
+      "DualCLIPLoader": {"outputs": ["CLIP"], "params": {"clip_name1": "CLIP1", "clip_name2": "CLIP2", "type": "sd/flux"}},
+      "VAELoader": {"outputs": ["VAE"], "params": {"vae_name": "VAE模型"}},
+      "ControlNetLoader": {"outputs": ["CONTROL_NET"], "params": {"control_net_name": "ControlNet模型"}},
+      "CLIPVisionLoader": {"outputs": ["CLIP_VISION"], "params": {"clip_name": "CLIP Vision模型"}},
+      "LoraLoader": {"inputs": ["MODEL", "CLIP"], "outputs": ["MODEL", "CLIP"], "params": {"lora_name": "LoRA文件", "strength_model": 1.0, "strength_clip": 1.0}},
+      "LoraLoaderModelOnly": {"inputs": ["MODEL"], "outputs": ["MODEL"], "params": {"lora_name": "LoRA文件", "strength_model": 1.0}},
+      "UpscaleModelLoader": {"outputs": ["UPSCALE_MODEL"], "params": {"model_name": "超分模型"}}
+    },
+    "encoding": {
+      "CLIPTextEncode": {"inputs": ["CLIP"], "outputs": ["CONDITIONING"], "params": {"text": "提示词"}},
+      "CLIPVisionEncode": {"inputs": ["CLIP_VISION", "IMAGE"], "outputs": ["CLIP_VISION_OUTPUT"]},
+      "VAEEncode": {"inputs": ["IMAGE", "VAE"], "outputs": ["LATENT"]},
+      "VAEDecode": {"inputs": ["LATENT", "VAE"], "outputs": ["IMAGE"]},
+      "ConditioningZeroOut": {"inputs": ["CONDITIONING"], "outputs": ["CONDITIONING"]},
+      "FluxGuidance": {"inputs": ["CONDITIONING"], "outputs": ["CONDITIONING"], "params": {"guidance": 3.5}}
+    },
+    "sampling": {
+      "KSampler": {"inputs": ["MODEL", "CONDITIONING", "CONDITIONING", "LATENT"], "outputs": ["LATENT"], "params": {"seed": 0, "steps": 20, "cfg": 7, "sampler_name": "euler", "scheduler": "normal", "denoise": 1.0}},
+      "KSamplerAdvanced": {"inputs": ["MODEL", "CONDITIONING", "CONDITIONING", "LATENT"], "outputs": ["LATENT"], "params": {"add_noise": true, "noise_seed": 0, "steps": 20, "cfg": 7, "sampler_name": "euler", "scheduler": "normal", "start_at_step": 0, "end_at_step": 10000, "return_with_leftover_noise": false}},
+      "SamplerCustomAdvanced": {"inputs": ["NOISE", "GUIDER", "SAMPLER", "SIGMAS", "LATENT"], "outputs": ["LATENT"]},
+      "RandomNoise": {"outputs": ["NOISE"], "params": {"noise_seed": 0}},
+      "KSamplerSelect": {"outputs": ["SAMPLER"], "params": {"sampler_name": "euler"}},
+      "BasicScheduler": {"inputs": ["MODEL"], "outputs": ["SIGMAS"], "params": {"scheduler": "normal", "steps": 20, "denoise": 1.0}},
+      "CFGGuider": {"inputs": ["MODEL", "CONDITIONING", "CONDITIONING"], "outputs": ["GUIDER"], "params": {"cfg": 7}}
+    },
+    "image_io": {
+      "LoadImage": {"outputs": ["IMAGE", "MASK"], "params": {"image": "文件名"}},
+      "SaveImage": {"inputs": ["IMAGE"], "params": {"filename_prefix": "ComfyUI"}},
+      "PreviewImage": {"inputs": ["IMAGE"]},
+      "EmptyLatentImage": {"outputs": ["LATENT"], "params": {"width": 512, "height": 512, "batch_size": 1}},
+      "EmptySD3LatentImage": {"outputs": ["LATENT"], "params": {"width": 1024, "height": 1024, "batch_size": 1}},
+      "ImageBatch": {"inputs": ["IMAGE", "IMAGE"], "outputs": ["IMAGE"]},
+      "ImageScaleToTotalPixels": {"inputs": ["IMAGE"], "outputs": ["IMAGE"], "params": {"upscale_method": "bilinear", "megapixels": 1.0}}
+    },
+    "controlnet": {
+      "ControlNetApplyAdvanced": {"inputs": ["CONDITIONING", "CONDITIONING", "CONTROL_NET", "IMAGE", "VAE"], "outputs": ["CONDITIONING", "CONDITIONING"], "params": {"strength": 1.0, "start_percent": 0, "end_percent": 1.0}},
+      "AIO_Preprocessor": {"inputs": ["IMAGE"], "outputs": ["IMAGE"], "params": {"preprocessor": "CannyEdgePreprocessor", "resolution": 512}},
+      "Canny": {"inputs": ["IMAGE"], "outputs": ["IMAGE"], "params": {"low_threshold": 100, "high_threshold": 200}}
+    },
+    "model_patches": {
+      "ModelSamplingSD3": {"inputs": ["MODEL"], "outputs": ["MODEL"], "params": {"shift": 3.0}},
+      "ModelSamplingAuraFlow": {"inputs": ["MODEL"], "outputs": ["MODEL"], "params": {"shift": 1.73}},
+      "DifferentialDiffusion": {"inputs": ["MODEL"], "outputs": ["MODEL"]}
+    },
+    "video": {
+      "CreateVideo": {"inputs": ["IMAGE", "AUDIO"], "outputs": ["VIDEO"], "params": {"frame_rate": 8}},
+      "SaveVideo": {"inputs": ["VIDEO"], "params": {"filename_prefix": "ComfyUI"}},
+      "LoadVideo": {"outputs": ["VIDEO"]},
+      "VHS_VideoCombine": {"inputs": ["IMAGE", "AUDIO", "VHS_BatchManager", "VHS_FILENAMES", "VAE"], "outputs": ["VHS_FILENAMES"]}
+    },
+    "api_nodes": {
+      "GrokImageEditNode": {"inputs": ["IMAGE"], "outputs": ["IMAGE"], "params": {"prompt": "编辑指令", "n": 1, "quality": "auto"}},
+      "GeminiNode": {"inputs": ["GEMINI_INPUT_FILES"], "outputs": ["STRING"], "params": {"prompt": "指令"}},
+      "GeminiNanoBanana2": {"inputs": ["GEMINI_INPUT_FILES"], "outputs": ["STRING", "IMAGE"], "params": {"prompt": "指令"}}
+    }
+  }
+}

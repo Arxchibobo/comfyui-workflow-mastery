@@ -1,0 +1,114 @@
+{
+  "templates": {
+    "text2img": {
+      "workflowId": "9999",
+      "name": "文生图基础款",
+      "description": "SDXL 文生图，支持自定义 prompt、尺寸、采样参数",
+      "nodes": {
+        "checkpoint": {"nodeId": "4", "field": "ckpt_name", "default": "maximumEffort_maximumEffortXLV10.safetensors"},
+        "positive_prompt": {"nodeId": "6", "field": "text"},
+        "negative_prompt": {"nodeId": "7", "field": "text", "default": "(worst quality:1.5), (low quality:1.5), (normal quality:1.5), lowres, bad anatomy"},
+        "width": {"nodeId": "5", "field": "width", "default": 768},
+        "height": {"nodeId": "5", "field": "height", "default": 1024},
+        "steps": {"nodeId": "3", "field": "steps", "default": 20},
+        "cfg": {"nodeId": "3", "field": "cfg", "default": 8},
+        "seed": {"nodeId": "3", "field": "seed", "default": -1},
+        "sampler": {"nodeId": "3", "field": "sampler_name", "default": "dpmpp_2m_sde"},
+        "scheduler": {"nodeId": "3", "field": "scheduler", "default": "karras"}
+      },
+      "required": ["positive_prompt"],
+      "output_node": "9",
+      "typical_time": "20-40s"
+    },
+    "img2img": {
+      "workflowId": "9997",
+      "name": "图生图基础款",
+      "description": "上传图片 + prompt 进行风格转换、修改",
+      "nodes": {
+        "checkpoint": {"nodeId": "4", "field": "ckpt_name", "default": "samaritan3dCartoon_v40SDXL.safetensors"},
+        "input_image": {"nodeId": "10", "field": "image", "type": "image"},
+        "positive_prompt": {"nodeId": "21", "field": "text1", "default": ""},
+        "negative_prompt": {"nodeId": "7", "field": "text", "default": "embedding:verybadimagenegative_v1.3"},
+        "denoise": {"nodeId": "3", "field": "denoise", "default": 0.36},
+        "steps": {"nodeId": "3", "field": "steps", "default": 20},
+        "cfg": {"nodeId": "3", "field": "cfg", "default": 8},
+        "seed": {"nodeId": "3", "field": "seed", "default": -1},
+        "sampler": {"nodeId": "3", "field": "sampler_name", "default": "euler_ancestral"},
+        "caption_prompt": {"nodeId": "20", "field": "prompt", "default": "Please provide a detailed description of this image."}
+      },
+      "required": ["input_image"],
+      "output_node": "17",
+      "typical_time": "30-60s"
+    },
+    "text2img_lora": {
+      "workflowId": "9998",
+      "name": "文生图+LoRA",
+      "description": "SDXL 文生图 + LoRA 风格模型",
+      "nodes": {
+        "checkpoint": {"nodeId": "4", "field": "ckpt_name", "default": "MR 3DQ _SDXL V0.2.safetensors"},
+        "lora_name": {"nodeId": "28", "field": "lora_name"},
+        "lora_strength": {"nodeId": "28", "field": "strength_model", "default": 0.5},
+        "positive_prompt": {"nodeId": "6", "field": "text"},
+        "negative_prompt": {"nodeId": "7", "field": "text", "default": ""},
+        "width": {"nodeId": "5", "field": "width", "default": 1288},
+        "height": {"nodeId": "5", "field": "height", "default": 720},
+        "steps": {"nodeId": "3", "field": "steps", "default": 20},
+        "cfg": {"nodeId": "3", "field": "cfg", "default": 8},
+        "seed": {"nodeId": "3", "field": "seed", "default": -1}
+      },
+      "required": ["positive_prompt", "lora_name"],
+      "output_node": "9",
+      "typical_time": "30-60s"
+    },
+    "img2img_lora": {
+      "workflowId": "9995",
+      "name": "图生图+LoRA",
+      "description": "上传图片 + LoRA 进行风格转换",
+      "nodes": {
+        "checkpoint": {"nodeId": "4", "field": "ckpt_name", "default": "disneyrealcartoonmix_v10.safetensors"},
+        "lora_name": {"nodeId": "17", "field": "lora_name"},
+        "lora_strength": {"nodeId": "17", "field": "strength_model", "default": 0.4},
+        "input_image": {"nodeId": "19", "field": "image", "type": "image"},
+        "positive_prompt": {"nodeId": "6", "field": "text"},
+        "negative_prompt": {"nodeId": "7", "field": "text", "default": "embedding:easynegative"},
+        "denoise": {"nodeId": "3", "field": "denoise", "default": 0.53},
+        "steps": {"nodeId": "3", "field": "steps", "default": 20},
+        "cfg": {"nodeId": "3", "field": "cfg", "default": 8},
+        "seed": {"nodeId": "3", "field": "seed", "default": -1}
+      },
+      "required": ["input_image", "positive_prompt", "lora_name"],
+      "output_node": "9",
+      "typical_time": "40-80s"
+    },
+    "img2img_upscale": {
+      "workflowId": "9996",
+      "name": "图生图+高清修复",
+      "description": "上传图片 → 风格转换 + RealESRGAN 2x 超分辨率",
+      "nodes": {
+        "checkpoint": {"nodeId": "4", "field": "ckpt_name", "default": "toonyou_beta6.safetensors"},
+        "input_image": {"nodeId": "47", "field": "image", "type": "image"},
+        "positive_prompt": {"nodeId": "6", "field": "text"},
+        "negative_prompt": {"nodeId": "7", "field": "text", "default": "embedding:verybadimagenegative_v1.3"},
+        "denoise": {"nodeId": "3", "field": "denoise", "default": 0.45},
+        "upscale_denoise": {"nodeId": "38", "field": "denoise", "default": 0.15},
+        "steps": {"nodeId": "3", "field": "steps", "default": 20},
+        "cfg": {"nodeId": "3", "field": "cfg", "default": 8},
+        "seed": {"nodeId": "3", "field": "seed", "default": -1},
+        "upscale_model": {"nodeId": "54", "field": "model_name", "default": "RealESRGAN_x2.pth"}
+      },
+      "required": ["input_image", "positive_prompt"],
+      "output_node": "46",
+      "typical_time": "60-120s"
+    }
+  },
+  "api": {
+    "base_url": "https://www.runninghub.cn",
+    "upload_url": "https://www.runninghub.cn/task/openapi/upload",
+    "create_url": "https://www.runninghub.cn/task/openapi/create",
+    "status_url": "https://www.runninghub.cn/task/openapi/status",
+    "outputs_url": "https://www.runninghub.cn/task/openapi/outputs",
+    "account_url": "https://www.runninghub.cn/uc/openapi/accountStatus"
+  },
+  "samplers": ["euler", "euler_ancestral", "dpmpp_2m", "dpmpp_2m_sde", "dpmpp_sde", "ddim", "uni_pc"],
+  "schedulers": ["normal", "karras", "exponential", "sgm_uniform"]
+}
