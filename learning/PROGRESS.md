@@ -3,8 +3,8 @@
 ## 当前状态
 - **当前阶段**: Phase 1 - 基础理论
 - **当前天数**: Day 2 (进行中)
-- **上次学习时间**: 2026-03-18 14:03 UTC
-- **累计学习轮数**: 3
+- **上次学习时间**: 2026-03-18 18:03 UTC
+- **累计学习轮数**: 4
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -20,9 +20,9 @@
 
 ## Day 2 待做 (Latent Space & Sampling 深入)
 - [x] Latent Space 操作原理（插值、算术、编辑）
-- [ ] Sampling 算法数学细节（ODE vs SDE, 收敛性分析）
-- [ ] Euler vs DPM++ 2M vs DDIM 数学推导对比
-- [ ] Noise Schedule 设计（linear vs cosine vs karras）
+- [x] Sampling 算法数学细节（ODE vs SDE, 收敛性分析）
+- [x] Euler vs DPM++ 2M vs DDIM 数学推导对比
+- [x] Noise Schedule 设计（linear vs cosine vs karras）
 - [ ] 手搭 text2img 工作流并理解每个参数
 
 ## Day 3 待做 (ComfyUI 架构深入)
@@ -38,3 +38,4 @@
 | 1 | 2026-03-18 10:00 | Day1-SD基础 | 理论全部+源码阅读+架构图 | day01-sd-fundamentals.md |
 | 2 | 2026-03-18 12:00 | Day1-论文精读 | DDPM论文(ELBO→简化loss→Langevin连接)+LDM论文(两阶段解耦+CrossAttn+压缩比分析) | day01-sd-fundamentals.md §7 |
 | 3 | 2026-03-18 14:03 | Day1完成+Day2开始 | 采样器/CFG/步数系统对比(分类体系+决策树)+Latent Space操作(SLERP/LERP/算术/编辑/ComfyUI节点) | day01-sd-fundamentals.md §8 + day02-latent-space-sampling.md §1 |
+| 4 | 2026-03-18 18:03 | Day2-Sampling深入 | ODE vs SDE统一框架(Score-based SDE/PF-ODE/Anderson定理)+采样器数学推导(DDIM=一阶ODE/Euler等价/Heun/DPM++2M多步法精确公式)+Noise Schedule(Linear/Cosine/Karras设计原理与数学对比)+收敛性分析(LTE/guided instability/data prediction解决方案) | day02-latent-space-sampling.md §2-5 |
