@@ -1,0 +1,91 @@
+{
+  "_workflow_description": "LoRA Model vs CLIP Strength 分离实验：3x3 网格对比 strength_model(0.3/0.7/1.0) × strength_clip(0.3/0.7/1.0)，揭示两个参数的独立效果。共 9 个采样管线。",
+  "experiment_design": {
+    "purpose": "分离 strength_model 和 strength_clip 的独立效果",
+    "grid": "3x3 = 9 combinations",
+    "independent_variables": {
+      "strength_model": [0.3, 0.7, 1.0],
+      "strength_clip": [0.3, 0.7, 1.0]
+    },
+    "control_variables": {
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras"
+    },
+    "expected_results": {
+      "high_model_low_clip": "视觉风格强烈但对 prompt 响应减弱",
+      "low_model_high_clip": "视觉变化小但语义偏移明显（LoRA 的触发词更敏感）",
+      "high_model_high_clip": "最强 LoRA 效果（可能过度）",
+      "low_model_low_clip": "最弱 LoRA 效果（接近无 LoRA）"
+    },
+    "key_insight": "strength_model 控制视觉外观（纹理/色彩/结构），strength_clip 控制语义响应（提示词解释方式）。遇冲突时优先降 clip。"
+  },
+  "nodes": [
+    {
+      "id": 1, "type": "CheckpointLoaderSimple", "pos": [0, 400],
+      "widgets_values": ["dreamshaper_8.safetensors"],
+      "outputs": [
+        { "name": "MODEL", "type": "MODEL", "links": [1,2,3,4,5,6,7,8,9] },
+        { "name": "CLIP", "type": "CLIP", "links": [10,11,12,13,14,15,16,17,18] },
+        { "name": "VAE", "type": "VAE", "links": [19,20,21,22,23,24,25,26,27] }
+      ]
+    },
+    {
+      "id": 2, "type": "CLIPTextEncode", "pos": [350, 300], "title": "Positive",
+      "widgets_values": ["masterpiece, 1girl, princess, detailed face, castle background"],
+      "inputs": [{ "name": "clip", "type": "CLIP" }],
+      "outputs": [{ "name": "CONDITIONING", "links": [28,29,30,31,32,33,34,35,36] }]
+    },
+    {
+      "id": 3, "type": "CLIPTextEncode", "pos": [350, 450], "title": "Negative",
+      "widgets_values": ["worst quality, blurry"],
+      "inputs": [{ "name": "clip", "type": "CLIP" }],
+      "outputs": [{ "name": "CONDITIONING", "links": [37,38,39,40,41,42,43,44,45] }]
+    },
+    {
+      "id": 4, "type": "EmptyLatentImage", "pos": [350, 550],
+      "widgets_values": [512, 768, 1],
+      "outputs": [{ "name": "LATENT", "links": [46,47,48,49,50,51,52,53,54] }]
+    },
+    {
+      "id": 10, "type": "LoraLoader", "pos": [700, 0], "title": "M=0.3 C=0.3",
+      "widgets_values": ["test_lora.safetensors", 0.3, 0.3]
+    },
+    {
+      "id": 11, "type": "LoraLoader", "pos": [700, 200], "title": "M=0.3 C=0.7",
+      "widgets_values": ["test_lora.safetensors", 0.3, 0.7]
+    },
+    {
+      "id": 12, "type": "LoraLoader", "pos": [700, 400], "title": "M=0.3 C=1.0",
+      "widgets_values": ["test_lora.safetensors", 0.3, 1.0]
+    },
+    {
+      "id": 13, "type": "LoraLoader", "pos": [700, 600], "title": "M=0.7 C=0.3",
+      "widgets_values": ["test_lora.safetensors", 0.7, 0.3]
+    },
+    {
+      "id": 14, "type": "LoraLoader", "pos": [700, 800], "title": "M=0.7 C=0.7",
+      "widgets_values": ["test_lora.safetensors", 0.7, 0.7]
+    },
+    {
+      "id": 15, "type": "LoraLoader", "pos": [700, 1000], "title": "M=0.7 C=1.0",
+      "widgets_values": ["test_lora.safetensors", 0.7, 1.0]
+    },
+    {
+      "id": 16, "type": "LoraLoader", "pos": [700, 1200], "title": "M=1.0 C=0.3",
+      "widgets_values": ["test_lora.safetensors", 1.0, 0.3]
+    },
+    {
+      "id": 17, "type": "LoraLoader", "pos": [700, 1400], "title": "M=1.0 C=0.7",
+      "widgets_values": ["test_lora.safetensors", 1.0, 0.7]
+    },
+    {
+      "id": 18, "type": "LoraLoader", "pos": [700, 1600], "title": "M=1.0 C=1.0",
+      "widgets_values": ["test_lora.safetensors", 1.0, 1.0]
+    }
+  ],
+  "_note": "每个 LoraLoader 后接 KSampler → VAEDecode → SaveImage（共9条管线）。文件名格式: lora_M{model}_C{clip}_。此工作流的核心价值在于实验设计——揭示 model/clip strength 的正交效果。完整连线省略以保持可读性，实际使用时需补全 KSampler/VAEDecode/SaveImage 链。",
+  "version": 0.4
+}

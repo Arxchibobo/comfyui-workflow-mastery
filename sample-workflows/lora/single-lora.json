@@ -1,0 +1,126 @@
+{
+  "last_node_id": 8,
+  "last_link_id": 9,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [0, 0],
+      "size": [300, 100],
+      "properties": { "Node name for S&R": "CheckpointLoaderSimple" },
+      "widgets_values": ["dreamshaper_8.safetensors"],
+      "outputs": [
+        { "name": "MODEL", "type": "MODEL", "links": [1], "slot_index": 0 },
+        { "name": "CLIP", "type": "CLIP", "links": [2], "slot_index": 1 },
+        { "name": "VAE", "type": "VAE", "links": [7], "slot_index": 2 }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "LoraLoader",
+      "pos": [350, 0],
+      "size": [300, 150],
+      "properties": { "Node name for S&R": "LoraLoader" },
+      "widgets_values": ["style_lora.safetensors", 0.7, 0.6],
+      "inputs": [
+        { "name": "model", "type": "MODEL", "link": 1 },
+        { "name": "clip", "type": "CLIP", "link": 2 }
+      ],
+      "outputs": [
+        { "name": "MODEL", "type": "MODEL", "links": [3], "slot_index": 0 },
+        { "name": "CLIP", "type": "CLIP", "links": [4], "slot_index": 1 }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CLIPTextEncode",
+      "pos": [700, -50],
+      "size": [300, 100],
+      "properties": { "Node name for S&R": "CLIPTextEncode" },
+      "widgets_values": ["masterpiece, best quality, 1girl, fantasy warrior, detailed armor, epic lighting, cinematic"],
+      "inputs": [
+        { "name": "clip", "type": "CLIP", "link": 4 }
+      ],
+      "outputs": [
+        { "name": "CONDITIONING", "type": "CONDITIONING", "links": [5], "slot_index": 0 }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CLIPTextEncode",
+      "pos": [700, 100],
+      "size": [300, 100],
+      "properties": { "Node name for S&R": "CLIPTextEncode" },
+      "widgets_values": ["worst quality, low quality, watermark, text, blurry, deformed"],
+      "inputs": [
+        { "name": "clip", "type": "CLIP", "link": 4 }
+      ],
+      "outputs": [
+        { "name": "CONDITIONING", "type": "CONDITIONING", "links": [6], "slot_index": 0 }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "EmptyLatentImage",
+      "pos": [700, 250],
+      "size": [200, 100],
+      "properties": { "Node name for S&R": "EmptyLatentImage" },
+      "widgets_values": [512, 768, 1]
+    },
+    {
+      "id": 6,
+      "type": "KSampler",
+      "pos": [1050, 0],
+      "size": [300, 300],
+      "properties": { "Node name for S&R": "KSampler" },
+      "widgets_values": [42, "fixed", 25, 7.5, "dpmpp_2m", "karras", 1.0],
+      "inputs": [
+        { "name": "model", "type": "MODEL", "link": 3 },
+        { "name": "positive", "type": "CONDITIONING", "link": 5 },
+        { "name": "negative", "type": "CONDITIONING", "link": 6 },
+        { "name": "latent_image", "type": "LATENT", "link": null }
+      ],
+      "outputs": [
+        { "name": "LATENT", "type": "LATENT", "links": [8], "slot_index": 0 }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "VAEDecode",
+      "pos": [1400, 50],
+      "size": [200, 80],
+      "inputs": [
+        { "name": "samples", "type": "LATENT", "link": 8 },
+        { "name": "vae", "type": "VAE", "link": 7 }
+      ],
+      "outputs": [
+        { "name": "IMAGE", "type": "IMAGE", "links": [9], "slot_index": 0 }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "SaveImage",
+      "pos": [1650, 50],
+      "size": [200, 200],
+      "inputs": [
+        { "name": "images", "type": "IMAGE", "link": 9 }
+      ],
+      "widgets_values": ["lora_single"]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 2, 0, "MODEL"],
+    [2, 1, 1, 2, 1, "CLIP"],
+    [3, 2, 0, 6, 0, "MODEL"],
+    [4, 2, 1, 3, 0, "CLIP"],
+    [5, 3, 0, 6, 1, "CONDITIONING"],
+    [6, 4, 0, 6, 2, "CONDITIONING"],
+    [7, 1, 2, 7, 1, "VAE"],
+    [8, 6, 0, 7, 0, "LATENT"],
+    [9, 7, 0, 8, 0, "IMAGE"]
+  ],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "_workflow_description": "单 LoRA 加载基础工作流：Checkpoint → LoRA(style, 0.7/0.6) → Text Encode → KSampler → VAE Decode → Save"
+}

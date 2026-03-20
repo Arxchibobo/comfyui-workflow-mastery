@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 2 - 核心工作流实操
-- **当前天数**: Day 6 完成 ✅ → 下一步 Day 7 (LoRA)
-- **上次学习时间**: 2026-03-20 20:03 UTC
-- **累计学习轮数**: 13
+- **当前天数**: Day 7 进行中 → LoRA 基础 + 多 LoRA 融合已完成，下一步 Day 7 剩余或 Day 8
+- **上次学习时间**: 2026-03-20 22:03 UTC
+- **累计学习轮数**: 14
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -58,6 +58,33 @@
 | 11 | 2026-03-20 16:03 | Day5-Img2Img+Inpainting+Outpainting | Img2Img原理(VAEEncode vs EmptyLatent/denoise sigma截断数学/参数速查)+Inpainting三种方法对比(SetLatentNoiseMask/VAEEncodeForInpaint/InpaintModelConditioning源码分析)+noise_mask全管线传递+mask灰色像素技巧+Outpainting(ImagePadForOutpaint源码/feathering/最佳实践)+denoise对比实验设计 | day05-img2img-inpainting-outpainting.md + img2img.json + inpainting-simple.json + inpainting-vae.json + outpainting.json + denoise-comparison.json |
 | 12 | 2026-03-20 18:03 | Day6-ControlNet基础+三大经典 | ControlNet架构(零卷积/双副本/hint编码/权重注入)+ComfyUI源码分析(ControlBase/ControlNet/get_control/control_merge/ControlNetApplyAdvanced)+v1.1全14模型列表+Canny/Depth/OpenPose深度解析(原理/预处理器/strength调优/场景)+多ControlNet合并机制(信号相加)+start/end_percent策略+跨模型对比(SD1.5/SDXL/Flux)+Union ControlNet | day06-controlnet-fundamentals.md + controlnet/canny-controlnet.json + depth-controlnet.json + openpose-controlnet.json + multi-controlnet-depth-pose.json + canny-strength-comparison.json |
 | 13 | 2026-03-20 20:03 | Day6-Tile+IP-Adapter+多CN组合 | Tile ControlNet(局部语义感知/细节幻觉/Prompt冲突处理/三阶段超分管线ESRGAN→Tile→频率混合)+IP-Adapter架构(解耦双交叉注意力/CLIP ViT编码/22M参数/Plus vs FaceID变体)+多ControlNet组合(链式连接/区域分工vs多维控制/权重策略/start-end分时段/IP-Adapter+ControlNet天然兼容) | day06-tile-ipadapter-multi-controlnet.md + controlnet/tile-upscale.json + ip-adapter-style-transfer.json + triple-control-ipadapter-depth-pose.json |
+| 14 | 2026-03-20 22:03 | Day7-LoRA基础+多LoRA融合 | LoRA数学原理(低秩分解W=W₀+α/r·B·A/参数压缩66x)+LyCORIS全家族(LoCon/LoHa/LoKR/DoRA/DyLoRA对比)+ComfyUI源码(load_lora_for_models/Clone+Patch延迟应用/KeyMapping多格式适配/weight_adapter统一系统/BypassLoRA)+多LoRA堆叠(线性叠加/model vs clip分离调优/冲突诊断)+strength对比实验+model×clip网格实验+API批量sweep脚本 | day07-lora-fundamentals.md + lora/single-lora.json + multi-lora-chain.json + lora-strength-comparison.json + model-vs-clip-strength-grid.json + lora_strength_sweep.py |
+
+## Day 7 待做 (LoRA 使用 + 多 LoRA 融合 + 权重调节)
+- [x] LoRA 数学原理
+  - [x] 低秩分解 W = W₀ + α/r · B·A，参数量压缩原理
+  - [x] alpha 与 rank 的关系（有效缩放 = α/r）
+  - [x] 在 SD 中的应用位置（交叉注意力层）
+- [x] LoRA 变体家族（LyCORIS）
+  - [x] LoCon（扩展到卷积层）
+  - [x] LoHa（Hadamard 积，4 矩阵分解）
+  - [x] LoKR（Kronecker 积）
+  - [x] DoRA（方向+幅度分解）
+  - [x] DyLoRA（动态 rank）
+- [x] ComfyUI LoRA 源码深度分析
+  - [x] load_lora_for_models() 完整流程
+  - [x] Clone + Patch 延迟应用机制
+  - [x] Key Mapping 系统（适配 kohya/OneTrainer/diffusers 等格式）
+  - [x] weight_adapter 统一适配器系统
+  - [x] Bypass LoRA 新模式
+- [x] 多 LoRA 堆叠原理与实践
+  - [x] 链式加载机制（线性叠加 W = W₀ + Σsᵢ·ΔWᵢ）
+  - [x] 权重调节策略（model vs clip 分离控制）
+  - [x] 冲突诊断与解决方案
+  - [x] 区域化 LoRA 应用概念
+- [ ] LoRA 与不同模型架构的差异（SD1.5/SDXL/Flux）实操验证
+  - [x] 理论分析完成
+  - [ ] 待有 GPU 环境时实操
 
 ## Day 4 待做 (Text2Img 全流程 — 各种采样器对比实验)
 - [x] 采样器系统性对比实验设计

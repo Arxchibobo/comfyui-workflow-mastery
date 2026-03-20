@@ -1,0 +1,266 @@
+{
+  "last_node_id": 20,
+  "last_link_id": 28,
+  "_workflow_description": "LoRA strength 对比实验：固定seed/prompt/model，用5个并行管线对比不同LoRA strength_model值(0.3/0.5/0.7/1.0/1.5)的视觉效果差异。共享前端节点（Checkpoint+LoRA+CLIP+EmptyLatent），5条独立采样管线。",
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [0, 200],
+      "size": [300, 100],
+      "title": "Base Checkpoint",
+      "widgets_values": ["dreamshaper_8.safetensors"],
+      "outputs": [
+        { "name": "MODEL", "type": "MODEL", "links": [1, 2, 3, 4, 5], "slot_index": 0 },
+        { "name": "CLIP", "type": "CLIP", "links": [6], "slot_index": 1 },
+        { "name": "VAE", "type": "VAE", "links": [20, 21, 22, 23, 24], "slot_index": 2 }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "CLIPTextEncode",
+      "pos": [350, 100],
+      "size": [300, 100],
+      "title": "Positive (shared)",
+      "widgets_values": ["masterpiece, best quality, 1girl, princess, castle, sunset, cinematic lighting"],
+      "inputs": [{ "name": "clip", "type": "CLIP", "link": 6 }],
+      "outputs": [{ "name": "CONDITIONING", "type": "CONDITIONING", "links": [7, 8, 9, 10, 11], "slot_index": 0 }]
+    },
+    {
+      "id": 3,
+      "type": "CLIPTextEncode",
+      "pos": [350, 250],
+      "size": [300, 100],
+      "title": "Negative (shared)",
+      "widgets_values": ["worst quality, low quality, blurry, watermark"],
+      "inputs": [{ "name": "clip", "type": "CLIP", "link": 6 }],
+      "outputs": [{ "name": "CONDITIONING", "type": "CONDITIONING", "links": [12, 13, 14, 15, 16], "slot_index": 0 }]
+    },
+    {
+      "id": 4,
+      "type": "EmptyLatentImage",
+      "pos": [350, 400],
+      "size": [200, 100],
+      "title": "Latent (shared)",
+      "widgets_values": [512, 768, 1],
+      "outputs": [{ "name": "LATENT", "type": "LATENT", "links": [17, 18, 19, 25, 26], "slot_index": 0 }]
+    },
+    {
+      "id": 5,
+      "type": "LoraLoader",
+      "pos": [700, 0],
+      "size": [300, 150],
+      "title": "LoRA strength=0.3",
+      "widgets_values": ["test_lora.safetensors", 0.3, 0.3],
+      "inputs": [
+        { "name": "model", "type": "MODEL", "link": 1 },
+        { "name": "clip", "type": "CLIP", "link": 6 }
+      ],
+      "outputs": [
+        { "name": "MODEL", "type": "MODEL", "links": [27], "slot_index": 0 },
+        { "name": "CLIP", "type": "CLIP", "links": [], "slot_index": 1 }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "LoraLoader",
+      "pos": [700, 200],
+      "size": [300, 150],
+      "title": "LoRA strength=0.5",
+      "widgets_values": ["test_lora.safetensors", 0.5, 0.5],
+      "inputs": [
+        { "name": "model", "type": "MODEL", "link": 2 },
+        { "name": "clip", "type": "CLIP", "link": 6 }
+      ],
+      "outputs": [
+        { "name": "MODEL", "type": "MODEL", "links": [28], "slot_index": 0 },
+        { "name": "CLIP", "type": "CLIP", "links": [], "slot_index": 1 }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "LoraLoader",
+      "pos": [700, 400],
+      "size": [300, 150],
+      "title": "LoRA strength=0.7",
+      "widgets_values": ["test_lora.safetensors", 0.7, 0.7],
+      "inputs": [
+        { "name": "model", "type": "MODEL", "link": 3 },
+        { "name": "clip", "type": "CLIP", "link": 6 }
+      ],
+      "outputs": [
+        { "name": "MODEL", "type": "MODEL", "links": [29], "slot_index": 0 },
+        { "name": "CLIP", "type": "CLIP", "links": [], "slot_index": 1 }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "LoraLoader",
+      "pos": [700, 600],
+      "size": [300, 150],
+      "title": "LoRA strength=1.0",
+      "widgets_values": ["test_lora.safetensors", 1.0, 1.0],
+      "inputs": [
+        { "name": "model", "type": "MODEL", "link": 4 },
+        { "name": "clip", "type": "CLIP", "link": 6 }
+      ],
+      "outputs": [
+        { "name": "MODEL", "type": "MODEL", "links": [30], "slot_index": 0 },
+        { "name": "CLIP", "type": "CLIP", "links": [], "slot_index": 1 }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "LoraLoader",
+      "pos": [700, 800],
+      "size": [300, 150],
+      "title": "LoRA strength=1.5 (over-strength)",
+      "widgets_values": ["test_lora.safetensors", 1.5, 1.0],
+      "inputs": [
+        { "name": "model", "type": "MODEL", "link": 5 },
+        { "name": "clip", "type": "CLIP", "link": 6 }
+      ],
+      "outputs": [
+        { "name": "MODEL", "type": "MODEL", "links": [31], "slot_index": 0 },
+        { "name": "CLIP", "type": "CLIP", "links": [], "slot_index": 1 }
+      ]
+    },
+    {
+      "id": 10, "type": "KSampler", "pos": [1100, 0], "size": [250, 300],
+      "title": "Sample @0.3",
+      "widgets_values": [42, "fixed", 25, 7.0, "dpmpp_2m", "karras", 1.0],
+      "inputs": [
+        { "name": "model", "type": "MODEL", "link": 27 },
+        { "name": "positive", "type": "CONDITIONING", "link": 7 },
+        { "name": "negative", "type": "CONDITIONING", "link": 12 },
+        { "name": "latent_image", "type": "LATENT", "link": 17 }
+      ],
+      "outputs": [{ "name": "LATENT", "type": "LATENT", "links": [32], "slot_index": 0 }]
+    },
+    {
+      "id": 11, "type": "KSampler", "pos": [1100, 350], "size": [250, 300],
+      "title": "Sample @0.5",
+      "widgets_values": [42, "fixed", 25, 7.0, "dpmpp_2m", "karras", 1.0],
+      "inputs": [
+        { "name": "model", "type": "MODEL", "link": 28 },
+        { "name": "positive", "type": "CONDITIONING", "link": 8 },
+        { "name": "negative", "type": "CONDITIONING", "link": 13 },
+        { "name": "latent_image", "type": "LATENT", "link": 18 }
+      ],
+      "outputs": [{ "name": "LATENT", "type": "LATENT", "links": [33], "slot_index": 0 }]
+    },
+    {
+      "id": 12, "type": "KSampler", "pos": [1100, 700], "size": [250, 300],
+      "title": "Sample @0.7",
+      "widgets_values": [42, "fixed", 25, 7.0, "dpmpp_2m", "karras", 1.0],
+      "inputs": [
+        { "name": "model", "type": "MODEL", "link": 29 },
+        { "name": "positive", "type": "CONDITIONING", "link": 9 },
+        { "name": "negative", "type": "CONDITIONING", "link": 14 },
+        { "name": "latent_image", "type": "LATENT", "link": 19 }
+      ],
+      "outputs": [{ "name": "LATENT", "type": "LATENT", "links": [34], "slot_index": 0 }]
+    },
+    {
+      "id": 13, "type": "KSampler", "pos": [1100, 1050], "size": [250, 300],
+      "title": "Sample @1.0",
+      "widgets_values": [42, "fixed", 25, 7.0, "dpmpp_2m", "karras", 1.0],
+      "inputs": [
+        { "name": "model", "type": "MODEL", "link": 30 },
+        { "name": "positive", "type": "CONDITIONING", "link": 10 },
+        { "name": "negative", "type": "CONDITIONING", "link": 15 },
+        { "name": "latent_image", "type": "LATENT", "link": 25 }
+      ],
+      "outputs": [{ "name": "LATENT", "type": "LATENT", "links": [35], "slot_index": 0 }]
+    },
+    {
+      "id": 14, "type": "KSampler", "pos": [1100, 1400], "size": [250, 300],
+      "title": "Sample @1.5",
+      "widgets_values": [42, "fixed", 25, 7.0, "dpmpp_2m", "karras", 1.0],
+      "inputs": [
+        { "name": "model", "type": "MODEL", "link": 31 },
+        { "name": "positive", "type": "CONDITIONING", "link": 11 },
+        { "name": "negative", "type": "CONDITIONING", "link": 16 },
+        { "name": "latent_image", "type": "LATENT", "link": 26 }
+      ],
+      "outputs": [{ "name": "LATENT", "type": "LATENT", "links": [36], "slot_index": 0 }]
+    },
+    {
+      "id": 15, "type": "VAEDecode", "pos": [1400, 50],
+      "inputs": [{ "name": "samples", "type": "LATENT", "link": 32 }, { "name": "vae", "type": "VAE", "link": 20 }],
+      "outputs": [{ "name": "IMAGE", "type": "IMAGE", "links": [37], "slot_index": 0 }]
+    },
+    {
+      "id": 16, "type": "VAEDecode", "pos": [1400, 400],
+      "inputs": [{ "name": "samples", "type": "LATENT", "link": 33 }, { "name": "vae", "type": "VAE", "link": 21 }],
+      "outputs": [{ "name": "IMAGE", "type": "IMAGE", "links": [38], "slot_index": 0 }]
+    },
+    {
+      "id": 17, "type": "VAEDecode", "pos": [1400, 750],
+      "inputs": [{ "name": "samples", "type": "LATENT", "link": 34 }, { "name": "vae", "type": "VAE", "link": 22 }],
+      "outputs": [{ "name": "IMAGE", "type": "IMAGE", "links": [39], "slot_index": 0 }]
+    },
+    {
+      "id": 18, "type": "VAEDecode", "pos": [1400, 1100],
+      "inputs": [{ "name": "samples", "type": "LATENT", "link": 35 }, { "name": "vae", "type": "VAE", "link": 23 }],
+      "outputs": [{ "name": "IMAGE", "type": "IMAGE", "links": [40], "slot_index": 0 }]
+    },
+    {
+      "id": 19, "type": "VAEDecode", "pos": [1400, 1450],
+      "inputs": [{ "name": "samples", "type": "LATENT", "link": 36 }, { "name": "vae", "type": "VAE", "link": 24 }],
+      "outputs": [{ "name": "IMAGE", "type": "IMAGE", "links": [41], "slot_index": 0 }]
+    },
+    {
+      "id": 20, "type": "SaveImage", "pos": [1650, 50], "widgets_values": ["lora_str_0.3_"],
+      "inputs": [{ "name": "images", "type": "IMAGE", "link": 37 }]
+    },
+    {
+      "id": 21, "type": "SaveImage", "pos": [1650, 400], "widgets_values": ["lora_str_0.5_"],
+      "inputs": [{ "name": "images", "type": "IMAGE", "link": 38 }]
+    },
+    {
+      "id": 22, "type": "SaveImage", "pos": [1650, 750], "widgets_values": ["lora_str_0.7_"],
+      "inputs": [{ "name": "images", "type": "IMAGE", "link": 39 }]
+    },
+    {
+      "id": 23, "type": "SaveImage", "pos": [1650, 1100], "widgets_values": ["lora_str_1.0_"],
+      "inputs": [{ "name": "images", "type": "IMAGE", "link": 40 }]
+    },
+    {
+      "id": 24, "type": "SaveImage", "pos": [1650, 1450], "widgets_values": ["lora_str_1.5_"],
+      "inputs": [{ "name": "images", "type": "IMAGE", "link": 41 }]
+    }
+  ],
+  "links": [],
+  "config": {},
+  "extra": {
+    "experiment_design": {
+      "purpose": "LoRA strength_model 对比实验",
+      "control_variables": {
+        "seed": 42,
+        "prompt": "固定",
+        "steps": 25,
+        "cfg": 7.0,
+        "sampler": "dpmpp_2m",
+        "scheduler": "karras",
+        "resolution": "512x768",
+        "base_model": "dreamshaper_8"
+      },
+      "independent_variable": "strength_model: [0.3, 0.5, 0.7, 1.0, 1.5]",
+      "expected_results": {
+        "0.3": "微弱 LoRA 效果，几乎与无 LoRA 一致",
+        "0.5": "可感知的风格变化，保留大部分原始特征",
+        "0.7": "明显的 LoRA 风格，原始特征开始让步",
+        "1.0": "LoRA 完全表达（设计预期 strength），标准效果",
+        "1.5": "过度 strength，可能出现伪影、色彩饱和过度、结构变形"
+      },
+      "observation_dimensions": [
+        "风格一致性（与 LoRA 训练目标的吻合度）",
+        "内容保持度（prompt 描述的内容是否被保留）",
+        "伪影程度（是否出现不自然纹理/色块/变形）",
+        "色彩变化（颜色倾向是否随 strength 单调变化）"
+      ]
+    }
+  },
+  "version": 0.4
+}
