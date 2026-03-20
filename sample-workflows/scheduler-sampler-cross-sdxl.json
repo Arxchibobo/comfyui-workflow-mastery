@@ -1,0 +1,337 @@
+{
+  "_meta": {
+    "title": "Scheduler × Sampler Cross-Effect Comparison (SDXL)",
+    "description": "对比 3 种采样器 × 4 种 Scheduler 的交叉效应，共 12 组对比。固定 seed/prompt/模型/步数/CFG，只变采样器和 scheduler 组合。",
+    "author": "ComfyUI Learning Session 9",
+    "date": "2026-03-20",
+    "notes": "需要 SDXL checkpoint。修改节点 1 的 ckpt_name 指向你的模型。输出 12 张图，文件名包含采样器和 scheduler 名称。"
+  },
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "a majestic lion standing on a rocky cliff at sunset, golden hour lighting, detailed fur texture, dramatic sky with clouds, 8k, photorealistic",
+      "clip": ["1", 1]
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "blurry, low quality, distorted, watermark, text, oversaturated",
+      "clip": ["1", 1]
+    }
+  },
+
+  "10": {
+    "_comment": "=== euler + normal (baseline) ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1.0
+    }
+  },
+  "11": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["10", 0], "vae": ["1", 2] }
+  },
+  "12": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["11", 0], "filename_prefix": "scheduler_cross/euler_normal" }
+  },
+
+  "20": {
+    "_comment": "=== euler + karras ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "euler",
+      "scheduler": "karras",
+      "denoise": 1.0
+    }
+  },
+  "21": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["20", 0], "vae": ["1", 2] }
+  },
+  "22": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["21", 0], "filename_prefix": "scheduler_cross/euler_karras" }
+  },
+
+  "30": {
+    "_comment": "=== euler + exponential ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "euler",
+      "scheduler": "exponential",
+      "denoise": 1.0
+    }
+  },
+  "31": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["30", 0], "vae": ["1", 2] }
+  },
+  "32": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["31", 0], "filename_prefix": "scheduler_cross/euler_exponential" }
+  },
+
+  "40": {
+    "_comment": "=== euler + beta ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "euler",
+      "scheduler": "beta",
+      "denoise": 1.0
+    }
+  },
+  "41": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["40", 0], "vae": ["1", 2] }
+  },
+  "42": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["41", 0], "filename_prefix": "scheduler_cross/euler_beta" }
+  },
+
+  "50": {
+    "_comment": "=== dpmpp_2m + normal ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "normal",
+      "denoise": 1.0
+    }
+  },
+  "51": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["50", 0], "vae": ["1", 2] }
+  },
+  "52": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["51", 0], "filename_prefix": "scheduler_cross/dpmpp2m_normal" }
+  },
+
+  "60": {
+    "_comment": "=== dpmpp_2m + karras (金标准) ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1.0
+    }
+  },
+  "61": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["60", 0], "vae": ["1", 2] }
+  },
+  "62": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["61", 0], "filename_prefix": "scheduler_cross/dpmpp2m_karras_GOLD" }
+  },
+
+  "70": {
+    "_comment": "=== dpmpp_2m + exponential ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "exponential",
+      "denoise": 1.0
+    }
+  },
+  "71": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["70", 0], "vae": ["1", 2] }
+  },
+  "72": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["71", 0], "filename_prefix": "scheduler_cross/dpmpp2m_exponential" }
+  },
+
+  "80": {
+    "_comment": "=== dpmpp_2m + beta ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "beta",
+      "denoise": 1.0
+    }
+  },
+  "81": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["80", 0], "vae": ["1", 2] }
+  },
+  "82": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["81", 0], "filename_prefix": "scheduler_cross/dpmpp2m_beta" }
+  },
+
+  "90": {
+    "_comment": "=== dpmpp_2m_sde + normal ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m_sde",
+      "scheduler": "normal",
+      "denoise": 1.0
+    }
+  },
+  "91": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["90", 0], "vae": ["1", 2] }
+  },
+  "92": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["91", 0], "filename_prefix": "scheduler_cross/dpmpp2msde_normal" }
+  },
+
+  "100": {
+    "_comment": "=== dpmpp_2m_sde + karras (写实推荐) ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m_sde",
+      "scheduler": "karras",
+      "denoise": 1.0
+    }
+  },
+  "101": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["100", 0], "vae": ["1", 2] }
+  },
+  "102": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["101", 0], "filename_prefix": "scheduler_cross/dpmpp2msde_karras_REALISM" }
+  },
+
+  "110": {
+    "_comment": "=== dpmpp_2m_sde + exponential ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m_sde",
+      "scheduler": "exponential",
+      "denoise": 1.0
+    }
+  },
+  "111": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["110", 0], "vae": ["1", 2] }
+  },
+  "112": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["111", 0], "filename_prefix": "scheduler_cross/dpmpp2msde_exponential" }
+  },
+
+  "120": {
+    "_comment": "=== dpmpp_2m_sde + beta ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m_sde",
+      "scheduler": "beta",
+      "denoise": 1.0
+    }
+  },
+  "121": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["120", 0], "vae": ["1", 2] }
+  },
+  "122": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["121", 0], "filename_prefix": "scheduler_cross/dpmpp2msde_beta" }
+  }
+}

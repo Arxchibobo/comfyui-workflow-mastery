@@ -1,0 +1,266 @@
+{
+  "_meta": {
+    "title": "Flux vs SDXL Sampler Behavior Comparison",
+    "description": "对比 Flux 和 SDXL 在相同采样器下的行为差异。Flux 部分使用 euler+normal (推荐) 和 dpmpp_2m+beta (高质量)，SDXL 部分使用 dpmpp_2m+karras (金标准) 和 dpmpp_2m_sde+karras (写实)。展示不同架构对采样器选择的影响。",
+    "author": "ComfyUI Learning Session 9",
+    "date": "2026-03-20",
+    "notes": "需要 Flux-dev 和 SDXL checkpoint。修改节点 1/2 的 ckpt_name。Flux 使用 cfg=1.0（不使用 CFG），SDXL 使用 cfg=7.0。"
+  },
+
+  "_comment_flux": "========== FLUX SECTION ==========",
+
+  "1": {
+    "_comment": "Flux checkpoint",
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "flux1-dev.safetensors"
+    }
+  },
+  "2": {
+    "_comment": "SDXL checkpoint",
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+
+  "5": {
+    "class_type": "EmptyLatentImage",
+    "inputs": { "width": 1024, "height": 1024, "batch_size": 1 }
+  },
+
+  "6": {
+    "_comment": "Flux positive prompt (Flux uses T5, longer descriptive prompts work better)",
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "A detailed photograph of a red fox sitting in a snowy forest clearing. Morning light filters through pine trees creating golden rays. The fox has bright orange fur with white chest, alert ears, and intelligent eyes. Snow crystals glitter on its whiskers. Sharp focus, natural lighting, wildlife photography.",
+      "clip": ["1", 1]
+    }
+  },
+  "7": {
+    "_comment": "Flux negative (minimal for Flux - CFG is 1.0 so negative has no effect)",
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "",
+      "clip": ["1", 1]
+    }
+  },
+  "8": {
+    "_comment": "SDXL positive prompt",
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "A detailed photograph of a red fox sitting in a snowy forest clearing. Morning light filters through pine trees creating golden rays. The fox has bright orange fur with white chest, alert ears, and intelligent eyes. Snow crystals glitter on its whiskers. Sharp focus, natural lighting, wildlife photography.",
+      "clip": ["2", 1]
+    }
+  },
+  "9": {
+    "_comment": "SDXL negative prompt",
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "blurry, low quality, distorted, watermark, text, oversaturated, cartoon, anime",
+      "clip": ["2", 1]
+    }
+  },
+
+  "10": {
+    "_comment": "=== Flux: euler + normal (官方推荐) ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["6", 0],
+      "negative": ["7", 0],
+      "latent_image": ["5", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1.0
+    }
+  },
+  "11": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["10", 0], "vae": ["1", 2] }
+  },
+  "12": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["11", 0], "filename_prefix": "model_compare/flux_euler_normal" }
+  },
+
+  "20": {
+    "_comment": "=== Flux: dpmpp_2m + beta (高质量) ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["6", 0],
+      "negative": ["7", 0],
+      "latent_image": ["5", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 1.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "beta",
+      "denoise": 1.0
+    }
+  },
+  "21": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["20", 0], "vae": ["1", 2] }
+  },
+  "22": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["21", 0], "filename_prefix": "model_compare/flux_dpmpp2m_beta" }
+  },
+
+  "30": {
+    "_comment": "=== Flux: euler + simple (快速 — Schnell 风格) ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["6", 0],
+      "negative": ["7", 0],
+      "latent_image": ["5", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "31": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["30", 0], "vae": ["1", 2] }
+  },
+  "32": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["31", 0], "filename_prefix": "model_compare/flux_euler_simple" }
+  },
+
+  "40": {
+    "_comment": "=== Flux: euler + karras (对比：传统 scheduler 在 Flux 上的表现) ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["6", 0],
+      "negative": ["7", 0],
+      "latent_image": ["5", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "karras",
+      "denoise": 1.0
+    }
+  },
+  "41": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["40", 0], "vae": ["1", 2] }
+  },
+  "42": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["41", 0], "filename_prefix": "model_compare/flux_euler_karras_COMPARE" }
+  },
+
+  "_comment_sdxl": "========== SDXL SECTION ==========",
+
+  "50": {
+    "_comment": "=== SDXL: dpmpp_2m + karras (金标准) ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["2", 0],
+      "positive": ["8", 0],
+      "negative": ["9", 0],
+      "latent_image": ["5", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1.0
+    }
+  },
+  "51": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["50", 0], "vae": ["2", 2] }
+  },
+  "52": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["51", 0], "filename_prefix": "model_compare/sdxl_dpmpp2m_karras_GOLD" }
+  },
+
+  "60": {
+    "_comment": "=== SDXL: dpmpp_2m_sde + karras (写实推荐) ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["2", 0],
+      "positive": ["8", 0],
+      "negative": ["9", 0],
+      "latent_image": ["5", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m_sde",
+      "scheduler": "karras",
+      "denoise": 1.0
+    }
+  },
+  "61": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["60", 0], "vae": ["2", 2] }
+  },
+  "62": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["61", 0], "filename_prefix": "model_compare/sdxl_dpmpp2msde_karras_REALISM" }
+  },
+
+  "70": {
+    "_comment": "=== SDXL: euler + normal (与 Flux 同采样器对比) ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["2", 0],
+      "positive": ["8", 0],
+      "negative": ["9", 0],
+      "latent_image": ["5", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1.0
+    }
+  },
+  "71": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["70", 0], "vae": ["2", 2] }
+  },
+  "72": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["71", 0], "filename_prefix": "model_compare/sdxl_euler_normal_COMPARE" }
+  },
+
+  "80": {
+    "_comment": "=== SDXL: euler + beta (传统模型上 beta scheduler 表现) ===",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["2", 0],
+      "positive": ["8", 0],
+      "negative": ["9", 0],
+      "latent_image": ["5", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "euler",
+      "scheduler": "beta",
+      "denoise": 1.0
+    }
+  },
+  "81": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["80", 0], "vae": ["2", 2] }
+  },
+  "82": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["81", 0], "filename_prefix": "model_compare/sdxl_euler_beta_COMPARE" }
+  }
+}

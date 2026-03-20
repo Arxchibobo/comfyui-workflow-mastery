@@ -1,0 +1,109 @@
+{
+  "_meta": {
+    "title": "Steps-Quality Curve Experiment (dpmpp_2m + karras)",
+    "description": "步数-质量曲线绘制：固定采样器 dpmpp_2m+karras, CFG 7.0, seed 42，分别用 5/10/15/20/30/50 步生成同一 prompt。用于观察收敛行为和确定最低可用步数。",
+    "author": "ComfyUI Learning Session 9",
+    "date": "2026-03-20",
+    "notes": "适用于 SD1.5 或 SDXL。修改节点 1 的 ckpt_name，以及节点 2 的分辨率（SD1.5=512x512, SDXL=1024x1024）。"
+  },
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": { "ckpt_name": "sd_xl_base_1.0.safetensors" }
+  },
+  "2": {
+    "class_type": "EmptyLatentImage",
+    "inputs": { "width": 1024, "height": 1024, "batch_size": 1 }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "a beautiful medieval castle on a hilltop, surrounded by autumn forests, morning mist in the valley below, dramatic lighting, detailed stone architecture, oil painting style, masterpiece",
+      "clip": ["1", 1]
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "blurry, low quality, distorted, watermark",
+      "clip": ["1", 1]
+    }
+  },
+
+  "10": {
+    "_comment": "5 steps",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0], "positive": ["3", 0], "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42, "steps": 5, "cfg": 7.0,
+      "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1.0
+    }
+  },
+  "11": { "class_type": "VAEDecode", "inputs": { "samples": ["10", 0], "vae": ["1", 2] } },
+  "12": { "class_type": "SaveImage", "inputs": { "images": ["11", 0], "filename_prefix": "steps_curve/05steps" } },
+
+  "20": {
+    "_comment": "10 steps",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0], "positive": ["3", 0], "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42, "steps": 10, "cfg": 7.0,
+      "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1.0
+    }
+  },
+  "21": { "class_type": "VAEDecode", "inputs": { "samples": ["20", 0], "vae": ["1", 2] } },
+  "22": { "class_type": "SaveImage", "inputs": { "images": ["21", 0], "filename_prefix": "steps_curve/10steps" } },
+
+  "30": {
+    "_comment": "15 steps",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0], "positive": ["3", 0], "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42, "steps": 15, "cfg": 7.0,
+      "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1.0
+    }
+  },
+  "31": { "class_type": "VAEDecode", "inputs": { "samples": ["30", 0], "vae": ["1", 2] } },
+  "32": { "class_type": "SaveImage", "inputs": { "images": ["31", 0], "filename_prefix": "steps_curve/15steps" } },
+
+  "40": {
+    "_comment": "20 steps",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0], "positive": ["3", 0], "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42, "steps": 20, "cfg": 7.0,
+      "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1.0
+    }
+  },
+  "41": { "class_type": "VAEDecode", "inputs": { "samples": ["40", 0], "vae": ["1", 2] } },
+  "42": { "class_type": "SaveImage", "inputs": { "images": ["41", 0], "filename_prefix": "steps_curve/20steps" } },
+
+  "50": {
+    "_comment": "30 steps",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0], "positive": ["3", 0], "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42, "steps": 30, "cfg": 7.0,
+      "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1.0
+    }
+  },
+  "51": { "class_type": "VAEDecode", "inputs": { "samples": ["50", 0], "vae": ["1", 2] } },
+  "52": { "class_type": "SaveImage", "inputs": { "images": ["51", 0], "filename_prefix": "steps_curve/30steps" } },
+
+  "60": {
+    "_comment": "50 steps",
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0], "positive": ["3", 0], "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 42, "steps": 50, "cfg": 7.0,
+      "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1.0
+    }
+  },
+  "61": { "class_type": "VAEDecode", "inputs": { "samples": ["60", 0], "vae": ["1", 2] } },
+  "62": { "class_type": "SaveImage", "inputs": { "images": ["61", 0], "filename_prefix": "steps_curve/50steps" } }
+}
