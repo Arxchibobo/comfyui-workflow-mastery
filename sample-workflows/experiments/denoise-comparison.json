@@ -1,0 +1,137 @@
+{
+  "_experiment_info": {
+    "title": "Denoise Value Comparison Experiment",
+    "description": "Systematically compares different denoise values (0.2, 0.4, 0.6, 0.8, 1.0) on the same input image with identical seed/prompt/model. All parameters fixed except denoise. Demonstrates how denoise controls the balance between original image fidelity and creative generation.",
+    "control_variables": {
+      "seed": 42,
+      "steps": 20,
+      "cfg": 7.5,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras",
+      "model": "v1-5-pruned-emaonly.safetensors"
+    },
+    "independent_variable": "denoise (0.2, 0.4, 0.6, 0.8, 1.0)",
+    "expected_results": {
+      "denoise_0.2": "Almost identical to input. Slight texture/color adjustments. Structure fully preserved.",
+      "denoise_0.4": "Noticeable style changes. Composition and major elements preserved. Good for style transfer.",
+      "denoise_0.6": "Significant changes. Major shapes preserved but details heavily modified. Creative reinterpretation.",
+      "denoise_0.8": "Near full regeneration. Only vague silhouettes from original remain. High creativity.",
+      "denoise_1.0": "Equivalent to text2img. Original image influence essentially zero."
+    }
+  },
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": { "ckpt_name": "v1-5-pruned-emaonly.safetensors" }
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "test_input.png" }
+  },
+  "3": {
+    "class_type": "VAEEncode",
+    "inputs": { "pixels": ["2", 0], "vae": ["1", 2] }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "text": "a beautiful landscape painting, vibrant colors, masterpiece, highly detailed", "clip": ["1", 1] }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "text": "ugly, blurry, low quality, deformed", "clip": ["1", 1] }
+  },
+
+  "10": {
+    "class_type": "KSampler",
+    "_meta": { "title": "denoise=0.2 (Minimal change)" },
+    "inputs": {
+      "model": ["1", 0], "positive": ["4", 0], "negative": ["5", 0],
+      "latent_image": ["3", 0],
+      "seed": 42, "steps": 20, "cfg": 7.5,
+      "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 0.2
+    }
+  },
+  "11": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["10", 0], "vae": ["1", 2] }
+  },
+  "12": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["11", 0], "filename_prefix": "denoise_compare/d02" }
+  },
+
+  "20": {
+    "class_type": "KSampler",
+    "_meta": { "title": "denoise=0.4 (Light style transfer)" },
+    "inputs": {
+      "model": ["1", 0], "positive": ["4", 0], "negative": ["5", 0],
+      "latent_image": ["3", 0],
+      "seed": 42, "steps": 20, "cfg": 7.5,
+      "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 0.4
+    }
+  },
+  "21": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["20", 0], "vae": ["1", 2] }
+  },
+  "22": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["21", 0], "filename_prefix": "denoise_compare/d04" }
+  },
+
+  "30": {
+    "class_type": "KSampler",
+    "_meta": { "title": "denoise=0.6 (Moderate reinterpretation)" },
+    "inputs": {
+      "model": ["1", 0], "positive": ["4", 0], "negative": ["5", 0],
+      "latent_image": ["3", 0],
+      "seed": 42, "steps": 20, "cfg": 7.5,
+      "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 0.6
+    }
+  },
+  "31": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["30", 0], "vae": ["1", 2] }
+  },
+  "32": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["31", 0], "filename_prefix": "denoise_compare/d06" }
+  },
+
+  "40": {
+    "class_type": "KSampler",
+    "_meta": { "title": "denoise=0.8 (Heavy regeneration)" },
+    "inputs": {
+      "model": ["1", 0], "positive": ["4", 0], "negative": ["5", 0],
+      "latent_image": ["3", 0],
+      "seed": 42, "steps": 20, "cfg": 7.5,
+      "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 0.8
+    }
+  },
+  "41": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["40", 0], "vae": ["1", 2] }
+  },
+  "42": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["41", 0], "filename_prefix": "denoise_compare/d08" }
+  },
+
+  "50": {
+    "class_type": "KSampler",
+    "_meta": { "title": "denoise=1.0 (Full text2img equivalent)" },
+    "inputs": {
+      "model": ["1", 0], "positive": ["4", 0], "negative": ["5", 0],
+      "latent_image": ["3", 0],
+      "seed": 42, "steps": 20, "cfg": 7.5,
+      "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1.0
+    }
+  },
+  "51": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["50", 0], "vae": ["1", 2] }
+  },
+  "52": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["51", 0], "filename_prefix": "denoise_compare/d10" }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "_workflow_info": {
+    "title": "Outpainting - Extend Canvas",
+    "description": "Extends the image canvas using ImagePadForOutpaint, then uses VAEEncodeForInpaint to fill the new area. The pad node creates a feathered mask automatically for smooth transitions.",
+    "technique": "Outpainting via Padding + Inpainting"
+  },
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "v1-5-pruned-emaonly.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "original_image.png"
+    }
+  },
+  "3": {
+    "class_type": "ImagePadForOutpaint",
+    "_meta": {
+      "title": "Pad Image for Outpainting",
+      "notes": "Extends canvas by specified pixels in each direction. New area filled with 0.5 gray. feathering creates a gradient transition at the original image edges. Returns IMAGE (padded) + MASK (1=new area, 0=original with feathered edge)."
+    },
+    "inputs": {
+      "image": ["2", 0],
+      "left": 128,
+      "top": 0,
+      "right": 128,
+      "bottom": 0,
+      "feathering": 40
+    }
+  },
+  "4": {
+    "class_type": "VAEEncodeForInpaint",
+    "_meta": {
+      "notes": "Encodes the padded image with the auto-generated mask from ImagePadForOutpaint. grow_mask_by ensures smooth latent-space blending."
+    },
+    "inputs": {
+      "pixels": ["3", 0],
+      "vae": ["1", 2],
+      "mask": ["3", 1],
+      "grow_mask_by": 8
+    }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "a wide panoramic landscape, rolling hills, dramatic sky, highly detailed",
+      "clip": ["1", 1]
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "ugly, blurry, seam, border, watermark",
+      "clip": ["1", 1]
+    }
+  },
+  "7": {
+    "class_type": "KSampler",
+    "_meta": {
+      "notes": "Outpainting typically needs high denoise (0.85-1.0) since new areas are essentially blank. Use more steps for better coherence."
+    },
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["5", 0],
+      "negative": ["6", 0],
+      "latent_image": ["4", 0],
+      "seed": 42,
+      "steps": 30,
+      "cfg": 7.5,
+      "sampler_name": "dpmpp_2m_sde",
+      "scheduler": "karras",
+      "denoise": 0.95
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["7", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["8", 0],
+      "filename_prefix": "outpaint_output"
+    }
+  }
+}

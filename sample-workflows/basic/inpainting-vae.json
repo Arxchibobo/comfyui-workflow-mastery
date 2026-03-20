@@ -1,0 +1,76 @@
+{
+  "_workflow_info": {
+    "title": "Inpainting - VAEEncodeForInpaint Method",
+    "description": "Better edge handling via grow_mask_by expansion and gray-pixel encoding in masked regions. Works with any model. The mask is automatically attached as noise_mask.",
+    "method": "VAEEncodeForInpaint",
+    "requires_inpainting_model": false
+  },
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "v1-5-pruned-emaonly.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input_with_mask.png"
+    }
+  },
+  "3": {
+    "class_type": "VAEEncodeForInpaint",
+    "_meta": {
+      "title": "VAE Encode (for Inpainting)",
+      "notes": "Key differences from plain VAEEncode: (1) grow_mask_by expands mask by N pixels via convolution for smoother latent-space boundaries; (2) masked pixel regions are set to 0.5 (neutral gray) before encoding to prevent color leakage; (3) noise_mask is automatically attached to the latent output."
+    },
+    "inputs": {
+      "pixels": ["2", 0],
+      "vae": ["1", 2],
+      "mask": ["2", 1],
+      "grow_mask_by": 6
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "a beautiful flower garden, vibrant colors, detailed petals",
+      "clip": ["1", 1]
+    }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "ugly, blurry, low quality",
+      "clip": ["1", 1]
+    }
+  },
+  "6": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["4", 0],
+      "negative": ["5", 0],
+      "latent_image": ["3", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.5,
+      "sampler_name": "dpmpp_2m_sde",
+      "scheduler": "karras",
+      "denoise": 0.85
+    }
+  },
+  "7": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["6", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "8": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["7", 0],
+      "filename_prefix": "inpaint_vae"
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "_workflow_info": {
+    "title": "Inpainting - Simple Method (SetLatentNoiseMask)",
+    "description": "Uses any general model + SetLatentNoiseMask. The mask restricts sampling to marked areas. Simpler but may have harder edges than VAEEncodeForInpaint method.",
+    "method": "SetLatentNoiseMask",
+    "requires_inpainting_model": false
+  },
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "v1-5-pruned-emaonly.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "_meta": {
+      "notes": "Load image WITH alpha channel (transparency = mask area), or use MaskEditor to draw mask after loading"
+    },
+    "inputs": {
+      "image": "input_with_mask.png"
+    }
+  },
+  "3": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": ["2", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "4": {
+    "class_type": "SetLatentNoiseMask",
+    "_meta": {
+      "title": "SetLatentNoiseMask",
+      "notes": "Attaches the mask to the latent dict as noise_mask. During sampling, KSamplerX0Inpaint will only denoise within masked regions and keep unmasked regions as original latent."
+    },
+    "inputs": {
+      "samples": ["3", 0],
+      "mask": ["2", 1]
+    }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "a cute cat sitting on a chair, detailed fur, photorealistic",
+      "clip": ["1", 1]
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "ugly, blurry, deformed",
+      "clip": ["1", 1]
+    }
+  },
+  "7": {
+    "class_type": "KSampler",
+    "_meta": {
+      "notes": "For inpainting, denoise 0.7-1.0 is typical. Higher denoise = more creative freedom in masked area."
+    },
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["5", 0],
+      "negative": ["6", 0],
+      "latent_image": ["4", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.5,
+      "sampler_name": "dpmpp_2m_sde",
+      "scheduler": "karras",
+      "denoise": 0.85
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["7", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["8", 0],
+      "filename_prefix": "inpaint_simple"
+    }
+  }
+}
