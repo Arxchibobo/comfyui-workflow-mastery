@@ -1,0 +1,257 @@
+{
+  "last_node_id": 35,
+  "last_link_id": 30,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [0, 300],
+      "size": [300, 100],
+      "properties": {},
+      "widgets_values": ["v1-5-pruned-emaonly.safetensors"]
+    },
+    {
+      "id": 2,
+      "type": "CLIPTextEncode",
+      "pos": [400, 100],
+      "size": [300, 120],
+      "properties": {},
+      "widgets_values": ["a majestic lion standing on a cliff at sunset, dramatic lighting, highly detailed fur, 8k, photorealistic"]
+    },
+    {
+      "id": 3,
+      "type": "CLIPTextEncode",
+      "pos": [400, 300],
+      "size": [300, 120],
+      "properties": {},
+      "widgets_values": ["blurry, low quality, deformed, ugly, bad anatomy"]
+    },
+    {
+      "id": 4,
+      "type": "EmptyLatentImage",
+      "pos": [400, 500],
+      "size": [300, 100],
+      "properties": {},
+      "widgets_values": [512, 512, 1]
+    },
+    {
+      "id": 10,
+      "type": "KSampler",
+      "pos": [800, 0],
+      "size": [300, 250],
+      "properties": {},
+      "widgets_values": [42, "fixed", 20, 7.0, "euler", "normal", 1.0]
+    },
+    {
+      "id": 11,
+      "type": "KSampler",
+      "pos": [800, 300],
+      "size": [300, 250],
+      "properties": {},
+      "widgets_values": [42, "fixed", 20, 7.0, "dpmpp_2m", "normal", 1.0]
+    },
+    {
+      "id": 12,
+      "type": "KSampler",
+      "pos": [800, 600],
+      "size": [300, 250],
+      "properties": {},
+      "widgets_values": [42, "fixed", 20, 7.0, "dpmpp_sde", "normal", 1.0]
+    },
+    {
+      "id": 13,
+      "type": "KSampler",
+      "pos": [800, 900],
+      "size": [300, 250],
+      "properties": {},
+      "widgets_values": [42, "fixed", 20, 7.0, "ddim", "normal", 1.0]
+    },
+    {
+      "id": 14,
+      "type": "KSampler",
+      "pos": [800, 1200],
+      "size": [300, 250],
+      "properties": {},
+      "widgets_values": [42, "fixed", 20, 7.0, "heun", "normal", 1.0]
+    },
+    {
+      "id": 15,
+      "type": "KSampler",
+      "pos": [800, 1500],
+      "size": [300, 250],
+      "properties": {},
+      "widgets_values": [42, "fixed", 20, 7.0, "uni_pc", "normal", 1.0]
+    },
+    {
+      "id": 20,
+      "type": "VAEDecode",
+      "pos": [1200, 0],
+      "size": [200, 80],
+      "properties": {}
+    },
+    {
+      "id": 21,
+      "type": "VAEDecode",
+      "pos": [1200, 300],
+      "size": [200, 80],
+      "properties": {}
+    },
+    {
+      "id": 22,
+      "type": "VAEDecode",
+      "pos": [1200, 600],
+      "size": [200, 80],
+      "properties": {}
+    },
+    {
+      "id": 23,
+      "type": "VAEDecode",
+      "pos": [1200, 900],
+      "size": [200, 80],
+      "properties": {}
+    },
+    {
+      "id": 24,
+      "type": "VAEDecode",
+      "pos": [1200, 1200],
+      "size": [200, 80],
+      "properties": {}
+    },
+    {
+      "id": 25,
+      "type": "VAEDecode",
+      "pos": [1200, 1500],
+      "size": [200, 80],
+      "properties": {}
+    },
+    {
+      "id": 30,
+      "type": "SaveImage",
+      "pos": [1500, 0],
+      "size": [300, 250],
+      "properties": {},
+      "widgets_values": ["sampler_comparison/euler"]
+    },
+    {
+      "id": 31,
+      "type": "SaveImage",
+      "pos": [1500, 300],
+      "size": [300, 250],
+      "properties": {},
+      "widgets_values": ["sampler_comparison/dpmpp_2m"]
+    },
+    {
+      "id": 32,
+      "type": "SaveImage",
+      "pos": [1500, 600],
+      "size": [300, 250],
+      "properties": {},
+      "widgets_values": ["sampler_comparison/dpmpp_sde"]
+    },
+    {
+      "id": 33,
+      "type": "SaveImage",
+      "pos": [1500, 900],
+      "size": [300, 250],
+      "properties": {},
+      "widgets_values": ["sampler_comparison/ddim"]
+    },
+    {
+      "id": 34,
+      "type": "SaveImage",
+      "pos": [1500, 1200],
+      "size": [300, 250],
+      "properties": {},
+      "widgets_values": ["sampler_comparison/heun"]
+    },
+    {
+      "id": 35,
+      "type": "SaveImage",
+      "pos": [1500, 1500],
+      "size": [300, 250],
+      "properties": {},
+      "widgets_values": ["sampler_comparison/uni_pc"]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 2, 0, "CLIP"],
+    [2, 1, 0, 3, 0, "CLIP"],
+
+    [3, 1, 0, 10, 0, "MODEL"],
+    [4, 2, 0, 10, 1, "CONDITIONING"],
+    [5, 3, 0, 10, 2, "CONDITIONING"],
+    [6, 4, 0, 10, 3, "LATENT"],
+
+    [7, 1, 0, 11, 0, "MODEL"],
+    [8, 2, 0, 11, 1, "CONDITIONING"],
+    [9, 3, 0, 11, 2, "CONDITIONING"],
+    [10, 4, 0, 11, 3, "LATENT"],
+
+    [11, 1, 0, 12, 0, "MODEL"],
+    [12, 2, 0, 12, 1, "CONDITIONING"],
+    [13, 3, 0, 12, 2, "CONDITIONING"],
+    [14, 4, 0, 12, 3, "LATENT"],
+
+    [15, 1, 0, 13, 0, "MODEL"],
+    [16, 2, 0, 13, 1, "CONDITIONING"],
+    [17, 3, 0, 13, 2, "CONDITIONING"],
+    [18, 4, 0, 13, 3, "LATENT"],
+
+    [19, 1, 0, 14, 0, "MODEL"],
+    [20, 2, 0, 14, 1, "CONDITIONING"],
+    [21, 3, 0, 14, 2, "CONDITIONING"],
+    [22, 4, 0, 14, 3, "LATENT"],
+
+    [23, 1, 0, 15, 0, "MODEL"],
+    [24, 2, 0, 15, 1, "CONDITIONING"],
+    [25, 3, 0, 15, 2, "CONDITIONING"],
+    [26, 4, 0, 15, 3, "LATENT"],
+
+    [27, 10, 0, 20, 0, "LATENT"],
+    [28, 11, 0, 21, 0, "LATENT"],
+    [29, 12, 0, 22, 0, "LATENT"],
+    [30, 13, 0, 23, 0, "LATENT"],
+    [31, 14, 0, 24, 0, "LATENT"],
+    [32, 15, 0, 25, 0, "LATENT"],
+
+    [33, 1, 2, 20, 1, "VAE"],
+    [34, 1, 2, 21, 1, "VAE"],
+    [35, 1, 2, 22, 1, "VAE"],
+    [36, 1, 2, 23, 1, "VAE"],
+    [37, 1, 2, 24, 1, "VAE"],
+    [38, 1, 2, 25, 1, "VAE"],
+
+    [39, 20, 0, 30, 0, "IMAGE"],
+    [40, 21, 0, 31, 0, "IMAGE"],
+    [41, 22, 0, 32, 0, "IMAGE"],
+    [42, 23, 0, 33, 0, "IMAGE"],
+    [43, 24, 0, 34, 0, "IMAGE"],
+    [44, 25, 0, 35, 0, "IMAGE"]
+  ],
+  "groups": [
+    {
+      "title": "Shared: Model + Prompt + Latent",
+      "bounding": [-50, 50, 800, 600],
+      "color": "#3f789e"
+    },
+    {
+      "title": "Sampler Comparison: 6 Samplers × Same Seed/Prompt/Model",
+      "bounding": [750, -50, 1150, 1850],
+      "color": "#8A6642"
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6,
+      "offset": [50, 50]
+    },
+    "info": {
+      "name": "Sampler Comparison Experiment",
+      "description": "Control-variable experiment: 6 samplers (euler/dpmpp_2m/dpmpp_sde/ddim/heun/uni_pc) with fixed seed=42, steps=20, cfg=7.0, SD1.5, 512x512. Compare visual quality, detail, and style differences.",
+      "author": "ComfyUI Learning Agent",
+      "version": "1.0.0"
+    }
+  },
+  "version": 0.4
+}
