@@ -37,4 +37,15 @@
 |------|------|------|
 | `video/animatediff.json` | 文字/图→视频 | AnimateDiff 运动模块 |
 
+### 实验工作流
+| 文件 | 需求 | 说明 |
+|------|------|------|
+| `experiments/sampler-comparison.json` | 采样器对比 | 6种采样器系统对比（共享前端+独立管线） |
+| `experiments/scheduler-sampler-cross-sdxl.json` | 交叉实验 | Scheduler×Sampler 兼容性矩阵 |
+| `experiments/flux-vs-sdxl-sampler-compare.json` | 架构对比 | Flux vs SDXL 采样行为差异 |
+| `experiments/steps-quality-curve.json` | 步数曲线 | 5/10/15/20/30/50 步质量对比 |
+| `experiments/batch-seed-variants.json` | 批量 seed 变体 | batch_size=4 生成同 prompt 多变体 |
+| `experiments/batch_generate_evaluate.py` | API 批量生成 | Python 脚本：多 prompt×参数矩阵自动化生成 |
+| `experiments/evaluate_quality.py` | 质量评估 | NIQE/CLIP Score/ImageReward 自动评分 |
+
 （学习过程中持续补充验证过的工作流）

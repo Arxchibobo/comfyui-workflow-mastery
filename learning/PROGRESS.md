@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 2 - 核心工作流实操
-- **当前天数**: Day 4 进行中
-- **上次学习时间**: 2026-03-20 11:33 UTC
-- **累计学习轮数**: 8
+- **当前天数**: Day 4 完成，Day 5 待开始
+- **上次学习时间**: 2026-03-20 14:03 UTC
+- **累计学习轮数**: 10
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -53,18 +53,33 @@
 | 5 | 2026-03-18 20:03 | Day2完成-Text2Img工作流 | 6节点完整拓扑解析(Checkpoint/EmptyLatent/CLIPEncode/KSampler/VAEDecode/SaveImage)+KSampler全参数深度解析(seed/steps/cfg/sampler/scheduler/denoise交互效应)+API JSON格式+分辨率匹配表+采样器决策树+SD1.5/SDXL/Flux推荐配置 | day02-latent-space-sampling.md §6 + sample-workflows/basic/text2img.json |
 | 6 | 2026-03-18 22:03 | Day3-节点系统+自定义节点 | 节点注册机制4要素(INPUT_TYPES/RETURN_TYPES/FUNCTION/CATEGORY)+数据类型系统(13种核心类型+IO枚举)+自定义节点加载流程(init_extra_nodes容错扫描)+graph.py深度分析(DynamicPrompt/TopologicalSort/ExecutionList/UX优先级调度)+Lazy Eval/OutputNode/PromptServer通信模式 | day03-comfyui-architecture.md §1-8 |
 | 8 | 2026-03-20 11:33 | Day4-采样器对比实验 | 6种采样器系统性对比实验设计(euler/dpmpp_2m/dpmpp_sde/ddim/heun/uni_pc)+控制变量方案+可运行工作流JSON(共享前端+6独立采样管线)+社区研究总结+预期结果分析 | day04-sampler-experiments.md + sampler-comparison.json |
+| 9 | 2026-03-20 12:03 | Day4-模型×采样器矩阵+Scheduler深度分析 | SD1.5/SDXL/Flux三架构对比(U-Net vs DiT/DDPM vs Rectified Flow/CFG差异)+各模型最优采样器推荐表+全9种Scheduler数学公式源码分析(karras/exponential/beta/normal/simple/ddim_uniform/sgm_uniform/linear_quadratic/kl_optimal)+Scheduler×Sampler兼容性矩阵+CFG×采样器交互分析+步数-质量曲线+快速决策树 | day04-model-sampler-matrix.md + scheduler-sampler-cross-sdxl.json + flux-vs-sdxl-sampler-compare.json + steps-quality-curve.json |
+| 10 | 2026-03-20 14:03 | Day4完成-批量生成+质量评估 | FID/KID/IS分布级指标+LPIPS/SSIM/NIQE图像级指标+CLIP Score/ImageReward/HPS v2对齐级指标+指标选择决策树+3种ComfyUI批量方法(batch_size/RepeatLatentBatch/API脚本)+完整API批量生成Python脚本+自动质量评估脚本(NIQE/CLIP/ImageReward) | day04-batch-generation-quality-eval.md + batch-seed-variants.json + batch_generate_evaluate.py + evaluate_quality.py |
 
 ## Day 4 待做 (Text2Img 全流程 — 各种采样器对比实验)
 - [x] 采样器系统性对比实验设计
   - [x] 控制变量法：固定 seed/prompt/模型，只变采样器
   - [x] 对比维度：生成质量、速度、步数敏感度、CFG 兼容性
-- [ ] SD 1.5 vs SDXL vs Flux 采样器行为差异
-  - [ ] 不同架构对采样器选择的影响
-  - [ ] 最优采样器×模型组合推荐
-- [ ] 高级参数调校
-  - [ ] Scheduler 与 Sampler 的交叉效应（karras/exponential/sgm_uniform）
-  - [ ] 步数-质量曲线绘制（5/10/15/20/30/50 步对比）
-  - [ ] CFG Scale 与采样器的交互（某些采样器对高 CFG 更稳定）
-- [ ] 批量生成与质量评估方法论
-  - [ ] 如何科学评估生成质量（FID/CLIP Score 原理）
-  - [ ] ComfyUI 批量生成工作流设计
+- [x] SD 1.5 vs SDXL vs Flux 采样器行为差异
+  - [x] 不同架构对采样器选择的影响
+  - [x] 最优采样器×模型组合推荐
+- [x] 高级参数调校
+  - [x] Scheduler 与 Sampler 的交叉效应（karras/exponential/sgm_uniform）
+  - [x] 步数-质量曲线绘制（5/10/15/20/30/50 步对比）
+  - [x] CFG Scale 与采样器的交互（某些采样器对高 CFG 更稳定）
+- [x] 批量生成与质量评估方法论
+  - [x] 如何科学评估生成质量（FID/CLIP Score 原理）
+  - [x] ComfyUI 批量生成工作流设计
+
+## Day 5 待做 (Img2Img、Inpainting、Outpainting)
+- [ ] Img2Img 原理与 denoise 参数深入
+  - [ ] VAEEncode 流程 vs EmptyLatentImage 区别
+  - [ ] denoise 值对内容保持 vs 创意生成的平衡
+  - [ ] 最佳 denoise 范围（风格迁移/局部修改/大幅重绘）
+- [ ] Inpainting 原理与遮罩处理
+  - [ ] SetLatentNoiseMask 机制
+  - [ ] Inpainting 专用模型 vs 通用模型 + mask
+  - [ ] 遮罩羽化与边缘融合技巧
+- [ ] Outpainting 扩展画布
+  - [ ] Padding + Inpaint 方法
+  - [ ] 分辨率与构图一致性挑战

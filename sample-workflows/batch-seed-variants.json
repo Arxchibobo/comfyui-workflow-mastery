@@ -1,0 +1,72 @@
+{
+  "_metadata": {
+    "title": "Batch Generation with Multiple Seeds - Systematic Quality Comparison",
+    "description": "使用 EmptyLatentImage batch_size 批量生成同 prompt 的多个变体，用于评估 seed 变化对生成质量的影响。包含 3 prompt × 4 seed 变体 = 12 张图片的设计。",
+    "author": "ComfyUI Learning Session 10",
+    "date": "2026-03-20",
+    "model": "SDXL",
+    "purpose": "批量生成实验 — 探索 seed 对生成多样性和质量的影响"
+  },
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "CLIPTextEncode",
+    "_meta": { "title": "Positive Prompt" },
+    "inputs": {
+      "text": "a majestic snow leopard standing on a rocky cliff at sunset, dramatic golden light, highly detailed fur, 8k photography, national geographic style",
+      "clip": ["1", 1]
+    }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "_meta": { "title": "Negative Prompt" },
+    "inputs": {
+      "text": "blurry, low quality, deformed, ugly, bad anatomy, watermark, text, signature",
+      "clip": ["1", 1]
+    }
+  },
+  "4": {
+    "class_type": "EmptyLatentImage",
+    "_meta": { "title": "Latent Batch (4 variants)" },
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 4
+    }
+  },
+  "5": {
+    "class_type": "KSampler",
+    "_meta": { "title": "Sampler - DPM++ 2M Karras" },
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["2", 0],
+      "negative": ["3", 0],
+      "latent_image": ["4", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1.0
+    }
+  },
+  "6": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["5", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "7": {
+    "class_type": "SaveImage",
+    "_meta": { "title": "Save Batch Results" },
+    "inputs": {
+      "images": ["6", 0],
+      "filename_prefix": "batch_seed_variants/dpmpp2m_karras_s25_cfg7"
+    }
+  }
+}
