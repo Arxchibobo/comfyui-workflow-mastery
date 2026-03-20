@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 2 - 核心工作流实操
-- **当前天数**: Day 6 进行中（ControlNet 基础原理 + Canny/Depth/Pose 完成）
-- **上次学习时间**: 2026-03-20 18:03 UTC
-- **累计学习轮数**: 12
+- **当前天数**: Day 6 完成 ✅ → 下一步 Day 7 (LoRA)
+- **上次学习时间**: 2026-03-20 20:03 UTC
+- **累计学习轮数**: 13
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -57,6 +57,7 @@
 | 10 | 2026-03-20 14:03 | Day4完成-批量生成+质量评估 | FID/KID/IS分布级指标+LPIPS/SSIM/NIQE图像级指标+CLIP Score/ImageReward/HPS v2对齐级指标+指标选择决策树+3种ComfyUI批量方法(batch_size/RepeatLatentBatch/API脚本)+完整API批量生成Python脚本+自动质量评估脚本(NIQE/CLIP/ImageReward) | day04-batch-generation-quality-eval.md + batch-seed-variants.json + batch_generate_evaluate.py + evaluate_quality.py |
 | 11 | 2026-03-20 16:03 | Day5-Img2Img+Inpainting+Outpainting | Img2Img原理(VAEEncode vs EmptyLatent/denoise sigma截断数学/参数速查)+Inpainting三种方法对比(SetLatentNoiseMask/VAEEncodeForInpaint/InpaintModelConditioning源码分析)+noise_mask全管线传递+mask灰色像素技巧+Outpainting(ImagePadForOutpaint源码/feathering/最佳实践)+denoise对比实验设计 | day05-img2img-inpainting-outpainting.md + img2img.json + inpainting-simple.json + inpainting-vae.json + outpainting.json + denoise-comparison.json |
 | 12 | 2026-03-20 18:03 | Day6-ControlNet基础+三大经典 | ControlNet架构(零卷积/双副本/hint编码/权重注入)+ComfyUI源码分析(ControlBase/ControlNet/get_control/control_merge/ControlNetApplyAdvanced)+v1.1全14模型列表+Canny/Depth/OpenPose深度解析(原理/预处理器/strength调优/场景)+多ControlNet合并机制(信号相加)+start/end_percent策略+跨模型对比(SD1.5/SDXL/Flux)+Union ControlNet | day06-controlnet-fundamentals.md + controlnet/canny-controlnet.json + depth-controlnet.json + openpose-controlnet.json + multi-controlnet-depth-pose.json + canny-strength-comparison.json |
+| 13 | 2026-03-20 20:03 | Day6-Tile+IP-Adapter+多CN组合 | Tile ControlNet(局部语义感知/细节幻觉/Prompt冲突处理/三阶段超分管线ESRGAN→Tile→频率混合)+IP-Adapter架构(解耦双交叉注意力/CLIP ViT编码/22M参数/Plus vs FaceID变体)+多ControlNet组合(链式连接/区域分工vs多维控制/权重策略/start-end分时段/IP-Adapter+ControlNet天然兼容) | day06-tile-ipadapter-multi-controlnet.md + controlnet/tile-upscale.json + ip-adapter-style-transfer.json + triple-control-ipadapter-depth-pose.json |
 
 ## Day 4 待做 (Text2Img 全流程 — 各种采样器对比实验)
 - [x] 采样器系统性对比实验设计
@@ -93,8 +94,8 @@
 - [x] Canny / Depth / Pose 三大经典 ControlNet
   - [x] 每种的最佳使用场景
   - [x] preprocessor 参数调优
-- [ ] Tile / IP-Adapter 高级 ControlNet
-  - [ ] Tile ControlNet 用于超分辨率
-  - [ ] IP-Adapter 图像风格迁移
-- [ ] 多 ControlNet 组合使用
-  - [ ] 权重调节与冲突处理
+- [x] Tile / IP-Adapter 高级 ControlNet
+  - [x] Tile ControlNet 用于超分辨率
+  - [x] IP-Adapter 图像风格迁移
+- [x] 多 ControlNet 组合使用
+  - [x] 权重调节与冲突处理

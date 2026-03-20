@@ -1,0 +1,208 @@
+{
+  "description": "多 ControlNet 组合 — IP-Adapter 风格 + Pose 姿势 + Depth 深度三重控制",
+  "version": "comfyui-learning-session-13",
+  "workflow_type": "multi-controlnet-ipadapter-combo",
+  "last_node_id": 18,
+  "last_link_id": 22,
+  "design_rationale": "展示最复杂的组合: IP-Adapter控制风格 + Pose控制姿势 + Depth控制空间，三者分时段生效避免冲突",
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [0, 0],
+      "title": "加载基础模型",
+      "widgets_values": ["v1-5-pruned-emaonly.safetensors"]
+    },
+    {
+      "id": 2,
+      "type": "CLIPTextEncode",
+      "pos": [300, 0],
+      "title": "正面 Prompt",
+      "widgets_values": ["a woman dancing in a garden, oil painting style, beautiful lighting"],
+      "inputs": [{"name": "clip", "link_from": [1, 1]}]
+    },
+    {
+      "id": 3,
+      "type": "CLIPTextEncode",
+      "pos": [300, 150],
+      "title": "负面 Prompt",
+      "widgets_values": ["blurry, low quality, ugly, deformed, extra limbs"],
+      "inputs": [{"name": "clip", "link_from": [1, 1]}]
+    },
+
+    {
+      "_comment": "===== IP-Adapter 风格控制 =====",
+      "id": 4,
+      "type": "CLIPVisionLoader",
+      "pos": [0, 350],
+      "title": "CLIP Vision (for IP-Adapter)",
+      "widgets_values": ["clip-vit-h-14-laion2B-s32B-b79K.safetensors"]
+    },
+    {
+      "id": 5,
+      "type": "IPAdapterModelLoader",
+      "pos": [0, 500],
+      "widgets_values": ["ip-adapter-plus_sd15.safetensors"]
+    },
+    {
+      "id": 6,
+      "type": "LoadImage",
+      "pos": [0, 650],
+      "title": "参考风格图 (油画风格)",
+      "widgets_values": ["oil_painting_reference.png"]
+    },
+    {
+      "id": 7,
+      "type": "IPAdapterAdvanced",
+      "pos": [350, 450],
+      "title": "IP-Adapter (weight=0.65, 0%-70%)",
+      "widgets_values": {
+        "weight": 0.65,
+        "weight_type": "standard",
+        "start_at": 0.0,
+        "end_at": 0.7,
+        "_comment": "70% 后释放风格控制，让后期步骤自由添加细节"
+      },
+      "inputs": [
+        {"name": "model", "link_from": [1, 0]},
+        {"name": "clip_vision", "link_from": [4, 0]},
+        {"name": "ipadapter", "link_from": [5, 0]},
+        {"name": "image", "link_from": [6, 0]}
+      ]
+    },
+
+    {
+      "_comment": "===== ControlNet #1: Depth (空间) =====",
+      "id": 8,
+      "type": "ControlNetLoader",
+      "pos": [0, 850],
+      "title": "加载 Depth ControlNet",
+      "widgets_values": ["control_v11f1p_sd15_depth_fp16.safetensors"]
+    },
+    {
+      "id": 9,
+      "type": "LoadImage",
+      "pos": [0, 1000],
+      "title": "Depth Map (深度图)",
+      "widgets_values": ["depth_map.png"]
+    },
+    {
+      "id": 10,
+      "type": "ControlNetApplyAdvanced",
+      "pos": [350, 850],
+      "title": "Depth CN (strength=0.6, 0%-50%)",
+      "widgets_values": {
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 0.5,
+        "_comment": "Depth 只控制早期构图阶段 (0-50%)，之后释放空间给细节"
+      },
+      "inputs": [
+        {"name": "positive", "link_from": [2, 0]},
+        {"name": "negative", "link_from": [3, 0]},
+        {"name": "control_net", "link_from": [8, 0]},
+        {"name": "image", "link_from": [9, 0]}
+      ]
+    },
+
+    {
+      "_comment": "===== ControlNet #2: Pose (姿势) =====",
+      "id": 11,
+      "type": "ControlNetLoader",
+      "pos": [0, 1200],
+      "title": "加载 Pose ControlNet",
+      "widgets_values": ["control_v11p_sd15_openpose_fp16.safetensors"]
+    },
+    {
+      "id": 12,
+      "type": "LoadImage",
+      "pos": [0, 1350],
+      "title": "Pose Map (姿势骨架图)",
+      "widgets_values": ["pose_skeleton.png"]
+    },
+    {
+      "id": 13,
+      "type": "ControlNetApplyAdvanced",
+      "pos": [700, 950],
+      "title": "Pose CN (strength=0.8, 0%-80%)",
+      "widgets_values": {
+        "strength": 0.8,
+        "start_percent": 0.0,
+        "end_percent": 0.8,
+        "_comment": "Pose 持续到 80% 确保姿势稳定，但比 Depth 结束晚"
+      },
+      "inputs": [
+        {"name": "positive", "link_from": [10, 0], "comment": "链式: 已经包含 Depth 条件"},
+        {"name": "negative", "link_from": [10, 1]},
+        {"name": "control_net", "link_from": [11, 0]},
+        {"name": "image", "link_from": [12, 0]}
+      ]
+    },
+
+    {
+      "_comment": "===== 采样与输出 =====",
+      "id": 14,
+      "type": "EmptyLatentImage",
+      "pos": [700, 1150],
+      "widgets_values": {"width": 512, "height": 768, "batch_size": 1},
+      "_comment": "竖版适合人物舞蹈主题"
+    },
+    {
+      "id": 15,
+      "type": "KSampler",
+      "pos": [1050, 800],
+      "title": "采样 (三重控制)",
+      "widgets_values": {
+        "seed": 42,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 1.0
+      },
+      "inputs": [
+        {"name": "model", "link_from": [7, 0], "comment": "IP-Adapter 增强的模型"},
+        {"name": "positive", "link_from": [13, 0], "comment": "Depth + Pose 链式条件"},
+        {"name": "negative", "link_from": [13, 1]},
+        {"name": "latent_image", "link_from": [14, 0]}
+      ]
+    },
+    {
+      "id": 16,
+      "type": "VAEDecode",
+      "pos": [1350, 800],
+      "inputs": [
+        {"name": "samples", "link_from": [15, 0]},
+        {"name": "vae", "link_from": [1, 2]}
+      ]
+    },
+    {
+      "id": 17,
+      "type": "SaveImage",
+      "pos": [1650, 800],
+      "title": "保存三重控制结果",
+      "widgets_values": ["triple_control_output"],
+      "inputs": [{"name": "images", "link_from": [16, 0]}]
+    }
+  ],
+  "notes": {
+    "triple_control_strategy": {
+      "IP-Adapter": "控制全局风格(油画感)，weight=0.65 适中，0-70% 时段生效",
+      "Depth": "控制空间层次，strength=0.6 辅助角色，0-50% 只管构图",
+      "Pose": "控制人物姿势，strength=0.8 较高优先级，0-80% 持续稳定",
+      "分时策略": "三者在时间轴上部分重叠但主导阶段不同，减少冲突"
+    },
+    "injection_paths": {
+      "IP-Adapter": "→ model (修改 U-Net attention 层)",
+      "ControlNet": "→ conditioning (通过零卷积注入 U-Net encoder/middle)",
+      "不同路径": "IP-Adapter 和 ControlNet 走不同的注入路径，天然兼容"
+    },
+    "tuning_tips": [
+      "如果风格太弱: 提高 IP-Adapter weight 到 0.8",
+      "如果姿势不准: 提高 Pose strength 到 1.0",
+      "如果构图混乱: 延长 Depth end_percent 到 0.7",
+      "如果图像过度约束(呆板): 降低所有 ControlNet strength",
+      "先单独测试每个控制，确认各自效果后再组合"
+    ]
+  }
+}

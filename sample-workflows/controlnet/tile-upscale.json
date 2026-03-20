@@ -1,0 +1,145 @@
+{
+  "description": "Tile ControlNet 超分辨率工作流 — 使用 4x-UltraSharp 放大后通过 Tile ControlNet + Img2Img 重建细节",
+  "version": "comfyui-learning-session-13",
+  "workflow_type": "tile-controlnet-upscale",
+  "last_node_id": 12,
+  "last_link_id": 14,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [0, 0],
+      "title": "加载原始图像",
+      "widgets_values": ["input_image.png"]
+    },
+    {
+      "id": 2,
+      "type": "UpscaleModelLoader",
+      "pos": [0, 250],
+      "title": "加载放大模型 (4x-UltraSharp)",
+      "widgets_values": ["4x-UltraSharp.pth"]
+    },
+    {
+      "id": 3,
+      "type": "ImageUpscaleWithModel",
+      "pos": [300, 100],
+      "title": "Stage 1: ESRGAN 确定性放大",
+      "inputs": [
+        {"name": "upscale_model", "link_from": [2, 0]},
+        {"name": "image", "link_from": [1, 0]}
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CheckpointLoaderSimple",
+      "pos": [0, 450],
+      "title": "加载 SD 1.5 模型",
+      "widgets_values": ["v1-5-pruned-emaonly.safetensors"]
+    },
+    {
+      "id": 5,
+      "type": "CLIPTextEncode",
+      "pos": [300, 450],
+      "title": "正面 Prompt (描述图像内容，辅助细节生成)",
+      "widgets_values": ["high quality, detailed, sharp focus, 8k uhd"],
+      "inputs": [
+        {"name": "clip", "link_from": [4, 1]}
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": [300, 600],
+      "title": "负面 Prompt",
+      "widgets_values": ["blurry, low quality, pixelated, artifacts, noise"],
+      "inputs": [
+        {"name": "clip", "link_from": [4, 1]}
+      ]
+    },
+    {
+      "id": 7,
+      "type": "ControlNetLoader",
+      "pos": [300, 750],
+      "title": "加载 Tile ControlNet 模型",
+      "widgets_values": ["control_v11f1e_sd15_tile.pth"]
+    },
+    {
+      "id": 8,
+      "type": "ControlNetApplyAdvanced",
+      "pos": [600, 500],
+      "title": "Stage 2: 应用 Tile ControlNet",
+      "widgets_values": {
+        "strength": 1.0,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      },
+      "inputs": [
+        {"name": "positive", "link_from": [5, 0]},
+        {"name": "negative", "link_from": [6, 0]},
+        {"name": "control_net", "link_from": [7, 0]},
+        {"name": "image", "link_from": [3, 0], "comment": "放大后的图像作为 Tile 条件 — 注意这里直接用放大后的图"}
+      ]
+    },
+    {
+      "id": 9,
+      "type": "VAEEncode",
+      "pos": [600, 250],
+      "title": "编码放大图像到 Latent",
+      "inputs": [
+        {"name": "pixels", "link_from": [3, 0]},
+        {"name": "vae", "link_from": [4, 2]}
+      ]
+    },
+    {
+      "id": 10,
+      "type": "KSampler",
+      "pos": [900, 400],
+      "title": "Img2Img 采样 (低 denoise 保结构)",
+      "widgets_values": {
+        "seed": 42,
+        "steps": 20,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.35,
+        "_comment": "denoise 0.3-0.45 是超分的甜蜜区间：<0.3 几乎不变，>0.5 偏离原图"
+      },
+      "inputs": [
+        {"name": "model", "link_from": [4, 0]},
+        {"name": "positive", "link_from": [8, 0]},
+        {"name": "negative", "link_from": [8, 1]},
+        {"name": "latent_image", "link_from": [9, 0]}
+      ]
+    },
+    {
+      "id": 11,
+      "type": "VAEDecode",
+      "pos": [1200, 400],
+      "title": "解码 Latent → 图像",
+      "inputs": [
+        {"name": "samples", "link_from": [10, 0]},
+        {"name": "vae", "link_from": [4, 2]}
+      ]
+    },
+    {
+      "id": 12,
+      "type": "SaveImage",
+      "pos": [1500, 400],
+      "title": "保存超分结果",
+      "widgets_values": ["tile_upscale_output"],
+      "inputs": [
+        {"name": "images", "link_from": [11, 0]}
+      ]
+    }
+  ],
+  "notes": {
+    "pipeline": "三阶段超分: ESRGAN放大 → Tile ControlNet条件 → 低denoise Img2Img采样",
+    "key_parameters": {
+      "denoise": "0.35 — 保持原图结构同时添加细节。0.3=保守，0.45=激进",
+      "tile_strength": "1.0 — Tile CN 通常保持最大强度",
+      "cfg": "7.0 — 标准值，过高会出现过饱和",
+      "sampler": "dpmpp_2m + karras — 20步兼顾速度和质量"
+    },
+    "tile_model_note": "control_v11f1e_sd15_tile.pth 用于 SD1.5。SDXL 用 xinsir/controlnet-tile-sdxl。Flux 暂无 Tile CN。"
+  }
+}

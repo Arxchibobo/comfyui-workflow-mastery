@@ -1,0 +1,145 @@
+{
+  "description": "IP-Adapter 风格迁移工作流 — 使用参考图像的风格生成新图像，同时保留文字 prompt 的语义控制",
+  "version": "comfyui-learning-session-13",
+  "workflow_type": "ip-adapter-style-transfer",
+  "last_node_id": 11,
+  "last_link_id": 13,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [0, 0],
+      "title": "加载基础模型",
+      "widgets_values": ["v1-5-pruned-emaonly.safetensors"]
+    },
+    {
+      "id": 2,
+      "type": "CLIPVisionLoader",
+      "pos": [0, 200],
+      "title": "加载 CLIP Vision 编码器",
+      "widgets_values": ["clip-vit-h-14-laion2B-s32B-b79K.safetensors"],
+      "_comment": "IP-Adapter 需要 CLIP ViT-H/14 来编码参考图像"
+    },
+    {
+      "id": 3,
+      "type": "IPAdapterModelLoader",
+      "pos": [0, 350],
+      "title": "加载 IP-Adapter 模型",
+      "widgets_values": ["ip-adapter-plus_sd15.safetensors"],
+      "_comment": "Plus 版本使用 patch tokens 而非仅 [CLS] token，细节保留更好"
+    },
+    {
+      "id": 4,
+      "type": "LoadImage",
+      "pos": [0, 500],
+      "title": "加载参考风格图像",
+      "widgets_values": ["style_reference.png"],
+      "_comment": "这张图的风格/色彩/纹理将被迁移到生成结果"
+    },
+    {
+      "id": 5,
+      "type": "IPAdapterApply",
+      "pos": [400, 200],
+      "title": "应用 IP-Adapter (风格迁移)",
+      "widgets_values": {
+        "weight": 0.7,
+        "noise": 0.0,
+        "weight_type": "standard",
+        "start_at": 0.0,
+        "end_at": 1.0,
+        "_comment": "weight 0.6-0.8 是甜蜜区间。>1.0 文字 prompt 基本失效。noise 增加多样性但降低一致性"
+      },
+      "inputs": [
+        {"name": "model", "link_from": [1, 0]},
+        {"name": "clip_vision", "link_from": [2, 0]},
+        {"name": "ipadapter", "link_from": [3, 0]},
+        {"name": "image", "link_from": [4, 0]}
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": [400, 450],
+      "title": "正面 Prompt (语义内容)",
+      "widgets_values": ["a majestic castle on a cliff, sunset, dramatic lighting"],
+      "inputs": [
+        {"name": "clip", "link_from": [1, 1]}
+      ],
+      "_comment": "文字控制'生成什么'，参考图控制'看起来像什么'"
+    },
+    {
+      "id": 7,
+      "type": "CLIPTextEncode",
+      "pos": [400, 600],
+      "title": "负面 Prompt",
+      "widgets_values": ["blurry, low quality, ugly, deformed"],
+      "inputs": [
+        {"name": "clip", "link_from": [1, 1]}
+      ]
+    },
+    {
+      "id": 8,
+      "type": "EmptyLatentImage",
+      "pos": [400, 750],
+      "title": "空 Latent (512x512 for SD1.5)",
+      "widgets_values": {"width": 512, "height": 512, "batch_size": 1}
+    },
+    {
+      "id": 9,
+      "type": "KSampler",
+      "pos": [750, 400],
+      "title": "采样 (IP-Adapter 增强的模型)",
+      "widgets_values": {
+        "seed": 42,
+        "steps": 30,
+        "cfg": 7.5,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 1.0,
+        "_comment": "denoise=1.0 因为是从空 latent 生成。IP-Adapter 影响通过模型注入，不是通过 denoise"
+      },
+      "inputs": [
+        {"name": "model", "link_from": [5, 0], "comment": "注意: 这里用 IP-Adapter 处理后的 model"},
+        {"name": "positive", "link_from": [6, 0]},
+        {"name": "negative", "link_from": [7, 0]},
+        {"name": "latent_image", "link_from": [8, 0]}
+      ]
+    },
+    {
+      "id": 10,
+      "type": "VAEDecode",
+      "pos": [1050, 400],
+      "title": "解码",
+      "inputs": [
+        {"name": "samples", "link_from": [9, 0]},
+        {"name": "vae", "link_from": [1, 2]}
+      ]
+    },
+    {
+      "id": 11,
+      "type": "SaveImage",
+      "pos": [1350, 400],
+      "title": "保存风格迁移结果",
+      "widgets_values": ["ip_adapter_style_transfer"],
+      "inputs": [
+        {"name": "images", "link_from": [10, 0]}
+      ]
+    }
+  ],
+  "notes": {
+    "architecture": "IP-Adapter 通过解耦交叉注意力注入图像特征: TextCrossAttn(Q,K_text,V_text) + λ·ImageCrossAttn(Q,K_img,V_img)",
+    "key_insight": "IP-Adapter 修改的是 model 对象（注入新的 attention 层），而不是 conditioning。所以 KSampler 接收的是增强后的 model。",
+    "weight_guide": {
+      "0.3-0.5": "轻微风格影响，文字 prompt 主导",
+      "0.6-0.8": "明显风格迁移，文字仍有效（推荐）",
+      "0.9-1.0": "强烈风格主导，文字影响减弱",
+      ">1.0": "极端风格锁定，文字基本无效"
+    },
+    "variants": {
+      "ip-adapter_sd15": "基础版，全局风格",
+      "ip-adapter-plus_sd15": "Plus 版，更多细节",
+      "ip-adapter-plus-face_sd15": "面部风格专用",
+      "ip-adapter_sdxl_vit-h": "SDXL 版本"
+    }
+  }
+}
