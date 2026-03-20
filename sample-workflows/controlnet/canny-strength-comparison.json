@@ -1,0 +1,253 @@
+{
+  "_comment": "ControlNet Strength 对比实验 — 同一 Canny 条件图，不同 strength 值对比",
+  "_description": "固定 seed/prompt/模型/Canny 图，只变 strength (0.3/0.5/0.7/0.9/1.2)，观察控制强度对生成质量的影响",
+  "_experiment_design": {
+    "控制变量": "seed=42, prompt='a cat sitting on a windowsill, warm light, detailed', model=SD1.5, sampler=dpmpp_2m, steps=20, cfg=7, canny_thresholds=100/200",
+    "自变量": "ControlNet strength: [0.3, 0.5, 0.7, 0.9, 1.2]",
+    "因变量": "生成图像的结构保持度 vs 创意自由度 vs 伪影水平",
+    "预期结果": {
+      "strength_0.3": "轻微引导，构图大致相似但细节自由，可能偏离边缘",
+      "strength_0.5": "中等引导，保持主要结构但允许变化",
+      "strength_0.7": "较强引导，大部分边缘被遵循，推荐的平衡点",
+      "strength_0.9": "强控制，严格遵循边缘，细节可能略僵硬",
+      "strength_1.2": "过强控制，可能出现伪影/颜色异常/不自然边缘"
+    }
+  },
+  "nodes": [
+    {
+      "id": 4,
+      "type": "CheckpointLoaderSimple",
+      "pos": [0, 0],
+      "widgets_values": ["v1-5-pruned-emaonly.safetensors"]
+    },
+    {
+      "id": 10,
+      "type": "LoadImage",
+      "pos": [0, 200],
+      "widgets_values": ["cat_reference.png", "image"]
+    },
+    {
+      "id": 11,
+      "type": "CannyEdgePreprocessor",
+      "pos": [350, 200],
+      "widgets_values": [100, 200, 512]
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": [350, 0],
+      "widgets_values": ["a cat sitting on a windowsill, warm sunlight, cozy room, detailed fur, masterpiece"]
+    },
+    {
+      "id": 7,
+      "type": "CLIPTextEncode",
+      "pos": [350, -120],
+      "widgets_values": ["worst quality, low quality, blurry"]
+    },
+    {
+      "id": 5,
+      "type": "EmptyLatentImage",
+      "pos": [350, 350],
+      "widgets_values": [512, 512, 1]
+    },
+
+    {"_comment": "=== Strength 0.3 ==="},
+    {
+      "id": 20,
+      "type": "ControlNetLoader",
+      "pos": [700, -200],
+      "widgets_values": ["control_v11p_sd15_canny.pth"]
+    },
+    {
+      "id": 21,
+      "type": "ControlNetApplyAdvanced",
+      "pos": [700, 0],
+      "widgets_values": [0.3, 0.0, 1.0]
+    },
+    {
+      "id": 22,
+      "type": "KSampler",
+      "pos": [1050, 0],
+      "widgets_values": [42, "fixed", 20, 7.0, "dpmpp_2m", "karras", 1.0]
+    },
+    {
+      "id": 23,
+      "type": "VAEDecode",
+      "pos": [1400, 0]
+    },
+    {
+      "id": 24,
+      "type": "SaveImage",
+      "pos": [1600, 0],
+      "widgets_values": ["canny_strength_0.3"]
+    },
+
+    {"_comment": "=== Strength 0.5 ==="},
+    {
+      "id": 30,
+      "type": "ControlNetLoader",
+      "pos": [700, 300],
+      "widgets_values": ["control_v11p_sd15_canny.pth"]
+    },
+    {
+      "id": 31,
+      "type": "ControlNetApplyAdvanced",
+      "pos": [700, 500],
+      "widgets_values": [0.5, 0.0, 1.0]
+    },
+    {
+      "id": 32,
+      "type": "KSampler",
+      "pos": [1050, 500],
+      "widgets_values": [42, "fixed", 20, 7.0, "dpmpp_2m", "karras", 1.0]
+    },
+    {
+      "id": 33,
+      "type": "VAEDecode",
+      "pos": [1400, 500]
+    },
+    {
+      "id": 34,
+      "type": "SaveImage",
+      "pos": [1600, 500],
+      "widgets_values": ["canny_strength_0.5"]
+    },
+
+    {"_comment": "=== Strength 0.7 ==="},
+    {
+      "id": 40,
+      "type": "ControlNetLoader",
+      "pos": [700, 800],
+      "widgets_values": ["control_v11p_sd15_canny.pth"]
+    },
+    {
+      "id": 41,
+      "type": "ControlNetApplyAdvanced",
+      "pos": [700, 1000],
+      "widgets_values": [0.7, 0.0, 1.0]
+    },
+    {
+      "id": 42,
+      "type": "KSampler",
+      "pos": [1050, 1000],
+      "widgets_values": [42, "fixed", 20, 7.0, "dpmpp_2m", "karras", 1.0]
+    },
+    {
+      "id": 43,
+      "type": "VAEDecode",
+      "pos": [1400, 1000]
+    },
+    {
+      "id": 44,
+      "type": "SaveImage",
+      "pos": [1600, 1000],
+      "widgets_values": ["canny_strength_0.7"]
+    },
+
+    {"_comment": "=== Strength 0.9 ==="},
+    {
+      "id": 50,
+      "type": "ControlNetLoader",
+      "pos": [700, 1300],
+      "widgets_values": ["control_v11p_sd15_canny.pth"]
+    },
+    {
+      "id": 51,
+      "type": "ControlNetApplyAdvanced",
+      "pos": [700, 1500],
+      "widgets_values": [0.9, 0.0, 1.0]
+    },
+    {
+      "id": 52,
+      "type": "KSampler",
+      "pos": [1050, 1500],
+      "widgets_values": [42, "fixed", 20, 7.0, "dpmpp_2m", "karras", 1.0]
+    },
+    {
+      "id": 53,
+      "type": "VAEDecode",
+      "pos": [1400, 1500]
+    },
+    {
+      "id": 54,
+      "type": "SaveImage",
+      "pos": [1600, 1500],
+      "widgets_values": ["canny_strength_0.9"]
+    },
+
+    {"_comment": "=== Strength 1.2 (过强测试) ==="},
+    {
+      "id": 60,
+      "type": "ControlNetLoader",
+      "pos": [700, 1800],
+      "widgets_values": ["control_v11p_sd15_canny.pth"]
+    },
+    {
+      "id": 61,
+      "type": "ControlNetApplyAdvanced",
+      "pos": [700, 2000],
+      "widgets_values": [1.2, 0.0, 1.0]
+    },
+    {
+      "id": 62,
+      "type": "KSampler",
+      "pos": [1050, 2000],
+      "widgets_values": [42, "fixed", 20, 7.0, "dpmpp_2m", "karras", 1.0]
+    },
+    {
+      "id": 63,
+      "type": "VAEDecode",
+      "pos": [1400, 2000]
+    },
+    {
+      "id": 64,
+      "type": "SaveImage",
+      "pos": [1600, 2000],
+      "widgets_values": ["canny_strength_1.2"]
+    }
+  ],
+  "links": [
+    ["_comment", "共享前端"],
+    [1, 4, 1, 6, 0, "CLIP"],
+    [2, 4, 1, 7, 0, "CLIP"],
+    [3, 10, 0, 11, 0, "IMAGE"],
+
+    ["_comment", "Strength 0.3 管线"],
+    [10, 11, 0, 21, 3, "IMAGE"],
+    [11, 20, 0, 21, 2, "CONTROL_NET"],
+    [12, 6, 0, 21, 0, "CONDITIONING"],
+    [13, 7, 0, 21, 1, "CONDITIONING"],
+    [14, 4, 0, 22, 0, "MODEL"],
+    [15, 21, 0, 22, 1, "CONDITIONING"],
+    [16, 21, 1, 22, 2, "CONDITIONING"],
+    [17, 5, 0, 22, 3, "LATENT"],
+    [18, 22, 0, 23, 0, "LATENT"],
+    [19, 4, 2, 23, 1, "VAE"],
+    [20, 23, 0, 24, 0, "IMAGE"],
+
+    ["_comment", "Strength 0.5 管线 (同理连接)"],
+    [30, 11, 0, 31, 3, "IMAGE"],
+    [31, 30, 0, 31, 2, "CONTROL_NET"],
+    [32, 6, 0, 31, 0, "CONDITIONING"],
+    [33, 7, 0, 31, 1, "CONDITIONING"],
+    [34, 4, 0, 32, 0, "MODEL"],
+    [35, 31, 0, 32, 1, "CONDITIONING"],
+    [36, 31, 1, 32, 2, "CONDITIONING"],
+    [37, 5, 0, 32, 3, "LATENT"],
+    [38, 32, 0, 33, 0, "LATENT"],
+    [39, 4, 2, 33, 1, "VAE"],
+    [40, 33, 0, 34, 0, "IMAGE"],
+
+    ["_comment", "Strength 0.7/0.9/1.2 管线结构完全相同，略"]
+  ],
+  "_analysis_guide": {
+    "观察维度": [
+      "1. 边缘遵循度：生成图像的边缘是否与 Canny 图吻合",
+      "2. 自然度：图像是否看起来自然，没有不自然的边缘强化",
+      "3. 细节质量：纹理、光照、色彩是否丰富",
+      "4. 伪影：是否出现颜色异常、纹理重复、边缘光晕",
+      "5. 创意空间：模型在遵循结构的基础上，能否添加有趣的细节"
+    ],
+    "预期最优范围": "0.6-0.8 通常是 Canny ControlNet 的最佳平衡点"
+  }
+}
