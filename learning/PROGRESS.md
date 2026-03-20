@@ -1,10 +1,10 @@
 # ComfyUI 学习进度追踪
 
 ## 当前状态
-- **当前阶段**: Phase 1 - 基础理论
-- **当前天数**: Day 3 进行中
-- **上次学习时间**: 2026-03-18 22:03 UTC
-- **累计学习轮数**: 6
+- **当前阶段**: Phase 2 - 核心工作流实操
+- **当前天数**: Day 4 待开始
+- **上次学习时间**: 2026-03-19 06:03 UTC
+- **累计学习轮数**: 7
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -34,14 +34,14 @@
   - [x] custom_nodes/ 目录扫描与 __init__.py 规范
   - [x] NODE_CLASS_MAPPINGS / NODE_DISPLAY_NAME_MAPPINGS
   - [x] 常见自定义节点包结构分析
-- [ ] Execution engine 深入（cache/lazy/parallel）
-  - [ ] execution.py 执行流程：validate → topological sort → execute
-  - [ ] 缓存机制：哪些节点会被重新执行，哪些走缓存
-  - [ ] Lazy evaluation 与 parallel execution 策略
-- [ ] ComfyUI API 调用流程
-  - [ ] WebSocket 通信协议（/ws, /prompt, /history, /view）
-  - [ ] 进度回调与图片返回机制
-  - [ ] 队列管理与并发控制
+- [x] Execution engine 深入（cache/lazy/parallel）
+  - [x] execution.py 执行流程：validate → topological sort → execute
+  - [x] 缓存机制：哪些节点会被重新执行，哪些走缓存
+  - [x] Lazy evaluation 与 parallel execution 策略
+- [x] ComfyUI API 调用流程
+  - [x] WebSocket 通信协议（/ws, /prompt, /history, /view）
+  - [x] 进度回调与图片返回机制
+  - [x] 队列管理与并发控制
 
 ## 学习轮次日志
 | 轮次 | 时间 (UTC) | 主题 | 完成内容 | 笔记文件 |
@@ -52,3 +52,19 @@
 | 4 | 2026-03-18 18:03 | Day2-Sampling深入 | ODE vs SDE统一框架(Score-based SDE/PF-ODE/Anderson定理)+采样器数学推导(DDIM=一阶ODE/Euler等价/Heun/DPM++2M多步法精确公式)+Noise Schedule(Linear/Cosine/Karras设计原理与数学对比)+收敛性分析(LTE/guided instability/data prediction解决方案) | day02-latent-space-sampling.md §2-5 |
 | 5 | 2026-03-18 20:03 | Day2完成-Text2Img工作流 | 6节点完整拓扑解析(Checkpoint/EmptyLatent/CLIPEncode/KSampler/VAEDecode/SaveImage)+KSampler全参数深度解析(seed/steps/cfg/sampler/scheduler/denoise交互效应)+API JSON格式+分辨率匹配表+采样器决策树+SD1.5/SDXL/Flux推荐配置 | day02-latent-space-sampling.md §6 + sample-workflows/basic/text2img.json |
 | 6 | 2026-03-18 22:03 | Day3-节点系统+自定义节点 | 节点注册机制4要素(INPUT_TYPES/RETURN_TYPES/FUNCTION/CATEGORY)+数据类型系统(13种核心类型+IO枚举)+自定义节点加载流程(init_extra_nodes容错扫描)+graph.py深度分析(DynamicPrompt/TopologicalSort/ExecutionList/UX优先级调度)+Lazy Eval/OutputNode/PromptServer通信模式 | day03-comfyui-architecture.md §1-8 |
+| 7 | 2026-03-19 06:03 | Day3完成-执行引擎+API协议 | 缓存系统4层架构(CacheKeySet/BasicCache/CacheSet/CacheProvider)+InputSignature内容寻址缓存键+IS_CHANGED指纹机制+4种缓存策略(Classic/LRU/RAMPressure/Null)+Lazy Eval完整执行流(check_lazy_status→make_input_strong_link→PENDING循环)+异步节点并行(asyncio.Task+external blocks)+子图展开(expand)+REST API全端点+WebSocket消息协议(8种消息类型+二进制预览)+队列管理+CSRF防护+生产部署模式 | day03-execution-engine-deep-dive.md + day03-api-protocol.md |
+
+## Day 4 待做 (Text2Img 全流程 — 各种采样器对比实验)
+- [ ] 采样器系统性对比实验设计
+  - [ ] 控制变量法：固定 seed/prompt/模型，只变采样器
+  - [ ] 对比维度：生成质量、速度、步数敏感度、CFG 兼容性
+- [ ] SD 1.5 vs SDXL vs Flux 采样器行为差异
+  - [ ] 不同架构对采样器选择的影响
+  - [ ] 最优采样器×模型组合推荐
+- [ ] 高级参数调校
+  - [ ] Scheduler 与 Sampler 的交叉效应（karras/exponential/sgm_uniform）
+  - [ ] 步数-质量曲线绘制（5/10/15/20/30/50 步对比）
+  - [ ] CFG Scale 与采样器的交互（某些采样器对高 CFG 更稳定）
+- [ ] 批量生成与质量评估方法论
+  - [ ] 如何科学评估生成质量（FID/CLIP Score 原理）
+  - [ ] ComfyUI 批量生成工作流设计
