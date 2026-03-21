@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 4 - 视频 & 动画专精 (学习路径已纠正)
-- **当前天数**: Day 14 — 自定义节点开发（Python API）
-- **上次学习时间**: 2026-03-21 14:03 UTC
-- **累计学习轮数**: 22
+- **当前天数**: Day 15 — Flux / SD3 新架构
+- **上次学习时间**: 2026-03-21 16:03 UTC
+- **累计学习轮数**: 23
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -64,6 +64,7 @@
 | 19 | 2026-03-21 08:30 | Day11-LTX-2.3工作流深度 | LTX-2.3全47节点体系分析(5类:加载/潜空间/条件/采样/后处理)+两阶段管线原理(latent upscale>pixel upscale)+sigma序列分析(蒸馏从0.85/完整从1.0)+I2V两模式对比(Inplace vs ConditionOnly)+IC-LoRA Union Control原理+Wan 2.6 T2V+Ref2V实验+LTX vs Wan架构对比 | day11-ltx2-workflow-deep-dive.md |
 | 20 | 2026-03-21 10:03 | Day12-ComfyUI API节点体系 | Partner Nodes架构(ApiEndpoint/SynchronousOp/PollingOp三层抽象+AUTH_TOKEN_COMFY_ORG+VIDEO原生类型)+Kling 3.0全节点体系(T2V/I2V/Audio/MotionControl/Element Binding)+Seedance Pro(1080p/cameraFixed/首尾帧)+Veo 3.1(8s固定/800字符)+第三方节点生态(fal-API/Kie-API/wavespeed)+混合工作流范式+Kling vs Veo对比实验(¥0.75 vs ¥0.10) | day12-comfyui-api-node-ecosystem.md |
 | 22 | 2026-03-21 14:03 | Day14-自定义节点开发 | 节点类4必需属性(CATEGORY/INPUT_TYPES/RETURN_TYPES/FUNCTION)+INPUT_TYPES三级字典(required/optional/hidden)+全数据类型系统(14种)+执行控制(缓存/IS_CHANGED/VALIDATE_INPUTS)+高级特性7项(自定义类型/通配符/动态输入/Lazy Eval/ExecutionBlocker/Node Expansion/List处理)+前后端通信(send_sync/aiohttp路由/JS扩展)+V3规范+Vue迁移+真实世界4种模式分析 | day14-custom-node-development.md |
+| 23 | 2026-03-21 16:03 | Day15-Flux/SD3新架构 | Rectified Flow数学(v-prediction vs ε-prediction/线性插值/OT路径/Logit-Normal采样)+SD3 MMDiT架构(Joint Attention with Separate Weights/三编码器CLIP-L+G+T5/adaLN/QKV RMSNorm)+SD3.5变体对比(Medium 2.5B MMDiT-X/Large 8B/Turbo ADD蒸馏)+Flux.1架构逆向(19 Double-Stream+38 Single-Stream/渐进融合设计/RoPE位置编码/16通道VAE)+Flux变体(Pro/Dev Guidance Distillation/Schnell LADD)+ComfyUI工作流差异(SD3专用节点/Flux无negative prompt/CFG=1/FluxGuidance)+LoRA训练差异+社区生态对比+架构概念图实验 | day15-flux-sd3-new-architectures.md |
 
 ## Day 9 进度 (LoRA 训练 — kohya_ss / sd-scripts)
 - [x] LoRA 训练工具生态概览
@@ -315,3 +316,45 @@
   - [x] 模型加载/修补节点模式（clone + patch）
   - [x] 最佳实践总结（8 条）
 - [x] RunningHub 实验 #21（架构概念图生成）
+
+## Day 15 进度 (Flux / SD3 新架构)
+- [x] 从 U-Net 到 DiT 的架构范式转移
+  - [x] SD 架构演进时间线（SD1.5 → SDXL → SD3 → Flux）
+  - [x] U-Net 瓶颈分析（可扩展性/全局上下文/多模态融合/Scaling Law）
+- [x] Rectified Flow 训练范式
+  - [x] DDPM ε-prediction vs Rectified Flow v-prediction 数学对比
+  - [x] 线性插值 x_t = (1-t)x_0 + tx_1（直线 OT 路径）
+  - [x] Logit-Normal 时间步采样（偏重中间步）
+  - [x] 直线路径优势（误差累积少/步数效率高/理论保证）
+- [x] SD3 MMDiT 架构深度解析
+  - [x] Joint Attention with Separate Weights（取代 Cross-Attention）
+  - [x] QKV 拼接 → 联合注意力 → split → 独立 FFN
+  - [x] adaLN（Adaptive Layer Normalization）调制机制
+  - [x] QKV RMSNorm 稳定混合精度训练
+- [x] SD3 三文本编码器系统
+  - [x] CLIP-L (768d) + CLIP-G (1280d) + T5-XXL (4096d)
+  - [x] Pooled embedding → timestep / Token embedding → joint attention
+  - [x] 训练时 40% dropout → 推理可去掉 T5 省 VRAM
+- [x] SD3/SD3.5 版本变体对比
+  - [x] SD3 Medium 2B / SD3.5 Medium 2.5B (MMDiT-X) / Large 8B / Large Turbo
+  - [x] Turbo 的 ADD（Adversarial Diffusion Distillation）蒸馏
+- [x] Flux.1 架构逆向分析（基于 arXiv:2507.09595 论文）
+  - [x] 19 Double-Stream Blocks（模态特异性/独立权重/joint attention）
+  - [x] 38 Single-Stream Blocks（共享权重/统一序列处理）
+  - [x] 渐进融合设计哲学（先分后合）
+  - [x] RoPE 位置编码（2D 网格 + 预留时间维度）
+  - [x] 16 通道 VAE + Patchify 2×2
+  - [x] CLIP-L + T5-XXL 双编码器（去掉 CLIP-G）
+- [x] Flux.1 模型变体
+  - [x] Pro（API only/完整训练）/ Dev（Guidance Distillation/CFG=1）/ Schnell（LADD/1-4步）
+  - [x] Guidance Distillation 机制（guidance_scale 作为模型输入/单次推理替代 CFG）
+- [x] SD3 vs Flux 全维度对比
+  - [x] 架构/参数/编码器/VAE/位置编码/训练方式/性能
+  - [x] 社区生态对比（LoRA/ControlNet/活跃度）
+  - [x] 2025-2026 趋势判断
+- [x] ComfyUI 工作流差异详解
+  - [x] SD3 专用节点（CLIPTextEncodeSD3/EmptySD3LatentImage）
+  - [x] Flux 工作流（FluxGuidance/DualCLIPLoader/CFG=1/euler sampler）
+  - [x] Flux 无 negative prompt 的设计原因
+- [x] Flux LoRA 训练与 SD3 LoRA 差异对比
+- [x] RunningHub 实验 #22（架构对比概念图生成）
