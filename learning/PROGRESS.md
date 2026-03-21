@@ -1,10 +1,10 @@
 # ComfyUI 学习进度追踪
 
 ## 当前状态
-- **当前阶段**: Phase 2 - 核心工作流实操
-- **当前天数**: Day 7 进行中 → LoRA 基础 + 多 LoRA 融合已完成，下一步 Day 7 剩余或 Day 8
-- **上次学习时间**: 2026-03-20 22:03 UTC
-- **累计学习轮数**: 14
+- **当前阶段**: Phase 3 - 高级技术
+- **当前天数**: Day 8 完成 → SDXL 架构差异 + Refiner 工作流，下一步 Day 9
+- **上次学习时间**: 2026-03-21 00:03 UTC
+- **累计学习轮数**: 15
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -59,6 +59,7 @@
 | 12 | 2026-03-20 18:03 | Day6-ControlNet基础+三大经典 | ControlNet架构(零卷积/双副本/hint编码/权重注入)+ComfyUI源码分析(ControlBase/ControlNet/get_control/control_merge/ControlNetApplyAdvanced)+v1.1全14模型列表+Canny/Depth/OpenPose深度解析(原理/预处理器/strength调优/场景)+多ControlNet合并机制(信号相加)+start/end_percent策略+跨模型对比(SD1.5/SDXL/Flux)+Union ControlNet | day06-controlnet-fundamentals.md + controlnet/canny-controlnet.json + depth-controlnet.json + openpose-controlnet.json + multi-controlnet-depth-pose.json + canny-strength-comparison.json |
 | 13 | 2026-03-20 20:03 | Day6-Tile+IP-Adapter+多CN组合 | Tile ControlNet(局部语义感知/细节幻觉/Prompt冲突处理/三阶段超分管线ESRGAN→Tile→频率混合)+IP-Adapter架构(解耦双交叉注意力/CLIP ViT编码/22M参数/Plus vs FaceID变体)+多ControlNet组合(链式连接/区域分工vs多维控制/权重策略/start-end分时段/IP-Adapter+ControlNet天然兼容) | day06-tile-ipadapter-multi-controlnet.md + controlnet/tile-upscale.json + ip-adapter-style-transfer.json + triple-control-ipadapter-depth-pose.json |
 | 14 | 2026-03-20 22:03 | Day7-LoRA基础+多LoRA融合 | LoRA数学原理(低秩分解W=W₀+α/r·B·A/参数压缩66x)+LyCORIS全家族(LoCon/LoHa/LoKR/DoRA/DyLoRA对比)+ComfyUI源码(load_lora_for_models/Clone+Patch延迟应用/KeyMapping多格式适配/weight_adapter统一系统/BypassLoRA)+多LoRA堆叠(线性叠加/model vs clip分离调优/冲突诊断)+strength对比实验+model×clip网格实验+API批量sweep脚本 | day07-lora-fundamentals.md + lora/single-lora.json + multi-lora-chain.json + lora-strength-comparison.json + model-vs-clip-strength-grid.json + lora_strength_sweep.py |
+| 15 | 2026-03-21 00:03 | Day8-SDXL架构+Refiner工作流 | SDXL架构深度(2.6B U-Net/异构Transformer[0,2,10]/移除8x层)+双编码器(CLIP-L 768d+OpenCLIP-bigG 1280d=2048d拼接/Pooled Embedding)+微条件三件套(c_size/c_crop/c_ar Fourier编码→timestep)+CLIPTextEncodeSDXL源码(text_g/text_l分离/token长度补齐)+SDXL-VAE(batch256+EMA)+Refiner(ascore条件/只用OpenCLIP-bigG/step分割交接/80-20推荐比例)+社区共识(fine-tune替代/LoRA不兼容)+分辨率推荐表+SD1.5对照 | day08-sdxl-architecture-refiner.md + sdxl/sdxl-base-refiner-step-split.json + sdxl-micro-conditioning-experiment.json + refiner-ratio-comparison.json + sdxl_refiner_sweep.py |
 
 ## Day 7 待做 (LoRA 使用 + 多 LoRA 融合 + 权重调节)
 - [x] LoRA 数学原理
@@ -126,3 +127,31 @@
   - [x] IP-Adapter 图像风格迁移
 - [x] 多 ControlNet 组合使用
   - [x] 权重调节与冲突处理
+
+## Day 8 待做 (SDXL 架构差异 + Refiner 工作流)
+- [x] SDXL 架构深度分析
+  - [x] U-Net 参数对比（860M vs 2.6B）
+  - [x] 异构 Transformer 分布 [0, 2, 10] vs SD1.5 的 [1,1,1,1]
+  - [x] 移除 8x 下采样层级的设计考量
+- [x] 双文本编码器系统
+  - [x] CLIP ViT-L/14 (768d) + OpenCLIP ViT-bigG/14 (1280d)
+  - [x] 拼接方式：逐 token 拼接 → 2048 维 cross-attention
+  - [x] Pooled Embedding 的作用（加到 timestep embedding）
+  - [x] ComfyUI CLIPTextEncodeSDXL 源码分析（text_g/text_l 分离）
+- [x] SDXL 微条件系统（Micro-Conditioning）
+  - [x] Size Conditioning c_size = (h_orig, w_orig)
+  - [x] Crop Conditioning c_crop = (crop_top, crop_left)
+  - [x] Multi-Aspect Conditioning c_ar = (h_target, w_target)
+  - [x] Fourier Feature Encoding → timestep embedding 注入机制
+- [x] SDXL-VAE 改进（batch 256 + EMA 权重追踪）
+- [x] SDXL Refiner 深度解析
+  - [x] Refiner 架构（只用 OpenCLIP-bigG，aesthetic score 条件）
+  - [x] CLIPTextEncodeSDXLRefiner 源码（ascore 参数）
+  - [x] Base→Refiner 交接机制（KSampler Advanced step 分割）
+  - [x] 交接比例对比（60/40 ~ 90/10 的效果差异）
+  - [x] add_noise/return_with_leftover_noise 的关键作用
+- [x] Refiner 是否还值得用（2024-2025 社区共识总结）
+  - [x] Fine-tune 模型替代 + LoRA 不兼容问题
+  - [x] 现代替代方案（Hires Fix / Tile ControlNet / Flux）
+- [x] SDXL 推荐分辨率与宽高比表
+- [x] SDXL vs SD1.5 工作流差异对照表（节点/参数/prompt 策略）

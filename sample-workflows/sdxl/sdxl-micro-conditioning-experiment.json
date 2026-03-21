@@ -1,0 +1,246 @@
+{
+  "metadata": {
+    "title": "SDXL Micro-Conditioning Comparison Experiment",
+    "description": "Systematically compare the effects of SDXL's three micro-conditioning parameters: c_size, c_crop, and c_ar. Same seed/prompt, only conditioning varies.",
+    "author": "comfyui-learning",
+    "created": "2026-03-21",
+    "tags": ["sdxl", "conditioning", "experiment", "comparison"]
+  },
+  "experiment_design": {
+    "objective": "Understand how size/crop/target conditioning affects SDXL output",
+    "control_variables": {
+      "seed": 42,
+      "prompt": "a detailed oil painting of a medieval castle on a hilltop, dramatic clouds, golden hour lighting",
+      "negative": "blurry, low quality",
+      "steps": 30,
+      "cfg": 6.5,
+      "sampler": "dpmpp_2m_sde",
+      "scheduler": "karras",
+      "resolution": "1024x1024"
+    },
+    "experiments": [
+      {
+        "name": "A1_size_1024",
+        "description": "Baseline: c_size=(1024,1024)",
+        "c_size": [1024, 1024],
+        "c_crop": [0, 0],
+        "c_ar": [1024, 1024],
+        "expected": "Clean, high-resolution output (default behavior)"
+      },
+      {
+        "name": "A2_size_512",
+        "description": "Low size conditioning: c_size=(512,512)",
+        "c_size": [512, 512],
+        "c_crop": [0, 0],
+        "c_ar": [1024, 1024],
+        "expected": "Slightly lower apparent detail, model thinks it's enhancing a 512px image"
+      },
+      {
+        "name": "A3_size_256",
+        "description": "Very low size conditioning: c_size=(256,256)",
+        "c_size": [256, 256],
+        "c_crop": [0, 0],
+        "c_ar": [1024, 1024],
+        "expected": "Noticeable quality degradation, softer/blurrier style"
+      },
+      {
+        "name": "A4_size_2048",
+        "description": "Upscaled size conditioning: c_size=(2048,2048)",
+        "c_size": [2048, 2048],
+        "c_crop": [0, 0],
+        "c_ar": [1024, 1024],
+        "expected": "Potentially sharper details, model thinks source is very high-res"
+      },
+      {
+        "name": "B1_crop_0_0",
+        "description": "Baseline: no crop offset",
+        "c_size": [1024, 1024],
+        "c_crop": [0, 0],
+        "c_ar": [1024, 1024],
+        "expected": "Centered, complete composition"
+      },
+      {
+        "name": "B2_crop_256_0",
+        "description": "Vertical crop offset: crop_h=256",
+        "c_size": [1024, 1024],
+        "c_crop": [0, 256],
+        "c_ar": [1024, 1024],
+        "expected": "Composition shifted up, as if cropped from a taller image"
+      },
+      {
+        "name": "B3_crop_0_256",
+        "description": "Horizontal crop offset: crop_w=256",
+        "c_size": [1024, 1024],
+        "c_crop": [256, 0],
+        "c_ar": [1024, 1024],
+        "expected": "Composition shifted left"
+      },
+      {
+        "name": "C1_target_match",
+        "description": "Baseline: target matches actual resolution",
+        "c_size": [1024, 1024],
+        "c_crop": [0, 0],
+        "c_ar": [1024, 1024],
+        "expected": "Standard 1:1 composition"
+      },
+      {
+        "name": "C2_target_wide",
+        "description": "Widescreen target: c_ar=(1024,576)",
+        "c_size": [1024, 1024],
+        "c_crop": [0, 0],
+        "c_ar": [1024, 576],
+        "expected": "Even though actual output is 1024x1024, composition may feel wider/more panoramic"
+      },
+      {
+        "name": "C3_target_tall",
+        "description": "Portrait target: c_ar=(576,1024)",
+        "c_size": [1024, 1024],
+        "c_crop": [0, 0],
+        "c_ar": [576, 1024],
+        "expected": "Composition may feel taller/more vertical despite being square output"
+      }
+    ]
+  },
+  "last_node_id": 30,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [50, 300],
+      "widgets_values": ["sd_xl_base_1.0.safetensors"],
+      "title": "SDXL Base"
+    },
+    {
+      "id": 2,
+      "type": "EmptyLatentImage",
+      "pos": [50, 500],
+      "widgets_values": [1024, 1024, 1]
+    },
+    {
+      "id": 10,
+      "type": "CLIPTextEncodeSDXL",
+      "pos": [400, 50],
+      "widgets_values": [1024, 1024, 0, 0, 1024, 1024,
+        "a detailed oil painting of a medieval castle on a hilltop, dramatic clouds, golden hour lighting",
+        "a detailed oil painting of a medieval castle on a hilltop, dramatic clouds, golden hour lighting"],
+      "title": "A1: c_size=(1024,1024) [BASELINE]",
+      "_comment": "Standard 1024 size conditioning"
+    },
+    {
+      "id": 11,
+      "type": "CLIPTextEncodeSDXL",
+      "pos": [400, 350],
+      "widgets_values": [256, 256, 0, 0, 1024, 1024,
+        "a detailed oil painting of a medieval castle on a hilltop, dramatic clouds, golden hour lighting",
+        "a detailed oil painting of a medieval castle on a hilltop, dramatic clouds, golden hour lighting"],
+      "title": "A3: c_size=(256,256) [LOW SIZE]",
+      "_comment": "Very low size conditioning - should produce softer output"
+    },
+    {
+      "id": 12,
+      "type": "CLIPTextEncodeSDXL",
+      "pos": [400, 650],
+      "widgets_values": [2048, 2048, 0, 0, 1024, 1024,
+        "a detailed oil painting of a medieval castle on a hilltop, dramatic clouds, golden hour lighting",
+        "a detailed oil painting of a medieval castle on a hilltop, dramatic clouds, golden hour lighting"],
+      "title": "A4: c_size=(2048,2048) [HIGH SIZE]",
+      "_comment": "High size conditioning - potentially sharper"
+    },
+    {
+      "id": 13,
+      "type": "CLIPTextEncodeSDXL",
+      "pos": [400, 950],
+      "widgets_values": [1024, 1024, 0, 256, 1024, 1024,
+        "a detailed oil painting of a medieval castle on a hilltop, dramatic clouds, golden hour lighting",
+        "a detailed oil painting of a medieval castle on a hilltop, dramatic clouds, golden hour lighting"],
+      "title": "B2: crop_h=256 [VERTICAL OFFSET]",
+      "_comment": "Crop conditioning simulating 256px vertical crop"
+    },
+    {
+      "id": 14,
+      "type": "CLIPTextEncodeSDXL",
+      "pos": [400, 1250],
+      "widgets_values": [1024, 1024, 0, 0, 1024, 576,
+        "a detailed oil painting of a medieval castle on a hilltop, dramatic clouds, golden hour lighting",
+        "a detailed oil painting of a medieval castle on a hilltop, dramatic clouds, golden hour lighting"],
+      "title": "C2: target=(1024,576) [WIDE TARGET]",
+      "_comment": "Widescreen target aspect - testing compositional influence"
+    },
+    {
+      "id": 5,
+      "type": "CLIPTextEncodeSDXL",
+      "pos": [400, 1550],
+      "widgets_values": [1024, 1024, 0, 0, 1024, 1024,
+        "blurry, low quality",
+        "blurry, low quality"],
+      "title": "Shared Negative",
+      "_comment": "Same negative for all experiments"
+    },
+    {
+      "id": 20,
+      "type": "KSampler",
+      "pos": [900, 50],
+      "widgets_values": [42, "fixed", 30, 6.5, "dpmpp_2m_sde", "karras", 1.0],
+      "title": "KSampler A1 (baseline)",
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link_from": "1:MODEL"},
+        {"name": "positive", "type": "CONDITIONING", "link_from": "10:CONDITIONING"},
+        {"name": "negative", "type": "CONDITIONING", "link_from": "5:CONDITIONING"},
+        {"name": "latent_image", "type": "LATENT", "link_from": "2:LATENT"}
+      ]
+    },
+    {
+      "id": 21,
+      "type": "KSampler",
+      "pos": [900, 350],
+      "widgets_values": [42, "fixed", 30, 6.5, "dpmpp_2m_sde", "karras", 1.0],
+      "title": "KSampler A3 (size=256)",
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link_from": "1:MODEL"},
+        {"name": "positive", "type": "CONDITIONING", "link_from": "11:CONDITIONING"},
+        {"name": "negative", "type": "CONDITIONING", "link_from": "5:CONDITIONING"},
+        {"name": "latent_image", "type": "LATENT", "link_from": "2:LATENT"}
+      ]
+    },
+    {
+      "id": 22,
+      "type": "KSampler",
+      "pos": [900, 650],
+      "widgets_values": [42, "fixed", 30, 6.5, "dpmpp_2m_sde", "karras", 1.0],
+      "title": "KSampler A4 (size=2048)",
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link_from": "1:MODEL"},
+        {"name": "positive", "type": "CONDITIONING", "link_from": "12:CONDITIONING"},
+        {"name": "negative", "type": "CONDITIONING", "link_from": "5:CONDITIONING"},
+        {"name": "latent_image", "type": "LATENT", "link_from": "2:LATENT"}
+      ]
+    },
+    {
+      "id": 23,
+      "type": "KSampler",
+      "pos": [900, 950],
+      "widgets_values": [42, "fixed", 30, 6.5, "dpmpp_2m_sde", "karras", 1.0],
+      "title": "KSampler B2 (crop_h=256)",
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link_from": "1:MODEL"},
+        {"name": "positive", "type": "CONDITIONING", "link_from": "13:CONDITIONING"},
+        {"name": "negative", "type": "CONDITIONING", "link_from": "5:CONDITIONING"},
+        {"name": "latent_image", "type": "LATENT", "link_from": "2:LATENT"}
+      ]
+    },
+    {
+      "id": 24,
+      "type": "KSampler",
+      "pos": [900, 1250],
+      "widgets_values": [42, "fixed", 30, 6.5, "dpmpp_2m_sde", "karras", 1.0],
+      "title": "KSampler C2 (target wide)",
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link_from": "1:MODEL"},
+        {"name": "positive", "type": "CONDITIONING", "link_from": "14:CONDITIONING"},
+        {"name": "negative", "type": "CONDITIONING", "link_from": "5:CONDITIONING"},
+        {"name": "latent_image", "type": "LATENT", "link_from": "2:LATENT"}
+      ]
+    }
+  ],
+  "_comment": "Each KSampler feeds into VAEDecode → SaveImage with appropriate filenames. Omitted for brevity but the pattern is: KSampler → VAEDecode(vae from node 1) → SaveImage(prefix=experiment_name)"
+}

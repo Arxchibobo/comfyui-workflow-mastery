@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "title": "SDXL Refiner Ratio Comparison (60/40 vs 70/30 vs 80/20 vs 90/10 vs Base-only)",
+    "description": "Compare different Base:Refiner step ratios to find optimal handoff point. Same prompt/seed, different split points.",
+    "author": "comfyui-learning",
+    "created": "2026-03-21",
+    "tags": ["sdxl", "refiner", "ratio", "comparison", "experiment"]
+  },
+  "experiment_design": {
+    "objective": "Find optimal Base:Refiner step split ratio",
+    "control_variables": {
+      "seed": 777,
+      "prompt_positive": "portrait of a young woman with freckles, natural lighting, shallow depth of field, 85mm lens, professional photography",
+      "prompt_negative": "blurry, deformed, ugly, oversaturated",
+      "total_steps": 50,
+      "cfg": 6.5,
+      "sampler": "dpmpp_2m_sde",
+      "scheduler": "karras",
+      "resolution": "832x1216",
+      "refiner_ascore_pos": 6.0,
+      "refiner_ascore_neg": 2.5
+    },
+    "variants": [
+      {"name": "base_only", "base_end": 50, "refiner_start": 50, "description": "No refiner (100% base)"},
+      {"name": "ratio_90_10", "base_end": 45, "refiner_start": 45, "description": "90/10: Minimal refiner touch"},
+      {"name": "ratio_80_20", "base_end": 40, "refiner_start": 40, "description": "80/20: Standard recommended split"},
+      {"name": "ratio_70_30", "base_end": 35, "refiner_start": 35, "description": "70/30: More refiner involvement"},
+      {"name": "ratio_60_40", "base_end": 30, "refiner_start": 30, "description": "60/40: Heavy refiner (may alter composition)"}
+    ],
+    "expected_results": {
+      "base_only": "Good overall quality but may lack fine detail in skin/hair",
+      "ratio_90_10": "Nearly identical to base-only with subtle texture improvement",
+      "ratio_80_20": "Best balance - composition from base preserved, details enhanced",
+      "ratio_70_30": "More polished but refiner style may start overriding base's character",
+      "ratio_60_40": "Risk of composition drift - refiner has too much influence on structure"
+    },
+    "what_to_look_for": [
+      "Skin texture and pore detail (refiner should improve this)",
+      "Hair strand definition (refiner's strength)",
+      "Background detail consistency (refiner may change background)",
+      "Overall color palette shift (refiner tends toward more neutral tones)",
+      "Composition preservation (too much refiner = layout changes)"
+    ]
+  },
+  "nodes_template": {
+    "_note": "Conceptual template for each variant. In practice, create 5 parallel pipelines sharing the same checkpoint loaders and latent.",
+    "shared": {
+      "base_checkpoint": "sd_xl_base_1.0.safetensors",
+      "refiner_checkpoint": "sd_xl_refiner_1.0_0.9vae.safetensors",
+      "empty_latent": {"width": 832, "height": 1216, "batch": 1}
+    },
+    "per_variant": {
+      "base_ksampler_advanced": {
+        "add_noise": "enable",
+        "seed": 777,
+        "control_after_generate": "fixed",
+        "steps": 50,
+        "cfg": 6.5,
+        "sampler_name": "dpmpp_2m_sde",
+        "scheduler": "karras",
+        "start_at_step": 0,
+        "end_at_step": "VARIES (30/35/40/45/50)",
+        "return_with_leftover_noise": "enable (disable for base_only)"
+      },
+      "refiner_ksampler_advanced": {
+        "add_noise": "disable",
+        "seed": 777,
+        "control_after_generate": "fixed",
+        "steps": 50,
+        "cfg": 6.5,
+        "sampler_name": "dpmpp_2m_sde",
+        "scheduler": "karras",
+        "start_at_step": "VARIES (30/35/40/45)",
+        "end_at_step": 50,
+        "return_with_leftover_noise": "disable"
+      }
+    }
+  }
+}

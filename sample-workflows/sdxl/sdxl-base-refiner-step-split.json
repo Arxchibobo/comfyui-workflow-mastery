@@ -1,0 +1,220 @@
+{
+  "metadata": {
+    "title": "SDXL Base + Refiner Two-Stage Workflow (Step Split Method)",
+    "description": "Complete SDXL pipeline: Base generates global composition (steps 0-39), Refiner enhances details (steps 40-49). Uses KSampler Advanced for precise step control.",
+    "author": "comfyui-learning",
+    "created": "2026-03-21",
+    "tags": ["sdxl", "refiner", "two-stage", "step-split"]
+  },
+  "last_node_id": 14,
+  "last_link_id": 18,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [50, 200],
+      "size": [320, 100],
+      "widgets_values": ["sd_xl_base_1.0.safetensors"],
+      "title": "SDXL Base Model",
+      "_comment": "Load SDXL Base checkpoint (~6.9GB). This is the primary generation model."
+    },
+    {
+      "id": 2,
+      "type": "CheckpointLoaderSimple",
+      "pos": [50, 650],
+      "size": [320, 100],
+      "widgets_values": ["sd_xl_refiner_1.0_0.9vae.safetensors"],
+      "title": "SDXL Refiner Model",
+      "_comment": "Load SDXL Refiner checkpoint. Specialized for high-frequency detail enhancement."
+    },
+    {
+      "id": 3,
+      "type": "CLIPTextEncodeSDXL",
+      "pos": [450, 50],
+      "size": [400, 280],
+      "widgets_values": [
+        1024, 1024,
+        0, 0,
+        1024, 1024,
+        "a majestic snow leopard resting on a rocky mountain cliff at golden hour, highly detailed fur texture, dramatic lighting, cinematic composition, 8k photography",
+        "a majestic snow leopard resting on a rocky mountain cliff at golden hour, highly detailed fur texture, dramatic lighting, cinematic composition, 8k photography"
+      ],
+      "title": "Base Positive (SDXL Conditioning)",
+      "inputs": [{"name": "clip", "type": "CLIP", "link_from": "1:CLIP"}],
+      "_comment": "SDXL-specific encoding with micro-conditioning. width/height=c_size (apparent resolution), crop_w/h=c_crop (0,0=no crop), target=c_ar (bucket size). text_g=OpenCLIP-bigG prompt, text_l=CLIP-L prompt."
+    },
+    {
+      "id": 4,
+      "type": "CLIPTextEncodeSDXL",
+      "pos": [450, 370],
+      "size": [400, 280],
+      "widgets_values": [
+        1024, 1024,
+        0, 0,
+        1024, 1024,
+        "blurry, low quality, deformed, ugly, oversaturated",
+        "blurry, low quality, deformed, ugly, oversaturated"
+      ],
+      "title": "Base Negative (SDXL Conditioning)",
+      "inputs": [{"name": "clip", "type": "CLIP", "link_from": "1:CLIP"}],
+      "_comment": "Negative prompt for base. SDXL needs lighter negative prompts than SD1.5."
+    },
+    {
+      "id": 5,
+      "type": "EmptyLatentImage",
+      "pos": [450, 700],
+      "size": [300, 110],
+      "widgets_values": [1024, 1024, 1],
+      "title": "Empty Latent (1024×1024)",
+      "_comment": "SDXL native resolution. Generates latent of shape [1, 4, 128, 128]."
+    },
+    {
+      "id": 6,
+      "type": "KSamplerAdvanced",
+      "pos": [900, 100],
+      "size": [300, 350],
+      "widgets_values": [
+        "enable",
+        12345,
+        "fixed",
+        50,
+        6.5,
+        "dpmpp_2m_sde",
+        "karras",
+        0,
+        40,
+        "enable"
+      ],
+      "title": "Base KSampler (Steps 0-39)",
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link_from": "1:MODEL"},
+        {"name": "positive", "type": "CONDITIONING", "link_from": "3:CONDITIONING"},
+        {"name": "negative", "type": "CONDITIONING", "link_from": "4:CONDITIONING"},
+        {"name": "latent_image", "type": "LATENT", "link_from": "5:LATENT"}
+      ],
+      "_comment": "Base model runs first 40 of 50 steps (80%). add_noise=enable (initial noise), end_at_step=40 (stop early), return_with_leftover_noise=enable (keep remaining noise for refiner). CFG=6.5 (SDXL sweet spot, lower than SD1.5's 7-8)."
+    },
+    {
+      "id": 7,
+      "type": "CLIPTextEncodeSDXLRefiner",
+      "pos": [450, 850],
+      "size": [400, 200],
+      "widgets_values": [
+        6.0,
+        1024, 1024,
+        "a majestic snow leopard resting on a rocky mountain cliff at golden hour, highly detailed fur texture, dramatic lighting, cinematic composition, 8k photography"
+      ],
+      "title": "Refiner Positive (Aesthetic Score = 6.0)",
+      "inputs": [{"name": "clip", "type": "CLIP", "link_from": "2:CLIP"}],
+      "_comment": "Refiner uses only OpenCLIP-bigG (one text input). ascore=6.0 guides toward high aesthetic quality. Higher=more polished but fewer training samples existed."
+    },
+    {
+      "id": 8,
+      "type": "CLIPTextEncodeSDXLRefiner",
+      "pos": [450, 1100],
+      "size": [400, 200],
+      "widgets_values": [
+        2.5,
+        1024, 1024,
+        "blurry, low quality, deformed, ugly"
+      ],
+      "title": "Refiner Negative (Aesthetic Score = 2.5)",
+      "inputs": [{"name": "clip", "type": "CLIP", "link_from": "2:CLIP"}],
+      "_comment": "Negative for refiner. ascore=2.5 pushes away from low-quality aesthetics."
+    },
+    {
+      "id": 9,
+      "type": "KSamplerAdvanced",
+      "pos": [900, 550],
+      "size": [300, 350],
+      "widgets_values": [
+        "disable",
+        12345,
+        "fixed",
+        50,
+        6.5,
+        "dpmpp_2m_sde",
+        "karras",
+        40,
+        50,
+        "disable"
+      ],
+      "title": "Refiner KSampler (Steps 40-49)",
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link_from": "2:MODEL"},
+        {"name": "positive", "type": "CONDITIONING", "link_from": "7:CONDITIONING"},
+        {"name": "negative", "type": "CONDITIONING", "link_from": "8:CONDITIONING"},
+        {"name": "latent_image", "type": "LATENT", "link_from": "6:LATENT"}
+      ],
+      "_comment": "Refiner continues from step 40 to 50 (last 20%). CRITICAL: add_noise=disable (don't re-noise!), start_at_step=40 (continue from base), return_with_leftover_noise=disable (final output). Uses same seed and total steps as base."
+    },
+    {
+      "id": 10,
+      "type": "VAEDecode",
+      "pos": [1300, 300],
+      "size": [200, 50],
+      "title": "Decode Base (Preview)",
+      "inputs": [
+        {"name": "samples", "type": "LATENT", "link_from": "6:LATENT"},
+        {"name": "vae", "type": "VAE", "link_from": "1:VAE"}
+      ],
+      "_comment": "Optional: preview base-only output for comparison."
+    },
+    {
+      "id": 11,
+      "type": "VAEDecode",
+      "pos": [1300, 600],
+      "size": [200, 50],
+      "title": "Decode Refined",
+      "inputs": [
+        {"name": "samples", "type": "LATENT", "link_from": "9:LATENT"},
+        {"name": "vae", "type": "VAE", "link_from": "1:VAE"}
+      ],
+      "_comment": "Decode the refined output. Uses base's VAE (same as refiner's - they share the VAE)."
+    },
+    {
+      "id": 12,
+      "type": "PreviewImage",
+      "pos": [1550, 280],
+      "title": "Base Only Preview",
+      "inputs": [{"name": "images", "type": "IMAGE", "link_from": "10:IMAGE"}]
+    },
+    {
+      "id": 13,
+      "type": "SaveImage",
+      "pos": [1550, 580],
+      "widgets_values": ["sdxl_base_refiner"],
+      "title": "Final Refined Output",
+      "inputs": [{"name": "images", "type": "IMAGE", "link_from": "11:IMAGE"}]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 6, 0, "MODEL"],
+    [2, 1, 1, 3, 0, "CLIP"],
+    [3, 1, 1, 4, 0, "CLIP"],
+    [4, 3, 0, 6, 1, "CONDITIONING"],
+    [5, 4, 0, 6, 2, "CONDITIONING"],
+    [6, 5, 0, 6, 3, "LATENT"],
+    [7, 6, 0, 9, 3, "LATENT"],
+    [8, 2, 0, 9, 0, "MODEL"],
+    [9, 2, 1, 7, 0, "CLIP"],
+    [10, 2, 1, 8, 0, "CLIP"],
+    [11, 7, 0, 9, 1, "CONDITIONING"],
+    [12, 8, 0, 9, 2, "CONDITIONING"],
+    [13, 6, 0, 10, 0, "LATENT"],
+    [14, 1, 2, 10, 1, "VAE"],
+    [15, 9, 0, 11, 0, "LATENT"],
+    [16, 1, 2, 11, 1, "VAE"],
+    [17, 10, 0, 12, 0, "IMAGE"],
+    [18, 11, 0, 13, 0, "IMAGE"]
+  ],
+  "extra": {
+    "workflow_design_notes": {
+      "step_split_explanation": "Base runs 0-39 (80%), Refiner runs 40-49 (20%). This is the standard 80/20 split recommended by Stability AI. The latent passes directly from base to refiner without VAE decode/encode.",
+      "why_disable_add_noise": "Refiner receives partially-denoised latent from base. Adding noise again would destroy the base's work. The leftover noise IS the signal for the refiner.",
+      "aesthetic_score_guide": "Positive ascore=6.0 (higher=more polished, 6-8 safe range). Negative ascore=2.5 (lower=less aesthetic). These were the training conditioning values.",
+      "cfg_note": "SDXL works best with CFG 5-7. Above 8 often causes oversaturation. SD1.5 users should lower their usual CFG.",
+      "alternative_ratios": "Try 70/30 (end_at_step=35/start=35) for more refinement, or 90/10 for minimal refiner touch."
+    }
+  }
+}
