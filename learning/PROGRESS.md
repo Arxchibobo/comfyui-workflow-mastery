@@ -1,10 +1,10 @@
 # ComfyUI 学习进度追踪
 
 ## 当前状态
-- **当前阶段**: Phase 3 - 高级技术 (学习路径已纠正)
-- **当前天数**: Day 12 — ComfyUI API 节点体系
-- **上次学习时间**: 2026-03-21 10:03 UTC
-- **累计学习轮数**: 20
+- **当前阶段**: Phase 4 - 视频生成深度 (学习路径已纠正)
+- **当前天数**: Day 13 — AnimateDiff 运动模块
+- **上次学习时间**: 2026-03-21 12:03 UTC
+- **累计学习轮数**: 21
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -241,3 +241,31 @@
   - [x] 实验 17: Kling 3.0 Pro I2V（samurai 动画化, 150s/¥0.75）
   - [x] 实验 18: Veo 3.1 Pro I2V（同图对比, 125s/¥0.10）
   - [x] Kling 3.0 vs Veo 3.1 全维度对比分析
+
+## Day 13 进度 (AnimateDiff 运动模块)
+- [x] AnimateDiff 论文深度解析 (ICLR 2024 Spotlight)
+  - [x] 三阶段训练流程（Domain Adapter → Motion Module → MotionLoRA）
+  - [x] Motion Module 架构（Temporal Transformer + 正弦位置编码）
+  - [x] 时间自注意力机制（沿帧维度 self-attention，冻结空间权重）
+  - [x] 即插即用原理（时间/空间注意力解耦）
+  - [x] 维度变换 [B,C,H,W] → [B×H×W, C, F] → temporal attn → 恢复
+- [x] AnimateDiff 版本演进（v1 → v2 → v3 → SDXL）
+  - [x] v2 MotionLoRA（8种镜头运动，每个~74MB）
+  - [x] v3 SparseCtrl（RGB/涂鸦条件编码器，关键帧控制）
+  - [x] 社区微调模型（Stabilized/TemporalDiff/FP16 版本）
+- [x] ComfyUI-AnimateDiff-Evolved 节点系统
+  - [x] 核心节点分类（Motion Model / Context Options / Sample Settings / MotionLoRA）
+  - [x] Context Options 滑动窗口机制（Standard vs Looped Uniform）
+  - [x] FreeNoise 噪声优化原理（重复+shuffle > 独立随机）
+  - [x] Gen2 多运动模型堆叠
+  - [x] 高级功能（AnimateLCM / CameraCtrl / PIA / ContextRef / NaiveReuse）
+  - [x] 典型工作流结构（基础 T2V / 带 ControlNet / 带 MotionLoRA）
+- [x] AnimateDiff 在现代视频生成中的定位
+  - [x] vs Wan 2.2/2.6、LTX-2、Kling/Seedance 全维度对比
+  - [x] 优势：极强定制性 + ControlNet兼容 + 低VRAM + 社区生态
+  - [x] 局限：画质上限受 SD1.5/SDXL 限制 + 运动复杂度有限
+  - [x] 现代 ComfyUI 视频工作流四层策略
+- [x] RunningHub 实验
+  - [x] 实验 19: 关键帧图像生成 + Seedance 动画化（模拟 SparseCtrl 流程）
+  - [x] 实验 20: Wan 2.6 T2V 对比（40s/¥0.38）
+  - [x] AnimateDiff 工作流 vs 现代 API 模型的成本/质量/控制力对比
