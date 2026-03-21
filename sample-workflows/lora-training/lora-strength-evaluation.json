@@ -1,0 +1,272 @@
+{
+  "last_node_id": 18,
+  "last_link_id": 22,
+  "_comment": "LoRA Training Evaluation Workflow - Tests a trained LoRA at 5 different strength levels (0.3/0.5/0.7/1.0/1.2) with the same seed/prompt for systematic comparison",
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [0, 300],
+      "size": [315, 98],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": ["v1-5-pruned-emaonly.safetensors"]
+    },
+    {
+      "id": 2,
+      "type": "CLIPTextEncode",
+      "pos": [400, 100],
+      "size": [400, 200],
+      "properties": {
+        "Node name for S&R": "Positive Prompt (shared)"
+      },
+      "widgets_values": ["sks person, portrait photo, professional lighting, studio background, sharp focus, 8k uhd"]
+    },
+    {
+      "id": 3,
+      "type": "CLIPTextEncode",
+      "pos": [400, 350],
+      "size": [400, 200],
+      "properties": {
+        "Node name for S&R": "Negative Prompt (shared)"
+      },
+      "widgets_values": ["blurry, low quality, deformed, ugly, bad anatomy, watermark, text"]
+    },
+    {
+      "id": 4,
+      "type": "EmptyLatentImage",
+      "pos": [400, 600],
+      "size": [315, 106],
+      "widgets_values": [512, 512, 1]
+    },
+    {
+      "id": 5,
+      "type": "LoraLoader",
+      "pos": [400, 780],
+      "size": [315, 126],
+      "properties": {
+        "Node name for S&R": "LoRA strength=0.3"
+      },
+      "widgets_values": ["my_character_lora.safetensors", 0.3, 0.3]
+    },
+    {
+      "id": 6,
+      "type": "LoraLoader",
+      "pos": [400, 960],
+      "size": [315, 126],
+      "properties": {
+        "Node name for S&R": "LoRA strength=0.5"
+      },
+      "widgets_values": ["my_character_lora.safetensors", 0.5, 0.5]
+    },
+    {
+      "id": 7,
+      "type": "LoraLoader",
+      "pos": [400, 1140],
+      "size": [315, 126],
+      "properties": {
+        "Node name for S&R": "LoRA strength=0.7"
+      },
+      "widgets_values": ["my_character_lora.safetensors", 0.7, 0.7]
+    },
+    {
+      "id": 8,
+      "type": "LoraLoader",
+      "pos": [400, 1320],
+      "size": [315, 126],
+      "properties": {
+        "Node name for S&R": "LoRA strength=1.0"
+      },
+      "widgets_values": ["my_character_lora.safetensors", 1.0, 1.0]
+    },
+    {
+      "id": 9,
+      "type": "LoraLoader",
+      "pos": [400, 1500],
+      "size": [315, 126],
+      "properties": {
+        "Node name for S&R": "LoRA strength=1.2"
+      },
+      "widgets_values": ["my_character_lora.safetensors", 1.2, 1.2]
+    },
+    {
+      "id": 10,
+      "type": "KSampler",
+      "pos": [850, 780],
+      "size": [315, 262],
+      "properties": { "Node name for S&R": "KSampler_s0.3" },
+      "widgets_values": [12345, "fixed", 20, 7.5, "euler", "normal", 1.0]
+    },
+    {
+      "id": 11,
+      "type": "KSampler",
+      "pos": [850, 1080],
+      "size": [315, 262],
+      "properties": { "Node name for S&R": "KSampler_s0.5" },
+      "widgets_values": [12345, "fixed", 20, 7.5, "euler", "normal", 1.0]
+    },
+    {
+      "id": 12,
+      "type": "KSampler",
+      "pos": [850, 1380],
+      "size": [315, 262],
+      "properties": { "Node name for S&R": "KSampler_s0.7" },
+      "widgets_values": [12345, "fixed", 20, 7.5, "euler", "normal", 1.0]
+    },
+    {
+      "id": 13,
+      "type": "KSampler",
+      "pos": [850, 1680],
+      "size": [315, 262],
+      "properties": { "Node name for S&R": "KSampler_s1.0" },
+      "widgets_values": [12345, "fixed", 20, 7.5, "euler", "normal", 1.0]
+    },
+    {
+      "id": 14,
+      "type": "KSampler",
+      "pos": [850, 1980],
+      "size": [315, 262],
+      "properties": { "Node name for S&R": "KSampler_s1.2" },
+      "widgets_values": [12345, "fixed", 20, 7.5, "euler", "normal", 1.0]
+    },
+    {
+      "id": 15,
+      "type": "VAEDecode",
+      "pos": [1250, 780],
+      "size": [210, 46],
+      "properties": {}
+    },
+    {
+      "id": 16,
+      "type": "VAEDecode",
+      "pos": [1250, 1080],
+      "size": [210, 46]
+    },
+    {
+      "id": 17,
+      "type": "VAEDecode",
+      "pos": [1250, 1380],
+      "size": [210, 46]
+    },
+    {
+      "id": 18,
+      "type": "VAEDecode",
+      "pos": [1250, 1680],
+      "size": [210, 46]
+    },
+    {
+      "id": 19,
+      "type": "VAEDecode",
+      "pos": [1250, 1980],
+      "size": [210, 46]
+    },
+    {
+      "id": 20,
+      "type": "SaveImage",
+      "pos": [1500, 780],
+      "size": [315, 270],
+      "widgets_values": ["lora_eval/strength_0.3"]
+    },
+    {
+      "id": 21,
+      "type": "SaveImage",
+      "pos": [1500, 1080],
+      "size": [315, 270],
+      "widgets_values": ["lora_eval/strength_0.5"]
+    },
+    {
+      "id": 22,
+      "type": "SaveImage",
+      "pos": [1500, 1380],
+      "size": [315, 270],
+      "widgets_values": ["lora_eval/strength_0.7"]
+    },
+    {
+      "id": 23,
+      "type": "SaveImage",
+      "pos": [1500, 1680],
+      "size": [315, 270],
+      "widgets_values": ["lora_eval/strength_1.0"]
+    },
+    {
+      "id": 24,
+      "type": "SaveImage",
+      "pos": [1500, 1980],
+      "size": [315, 270],
+      "widgets_values": ["lora_eval/strength_1.2"]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 2, 0, "CLIP"],
+    [2, 1, 0, 3, 0, "CLIP"],
+
+    [3, 1, 0, 5, 0, "MODEL"],
+    [4, 1, 1, 5, 1, "CLIP"],
+    [5, 1, 0, 6, 0, "MODEL"],
+    [6, 1, 1, 6, 1, "CLIP"],
+    [7, 1, 0, 7, 0, "MODEL"],
+    [8, 1, 1, 7, 1, "CLIP"],
+    [9, 1, 0, 8, 0, "MODEL"],
+    [10, 1, 1, 8, 1, "CLIP"],
+    [11, 1, 0, 9, 0, "MODEL"],
+    [12, 1, 1, 9, 1, "CLIP"],
+
+    [13, 5, 0, 10, 0, "MODEL"],
+    [14, 2, 0, 10, 1, "CONDITIONING"],
+    [15, 3, 0, 10, 2, "CONDITIONING"],
+    [16, 4, 0, 10, 3, "LATENT"],
+
+    [17, 6, 0, 11, 0, "MODEL"],
+    [18, 2, 0, 11, 1, "CONDITIONING"],
+    [19, 3, 0, 11, 2, "CONDITIONING"],
+    [20, 4, 0, 11, 3, "LATENT"],
+
+    [21, 7, 0, 12, 0, "MODEL"],
+    [22, 2, 0, 12, 1, "CONDITIONING"],
+    [23, 3, 0, 12, 2, "CONDITIONING"],
+    [24, 4, 0, 12, 3, "LATENT"],
+
+    [25, 8, 0, 13, 0, "MODEL"],
+    [26, 2, 0, 13, 1, "CONDITIONING"],
+    [27, 3, 0, 13, 2, "CONDITIONING"],
+    [28, 4, 0, 13, 3, "LATENT"],
+
+    [29, 9, 0, 14, 0, "MODEL"],
+    [30, 2, 0, 14, 1, "CONDITIONING"],
+    [31, 3, 0, 14, 2, "CONDITIONING"],
+    [32, 4, 0, 14, 3, "LATENT"],
+
+    [33, 10, 0, 15, 0, "LATENT"],
+    [34, 1, 2, 15, 1, "VAE"],
+    [35, 11, 0, 16, 0, "LATENT"],
+    [36, 1, 2, 16, 1, "VAE"],
+    [37, 12, 0, 17, 0, "LATENT"],
+    [38, 1, 2, 17, 1, "VAE"],
+    [39, 13, 0, 18, 0, "LATENT"],
+    [40, 1, 2, 18, 1, "VAE"],
+    [41, 14, 0, 19, 0, "LATENT"],
+    [42, 1, 2, 19, 1, "VAE"],
+
+    [43, 15, 0, 20, 0, "IMAGE"],
+    [44, 16, 0, 21, 0, "IMAGE"],
+    [45, 17, 0, 22, 0, "IMAGE"],
+    [46, 18, 0, 23, 0, "IMAGE"],
+    [47, 19, 0, 24, 0, "IMAGE"]
+  ],
+  "groups": [
+    {
+      "title": "Shared Inputs (Checkpoint + Prompts + Latent)",
+      "bounding": [0, 50, 820, 700],
+      "color": "#3f789e"
+    },
+    {
+      "title": "LoRA Strength Comparison (0.3 / 0.5 / 0.7 / 1.0 / 1.2)",
+      "bounding": [0, 730, 1900, 1550],
+      "color": "#8A6642"
+    }
+  ],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}

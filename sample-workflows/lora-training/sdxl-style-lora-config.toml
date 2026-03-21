@@ -1,0 +1,58 @@
+# SDXL Style LoRA Training Config
+# For kohya sd-scripts: accelerate launch sdxl_train_network.py --config_file this_file.toml
+
+[model]
+pretrained_model_name_or_path = "/path/to/sd_xl_base_1.0.safetensors"
+
+[dataset]
+resolution = 1024
+batch_size = 2
+enable_bucket = true
+min_bucket_reso = 512
+max_bucket_reso = 2048
+bucket_reso_steps = 64
+caption_extension = ".txt"
+shuffle_caption = true
+keep_tokens = 1
+
+[[dataset.subsets]]
+image_dir = "/path/to/training_data/5_txcl_style"
+num_repeats = 5
+class_tokens = "txcl style"
+
+[network]
+network_module = "networks.lora"
+network_dim = 32
+network_alpha = 32
+
+[optimizer]
+optimizer_type = "Adafactor"
+optimizer_args = ["scale_parameter=False", "relative_step=False", "warmup_init=False"]
+learning_rate = 5e-4
+unet_lr = 5e-4
+text_encoder_lr = 5e-5
+lr_scheduler = "cosine"
+lr_warmup_steps = 50
+
+[training]
+max_train_steps = 3500
+seed = 42
+clip_skip = 2
+mixed_precision = "fp16"
+save_precision = "fp16"
+save_model_as = "safetensors"
+save_every_n_steps = 500
+gradient_checkpointing = true
+cache_latents = true
+cache_latents_to_disk = true
+full_bf16 = false
+
+[advanced]
+noise_offset = 0.03
+min_snr_gamma = 5
+max_token_length = 225
+
+[output]
+output_dir = "/path/to/output"
+output_name = "my_style_lora_sdxl"
+logging_dir = "/path/to/logs"

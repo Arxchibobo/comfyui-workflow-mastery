@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 3 - 高级技术
-- **当前天数**: Day 8 完成 → SDXL 架构差异 + Refiner 工作流，下一步 Day 9
-- **上次学习时间**: 2026-03-21 00:03 UTC
-- **累计学习轮数**: 15
+- **当前天数**: Day 9 进行中 → LoRA 训练管线 + 数据准备 + 参数深度解析完成，下一步 Day 9 续（训练脚本源码分析 + 实际训练演练）
+- **上次学习时间**: 2026-03-21 06:03 UTC
+- **累计学习轮数**: 16
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -60,6 +60,42 @@
 | 13 | 2026-03-20 20:03 | Day6-Tile+IP-Adapter+多CN组合 | Tile ControlNet(局部语义感知/细节幻觉/Prompt冲突处理/三阶段超分管线ESRGAN→Tile→频率混合)+IP-Adapter架构(解耦双交叉注意力/CLIP ViT编码/22M参数/Plus vs FaceID变体)+多ControlNet组合(链式连接/区域分工vs多维控制/权重策略/start-end分时段/IP-Adapter+ControlNet天然兼容) | day06-tile-ipadapter-multi-controlnet.md + controlnet/tile-upscale.json + ip-adapter-style-transfer.json + triple-control-ipadapter-depth-pose.json |
 | 14 | 2026-03-20 22:03 | Day7-LoRA基础+多LoRA融合 | LoRA数学原理(低秩分解W=W₀+α/r·B·A/参数压缩66x)+LyCORIS全家族(LoCon/LoHa/LoKR/DoRA/DyLoRA对比)+ComfyUI源码(load_lora_for_models/Clone+Patch延迟应用/KeyMapping多格式适配/weight_adapter统一系统/BypassLoRA)+多LoRA堆叠(线性叠加/model vs clip分离调优/冲突诊断)+strength对比实验+model×clip网格实验+API批量sweep脚本 | day07-lora-fundamentals.md + lora/single-lora.json + multi-lora-chain.json + lora-strength-comparison.json + model-vs-clip-strength-grid.json + lora_strength_sweep.py |
 | 15 | 2026-03-21 00:03 | Day8-SDXL架构+Refiner工作流 | SDXL架构深度(2.6B U-Net/异构Transformer[0,2,10]/移除8x层)+双编码器(CLIP-L 768d+OpenCLIP-bigG 1280d=2048d拼接/Pooled Embedding)+微条件三件套(c_size/c_crop/c_ar Fourier编码→timestep)+CLIPTextEncodeSDXL源码(text_g/text_l分离/token长度补齐)+SDXL-VAE(batch256+EMA)+Refiner(ascore条件/只用OpenCLIP-bigG/step分割交接/80-20推荐比例)+社区共识(fine-tune替代/LoRA不兼容)+分辨率推荐表+SD1.5对照 | day08-sdxl-architecture-refiner.md + sdxl/sdxl-base-refiner-step-split.json + sdxl-micro-conditioning-experiment.json + refiner-ratio-comparison.json + sdxl_refiner_sweep.py |
+| 16 | 2026-03-21 06:03 | Day9-LoRA训练管线+参数深度 | 训练工具生态(sd-scripts/kohya_ss/OneTrainer/SimpleTuner/ai-toolkit)+数据准备全流程(质量>数量/SD1.5:30-100/SDXL:20-50/Flux:10-30/Tag vs NL打标/触发词/正则化)+核心参数深度(dim/alpha/分层LR/6种Optimizer/6种Scheduler/NoiseOffset/MinSNR/GradCheckpoint)+训练循环伪代码(ε-pred vs v-pred/MinSNR数学)+三架构对比(SD1.5/SDXL/Flux全维度)+Loss曲线诊断+三套快速启动配置 | day09-lora-training.md + lora-training/sd15-character-lora-config.toml + sdxl-style-lora-config.toml + flux-character-lora-config.toml + lora-strength-evaluation.json + prepare_dataset.py |
+
+## Day 9 进度 (LoRA 训练 — kohya_ss / sd-scripts)
+- [x] LoRA 训练工具生态概览
+  - [x] sd-scripts / kohya_ss GUI / OneTrainer / SimpleTuner / ai-toolkit 对比
+  - [x] sd-scripts 仓库结构分析（train_network.py / networks/lora.py / library/）
+- [x] 训练管线完整流程
+  - [x] 数据收集→筛选→预处理→打标→目录结构→训练→评估
+  - [x] 训练步数计算公式（图片数 × 重复 × epoch / batch_size）
+- [x] 数据准备深度解析
+  - [x] 图片质量标准与数量推荐（SD1.5/SDXL/Flux 差异）
+  - [x] 多样性维度（角度/姿势/光照/背景/距离）
+  - [x] 打标方法（Tag 式 vs 自然语言 / WD14 vs BLIP / 触发词策略）
+  - [x] kohya 目录结构（repeats_class_token 格式）
+  - [x] 正则化图片的作用与使用方法
+- [x] 训练核心参数深度解析
+  - [x] Network Dimension (rank) 与 Network Alpha 关系
+  - [x] 分层学习率（unet_lr vs text_encoder_lr）
+  - [x] Optimizer 全对比（AdamW8bit/Adafactor/Prodigy/CAME/Lion/DAdapt）
+  - [x] LR Scheduler 全系列（constant/cosine/cosine_with_restarts/warmup/linear/polynomial）
+  - [x] Batch Size / Noise Offset / Min-SNR Gamma / Gradient Checkpointing / Cache Latents / Mixed Precision / Clip Skip
+- [x] 训练循环内部机制
+  - [x] train_network.py 核心训练循环伪代码重建
+  - [x] 损失函数（ε-prediction vs v-prediction）
+  - [x] Min-SNR Weighting 数学原理与代码实现
+- [x] SD1.5 vs SDXL vs Flux 训练差异对比
+  - [x] 脚本/模块/分辨率/VRAM/dim/LR/TE/数据集规模/标注风格/容错性全维度对比
+  - [x] Flux flow-matching 特殊性（连续 t / velocity field / DiT / lora_flux.py）
+  - [x] SDXL 双 TE / 微条件 / bucket 特殊考量
+- [x] 训练诊断与质量评估
+  - [x] Loss 曲线解读（理想/过拟合/欠拟合）
+  - [x] 常见问题诊断表（6 种症状→原因→方案）
+  - [x] 推理测试清单（权重/灵活性/兼容性/负面/风格迁移 5 维度）
+- [x] 新手快速启动配置（SD1.5角色/SDXL风格/Flux角色 三套推荐参数）
+- [ ] train_network.py 源码逐行分析（下一轮续）
+- [ ] 实际训练演练（需 GPU 环境）
 
 ## Day 7 待做 (LoRA 使用 + 多 LoRA 融合 + 权重调节)
 - [x] LoRA 数学原理

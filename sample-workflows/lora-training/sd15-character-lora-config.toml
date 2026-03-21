@@ -1,0 +1,66 @@
+# SD 1.5 Character LoRA Training Config
+# For kohya sd-scripts: accelerate launch train_network.py --config_file this_file.toml
+
+[model]
+pretrained_model_name_or_path = "/path/to/sd-v1-5.safetensors"
+v2 = false
+v_parameterization = false
+
+[dataset]
+resolution = 512
+batch_size = 2
+enable_bucket = true
+min_bucket_reso = 256
+max_bucket_reso = 1024
+bucket_reso_steps = 64
+caption_extension = ".txt"
+shuffle_caption = true
+keep_tokens = 1   # Keep trigger word in first position
+
+[[dataset.subsets]]
+image_dir = "/path/to/training_data/10_sks_person"
+num_repeats = 10
+class_tokens = "sks person"
+
+[[dataset.subsets]]
+image_dir = "/path/to/reg_data/1_person"
+num_repeats = 1
+is_reg = true
+class_tokens = "person"
+
+[network]
+network_module = "networks.lora"
+network_dim = 32
+network_alpha = 16
+
+[optimizer]
+optimizer_type = "AdamW8bit"
+learning_rate = 1e-4
+unet_lr = 1e-4
+text_encoder_lr = 5e-5
+lr_scheduler = "cosine"
+lr_warmup_steps = 100
+
+[training]
+max_train_epochs = 3
+# Alternatively: max_train_steps = 3000
+seed = 42
+clip_skip = 1
+mixed_precision = "fp16"
+save_precision = "fp16"
+save_model_as = "safetensors"
+save_every_n_epochs = 1
+gradient_checkpointing = true
+cache_latents = true
+cache_latents_to_disk = true
+
+[advanced]
+noise_offset = 0.05
+min_snr_gamma = 5
+max_token_length = 225
+
+[output]
+output_dir = "/path/to/output"
+output_name = "my_character_lora"
+logging_dir = "/path/to/logs"
+log_prefix = "character_lora_"

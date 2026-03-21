@@ -1,0 +1,53 @@
+# Flux Character LoRA Training Config
+# For kohya sd-scripts: accelerate launch --mixed_precision bf16 flux_train_network.py --config_file this_file.toml
+
+[model]
+pretrained_model_name_or_path = "/path/to/flux1-dev.safetensors"
+clip_l = "/path/to/clip_l.safetensors"
+t5xxl = "/path/to/t5xxl_fp16.safetensors"
+ae = "/path/to/ae.safetensors"
+
+[dataset]
+resolution = 1024
+batch_size = 1
+enable_bucket = true
+min_bucket_reso = 512
+max_bucket_reso = 2048
+bucket_reso_steps = 64
+caption_extension = ".txt"
+shuffle_caption = false   # Natural language captions, don't shuffle
+
+[[dataset.subsets]]
+image_dir = "/path/to/training_data/5_ohwx_person"
+num_repeats = 5
+class_tokens = "ohwx person"
+
+[network]
+network_module = "networks.lora_flux"   # Flux-specific LoRA module
+network_dim = 16
+network_alpha = 8
+
+[optimizer]
+optimizer_type = "adamw8bit"
+learning_rate = 2e-4
+lr_scheduler = "constant"
+# No text_encoder_lr — Flux typically doesn't train TE
+
+[training]
+max_train_steps = 1000
+seed = 42
+mixed_precision = "bf16"       # bf16 preferred for Flux
+save_precision = "bf16"
+save_model_as = "safetensors"
+save_every_n_steps = 200       # Save frequently to pick best
+gradient_checkpointing = true
+cache_latents = true
+cache_latents_to_disk = true
+
+[advanced]
+max_token_length = 512    # Flux supports longer sequences via T5
+
+[output]
+output_dir = "/path/to/output"
+output_name = "my_flux_character_lora"
+logging_dir = "/path/to/logs"
