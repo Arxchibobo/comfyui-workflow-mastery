@@ -23,8 +23,8 @@
 - [x] **Day 12**: ComfyUI API 节点体系（Partner Nodes / Kling / Seedance / Veo3.1 集成）
 
 ### Phase 4: 视频 & 动画专精（Day 13-16）— 纠正后新增
-- [ ] **Day 13**: AnimateDiff 运动模块（基于 SD 的视频生成）
-- [ ] **Day 14**: 自定义节点开发（Python API）
+- [x] **Day 13**: AnimateDiff 运动模块（基于 SD 的视频生成）
+- [x] **Day 14**: 自定义节点开发（Python API）
 - [ ] **Day 15**: Flux / SD3 新架构
 - [ ] **Day 16**: 综合实战 — 从零编排完整视频生成工作流
 
@@ -41,3 +41,5 @@
 | 3/21 | Day10 RunningHub实操 | ~2h | 14个实验(图/视频) | 2个笔记文件 |
 | 3/21 | Day11 LTX-2.3工作流深度 | ~1h | Wan2.6 T2V+Ref2V | 1个笔记文件 |
 | 3/21 | Day12 ComfyUI API节点体系 | ~1.5h | Kling 3.0 + Veo 3.1 I2V对比 | 1个笔记文件 |
+| 3/21 | Day13 AnimateDiff运动模块 | ~2h | Seedance+Wan对比 | 1个笔记文件 |
+| 3/21 | Day14 自定义节点开发 | ~1h | 架构概念图 | 1个笔记文件 |

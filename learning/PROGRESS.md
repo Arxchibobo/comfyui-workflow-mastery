@@ -1,10 +1,10 @@
 # ComfyUI 学习进度追踪
 
 ## 当前状态
-- **当前阶段**: Phase 4 - 视频生成深度 (学习路径已纠正)
-- **当前天数**: Day 13 — AnimateDiff 运动模块
-- **上次学习时间**: 2026-03-21 12:03 UTC
-- **累计学习轮数**: 21
+- **当前阶段**: Phase 4 - 视频 & 动画专精 (学习路径已纠正)
+- **当前天数**: Day 14 — 自定义节点开发（Python API）
+- **上次学习时间**: 2026-03-21 14:03 UTC
+- **累计学习轮数**: 22
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -63,6 +63,7 @@
 | 16 | 2026-03-21 06:03 | Day9-LoRA训练管线+参数深度 | 训练工具生态(sd-scripts/kohya_ss/OneTrainer/SimpleTuner/ai-toolkit)+数据准备全流程(质量>数量/SD1.5:30-100/SDXL:20-50/Flux:10-30/Tag vs NL打标/触发词/正则化)+核心参数深度(dim/alpha/分层LR/6种Optimizer/6种Scheduler/NoiseOffset/MinSNR/GradCheckpoint)+训练循环伪代码(ε-pred vs v-pred/MinSNR数学)+三架构对比(SD1.5/SDXL/Flux全维度)+Loss曲线诊断+三套快速启动配置 | day09-lora-training.md + lora-training/sd15-character-lora-config.toml + sdxl-style-lora-config.toml + flux-character-lora-config.toml + lora-strength-evaluation.json + prepare_dataset.py |
 | 19 | 2026-03-21 08:30 | Day11-LTX-2.3工作流深度 | LTX-2.3全47节点体系分析(5类:加载/潜空间/条件/采样/后处理)+两阶段管线原理(latent upscale>pixel upscale)+sigma序列分析(蒸馏从0.85/完整从1.0)+I2V两模式对比(Inplace vs ConditionOnly)+IC-LoRA Union Control原理+Wan 2.6 T2V+Ref2V实验+LTX vs Wan架构对比 | day11-ltx2-workflow-deep-dive.md |
 | 20 | 2026-03-21 10:03 | Day12-ComfyUI API节点体系 | Partner Nodes架构(ApiEndpoint/SynchronousOp/PollingOp三层抽象+AUTH_TOKEN_COMFY_ORG+VIDEO原生类型)+Kling 3.0全节点体系(T2V/I2V/Audio/MotionControl/Element Binding)+Seedance Pro(1080p/cameraFixed/首尾帧)+Veo 3.1(8s固定/800字符)+第三方节点生态(fal-API/Kie-API/wavespeed)+混合工作流范式+Kling vs Veo对比实验(¥0.75 vs ¥0.10) | day12-comfyui-api-node-ecosystem.md |
+| 22 | 2026-03-21 14:03 | Day14-自定义节点开发 | 节点类4必需属性(CATEGORY/INPUT_TYPES/RETURN_TYPES/FUNCTION)+INPUT_TYPES三级字典(required/optional/hidden)+全数据类型系统(14种)+执行控制(缓存/IS_CHANGED/VALIDATE_INPUTS)+高级特性7项(自定义类型/通配符/动态输入/Lazy Eval/ExecutionBlocker/Node Expansion/List处理)+前后端通信(send_sync/aiohttp路由/JS扩展)+V3规范+Vue迁移+真实世界4种模式分析 | day14-custom-node-development.md |
 
 ## Day 9 进度 (LoRA 训练 — kohya_ss / sd-scripts)
 - [x] LoRA 训练工具生态概览
@@ -269,3 +270,48 @@
   - [x] 实验 19: 关键帧图像生成 + Seedance 动画化（模拟 SparseCtrl 流程）
   - [x] 实验 20: Wan 2.6 T2V 对比（40s/¥0.38）
   - [x] AnimateDiff 工作流 vs 现代 API 模型的成本/质量/控制力对比
+
+## Day 14 进度 (自定义节点开发 — Python API)
+- [x] 节点类四个必需属性深度解析
+  - [x] CATEGORY / INPUT_TYPES / RETURN_TYPES / FUNCTION 完整规范
+  - [x] INPUT_TYPES 三级字典结构（required/optional/hidden）
+  - [x] 所有内置数据类型（IMAGE/LATENT/MASK/MODEL/CLIP/VAE/CONDITIONING/NOISE/SAMPLER/SIGMAS/GUIDER/AUDIO + Python 原生 INT/FLOAT/STRING/BOOLEAN + COMBO）
+  - [x] Hidden Inputs 特殊值（UNIQUE_ID/PROMPT/EXTRA_PNGINFO/DYNPROMPT）
+  - [x] OPTIONS 参数全集（default/min/max/step/forceInput/defaultInput/lazy/rawLink/multiline/placeholder/dynamicPrompts/label_on/label_off）
+- [x] 节点注册与生命周期
+  - [x] 目录结构规范
+  - [x] __init__.py 标准模板（NODE_CLASS_MAPPINGS/NODE_DISPLAY_NAME_MAPPINGS/WEB_DIRECTORY）
+  - [x] ComfyUI 加载流程（扫描 → import → 检查导出 → 注册）
+  - [x] comfy-cli scaffold 工具
+- [x] 执行控制机制
+  - [x] 缓存系统原理（OUTPUT_NODE 标记 + 反向依赖追踪）
+  - [x] IS_CHANGED 正确用法（⚠️ 不能返回 bool！NaN 技巧）
+  - [x] VALIDATE_INPUTS（常量验证 + 类型验证 + input_types 参数）
+  - [x] SEARCH_ALIASES
+- [x] 高级特性
+  - [x] 自定义数据类型（forceInput 必需）
+  - [x] 通配符输入（"*" + VALIDATE_INPUTS 跳过验证）
+  - [x] 动态创建输入（ContainsAnyDict 技巧 + **kwargs）
+  - [x] Lazy Evaluation（lazy 标记 + check_lazy_status 方法）
+  - [x] ExecutionBlocker（静默阻断 vs 错误消息阻断 + 传播规则）
+  - [x] Node Expansion（GraphBuilder + 子图缓存优势）
+  - [x] List 处理（INPUT_IS_LIST / OUTPUT_IS_LIST / 默认逐元素处理）
+- [x] 前后端通信
+  - [x] Server → Client（PromptServer.send_sync）
+  - [x] Client → Server（自定义 aiohttp 路由 @routes.post/get）
+  - [x] 前端 JS 扩展（app.registerExtension / addEventListener / nodeCreated）
+  - [x] WEB_DIRECTORY 规范（只 serve .js 文件）
+- [x] ComfyUI 内置 API 路由全集（20+ 端点）
+- [x] WebSocket 消息类型（status/execution_start/executing/progress/executed）
+- [x] Nodes V3 规范分析
+  - [x] V3 解决的核心问题（稳定性/依赖冲突/动态IO/模型管理/未来扩展）
+  - [x] V3 Schema 对比（INPUT_TYPES → DEFINE_SCHEMA）
+  - [x] API 版本化策略
+  - [x] Nodes 2.0 Vue 迁移（LiteGraph.js → Vue.js 组件渲染）
+- [x] 真实世界模式分析
+  - [x] API 代理节点模式
+  - [x] 图像处理管线模式
+  - [x] 条件路由节点模式（Lazy + Switch）
+  - [x] 模型加载/修补节点模式（clone + patch）
+  - [x] 最佳实践总结（8 条）
+- [x] RunningHub 实验 #21（架构概念图生成）
