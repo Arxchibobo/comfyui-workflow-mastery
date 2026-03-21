@@ -1,0 +1,117 @@
+{
+  "_meta": {
+    "title": "Flux T2I → Kling 3.0 I2V Complete Pipeline",
+    "description": "Day 16 综合实战: 本地 Flux 生成关键帧 + Kling Partner Node 生成视频的完整 ComfyUI 工作流",
+    "author": "Day16 Learning Session",
+    "version": "1.0",
+    "requirements": [
+      "flux1-dev checkpoint",
+      "t5xxl + clip_l encoders",
+      "ae.safetensors VAE",
+      "Comfy Org Kling Partner Node (AUTH_TOKEN_COMFY_ORG required)"
+    ]
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "flux1-dev-fp8.safetensors",
+      "weight_dtype": "fp8_e4m3fn"
+    },
+    "_meta": { "title": "Load Flux Model" }
+  },
+  "2": {
+    "class_type": "DualCLIPLoader",
+    "inputs": {
+      "clip_name1": "t5xxl_fp16.safetensors",
+      "clip_name2": "clip_l.safetensors",
+      "type": "flux"
+    },
+    "_meta": { "title": "Load CLIP Encoders (T5-XXL + CLIP-L)" }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    },
+    "_meta": { "title": "Load Flux VAE (16ch)" }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "A majestic phoenix rising from emerald flames in a dark volcanic landscape, cinematic lighting, dramatic composition, hyper-detailed feathers glowing with golden and crimson fire, dark moody atmosphere, 8K quality, wide shot, 16:9 cinematic frame",
+      "clip": ["2", 0]
+    },
+    "_meta": { "title": "Encode Positive Prompt" }
+  },
+  "5": {
+    "class_type": "FluxGuidance",
+    "inputs": {
+      "guidance": 3.5,
+      "conditioning": ["4", 0]
+    },
+    "_meta": { "title": "Flux Guidance (replaces CFG)" }
+  },
+  "6": {
+    "class_type": "EmptySD3LatentImage",
+    "inputs": {
+      "width": 1280,
+      "height": 720,
+      "batch_size": 1
+    },
+    "_meta": { "title": "Create 720p 16:9 Latent" }
+  },
+  "7": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["5", 0],
+      "negative": ["4", 0],
+      "latent_image": ["6", 0],
+      "seed": 42,
+      "steps": 20,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_meta": { "title": "KSampler (Flux: cfg=1, euler, simple)" }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["7", 0],
+      "vae": ["3", 0]
+    },
+    "_meta": { "title": "Decode Latent → Image" }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["8", 0],
+      "filename_prefix": "pipeline/keyframe"
+    },
+    "_meta": { "title": "Save Keyframe (backup)" }
+  },
+  "10": {
+    "class_type": "KlingImageToVideoNode",
+    "inputs": {
+      "image": ["8", 0],
+      "prompt": "The phoenix spreads its wings wide, ascending from the green flames with a powerful upward thrust, feathers trailing golden sparks, camera slowly zooms out revealing the vast volcanic landscape, cinematic motion, smooth movement",
+      "negative_prompt": "blurry, distorted, low quality, static, frozen",
+      "duration": "5s",
+      "aspect_ratio": "16:9",
+      "model": "kling-v3-0",
+      "mode": "pro",
+      "cfg_scale": 0.5
+    },
+    "_meta": { "title": "Kling 3.0 Pro I2V" }
+  },
+  "11": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["10", 0],
+      "filename_prefix": "pipeline/phoenix_video"
+    },
+    "_meta": { "title": "Save Final Video" }
+  }
+}

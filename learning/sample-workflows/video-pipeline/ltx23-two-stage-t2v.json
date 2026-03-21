@@ -1,0 +1,167 @@
+{
+  "_meta": {
+    "title": "LTX-2.3 Two-Stage T2V Pipeline with Audio",
+    "description": "Day 16: LTX-2.3 两阶段视频管线 — 低分辨率生成 → 潜空间上采样 → 解码",
+    "requirements": [
+      "ltxv-2.3-distilled.safetensors (or full model)",
+      "gemma_3_12B.safetensors text encoder",
+      "ltxv-spatial-upscaler-0.9.7.safetensors",
+      "VRAM: >=24GB recommended"
+    ]
+  },
+  "1_model": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": { "ckpt_name": "ltxv-2.3-distilled.safetensors" },
+    "_meta": { "title": "Load LTX-2.3 Distilled Model" }
+  },
+  "2_text_encoder": {
+    "class_type": "LTXAVTextEncoderLoader",
+    "inputs": { "text_encoder_name": "gemma_3_12B.safetensors" },
+    "_meta": { "title": "Load Gemma 3 12B Text Encoder" }
+  },
+  "3_positive": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "A majestic phoenix rising from emerald flames in a dark volcanic landscape. The phoenix spreads its golden wings wide, feathers glowing with crimson and gold fire. Green flames dance around the volcanic crater below. The camera slowly tilts upward following the phoenix as it ascends into the stormy sky. Cinematic, dramatic lighting, hyper-detailed, 8K quality.",
+      "clip": ["2_text_encoder", 0]
+    },
+    "_meta": { "title": "Encode Positive (detailed scene + motion)" }
+  },
+  "4_negative": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "low quality, blurry, distorted, watermark, text overlay",
+      "clip": ["2_text_encoder", 0]
+    },
+    "_meta": { "title": "Encode Negative" }
+  },
+
+  "comment_stage1": "=== STAGE 1: Low-Resolution Generation (512x288, 97 frames @ 24fps = ~4s) ===",
+
+  "5_empty_latent": {
+    "class_type": "EmptyLTXVLatentVideo",
+    "inputs": {
+      "width": 512,
+      "height": 288,
+      "length": 97,
+      "batch_size": 1
+    },
+    "_meta": { "title": "Stage 1: Low-Res Latent (512x288, 97f)" }
+  },
+  "6_conditioning": {
+    "class_type": "LTXVConditioning",
+    "inputs": {
+      "positive": ["3_positive", 0],
+      "negative": ["4_negative", 0],
+      "frame_rate": 24
+    },
+    "_meta": { "title": "LTX Conditioning (24fps)" }
+  },
+  "7_noise": {
+    "class_type": "RandomNoise",
+    "inputs": { "noise_seed": 42 },
+    "_meta": { "title": "Random Noise (seed=42)" }
+  },
+  "8_sampler_select": {
+    "class_type": "KSamplerSelect",
+    "inputs": { "sampler_name": "euler" },
+    "_meta": { "title": "Euler Sampler" }
+  },
+  "9_sigmas_s1": {
+    "class_type": "LTXVManualSigmaSchedule",
+    "inputs": {
+      "model": ["1_model", 0],
+      "num_steps": 8,
+      "start_sigma": 0.85
+    },
+    "_meta": { "title": "Stage 1 Sigmas (distilled: start=0.85, 8 steps)" }
+  },
+  "10_guider_s1": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": ["1_model", 0],
+      "positive": ["6_conditioning", 0],
+      "negative": ["6_conditioning", 1],
+      "cfg": 1.0
+    },
+    "_meta": { "title": "Stage 1 CFG Guider (cfg=1.0 for distilled)" }
+  },
+  "11_sample_s1": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": ["7_noise", 0],
+      "guider": ["10_guider_s1", 0],
+      "sampler": ["8_sampler_select", 0],
+      "sigmas": ["9_sigmas_s1", 0],
+      "latent_image": ["5_empty_latent", 0]
+    },
+    "_meta": { "title": "Stage 1 Sampling" }
+  },
+
+  "comment_stage2": "=== STAGE 2: Latent Upscale + Refinement ===",
+
+  "12_upsampler": {
+    "class_type": "LTXVLatentUpsampler",
+    "inputs": {
+      "upsampler_model_name": "ltxv-spatial-upscaler-0.9.7.safetensors",
+      "latent": ["11_sample_s1", 1]
+    },
+    "_meta": { "title": "Stage 2: Latent Spatial Upscale (2x)" }
+  },
+  "13_sigmas_s2": {
+    "class_type": "LTXVManualSigmaSchedule",
+    "inputs": {
+      "model": ["1_model", 0],
+      "num_steps": 6,
+      "start_sigma": 0.35
+    },
+    "_meta": { "title": "Stage 2 Sigmas (refinement: start=0.35, 6 steps)" }
+  },
+  "14_noise_s2": {
+    "class_type": "RandomNoise",
+    "inputs": { "noise_seed": 42 },
+    "_meta": { "title": "Stage 2 Noise" }
+  },
+  "15_guider_s2": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": ["1_model", 0],
+      "positive": ["6_conditioning", 0],
+      "negative": ["6_conditioning", 1],
+      "cfg": 1.0
+    },
+    "_meta": { "title": "Stage 2 CFG Guider" }
+  },
+  "16_sample_s2": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": ["14_noise_s2", 0],
+      "guider": ["15_guider_s2", 0],
+      "sampler": ["8_sampler_select", 0],
+      "sigmas": ["13_sigmas_s2", 0],
+      "latent_image": ["12_upsampler", 0]
+    },
+    "_meta": { "title": "Stage 2 Sampling (Refinement)" }
+  },
+
+  "comment_decode": "=== DECODE & OUTPUT ===",
+
+  "17_decode": {
+    "class_type": "VAEDecodeTiled",
+    "inputs": {
+      "samples": ["16_sample_s2", 1],
+      "vae": ["1_model", 2],
+      "tile_size": 256
+    },
+    "_meta": { "title": "Tiled VAE Decode (saves VRAM)" }
+  },
+  "18_video": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": ["17_decode", 0],
+      "frame_rate": 24,
+      "filename_prefix": "ltx_phoenix"
+    },
+    "_meta": { "title": "Create Final Video (24fps)" }
+  }
+}

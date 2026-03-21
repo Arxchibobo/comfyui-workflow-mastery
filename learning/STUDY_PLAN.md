@@ -22,11 +22,11 @@
 - [x] **Day 11**: LTX-2.3 视频工作流深度（47节点体系 + 两阶段管线 + Wan 2.6 对比）
 - [x] **Day 12**: ComfyUI API 节点体系（Partner Nodes / Kling / Seedance / Veo3.1 集成）
 
-### Phase 4: 视频 & 动画专精（Day 13-16）— 纠正后新增
+### Phase 4: 视频 & 动画专精（Day 13-16）✅ 完成
 - [x] **Day 13**: AnimateDiff 运动模块（基于 SD 的视频生成）
 - [x] **Day 14**: 自定义节点开发（Python API）
 - [x] **Day 15**: Flux / SD3 新架构
-- [ ] **Day 16**: 综合实战 — 从零编排完整视频生成工作流
+- [x] **Day 16**: 综合实战 — 从零编排完整视频生成工作流
 
 ### Phase 5: 专精方向（Day 17+）
 - [ ] 模型合并（Model Merging）
@@ -43,4 +43,4 @@
 | 3/21 | Day12 ComfyUI API节点体系 | ~1.5h | Kling 3.0 + Veo 3.1 I2V对比 | 1个笔记文件 |
 | 3/21 | Day13 AnimateDiff运动模块 | ~2h | Seedance+Wan对比 | 1个笔记文件 |
 | 3/21 | Day14 自定义节点开发 | ~1h | 架构概念图 | 1个笔记文件 |
-| 3/21 | Day15 Flux/SD3新架构 | ~1.5h | 架构概念图实验 | 1个笔记文件 |
+| 3/21 | Day16 综合实战视频管线 | ~1.5h | 4实验(3模型I2V对比+首尾帧) | 1个笔记+4个工作流/脚本 |

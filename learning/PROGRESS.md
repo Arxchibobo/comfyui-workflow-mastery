@@ -1,10 +1,10 @@
 # ComfyUI 学习进度追踪
 
 ## 当前状态
-- **当前阶段**: Phase 4 - 视频 & 动画专精 (学习路径已纠正)
-- **当前天数**: Day 15 — Flux / SD3 新架构
-- **上次学习时间**: 2026-03-21 16:03 UTC
-- **累计学习轮数**: 23
+- **当前阶段**: Phase 4 完成 ✅ → 准备进入 Phase 5
+- **当前天数**: Day 16 — 综合实战（完成）
+- **上次学习时间**: 2026-03-21 18:03 UTC
+- **累计学习轮数**: 24
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -65,6 +65,7 @@
 | 20 | 2026-03-21 10:03 | Day12-ComfyUI API节点体系 | Partner Nodes架构(ApiEndpoint/SynchronousOp/PollingOp三层抽象+AUTH_TOKEN_COMFY_ORG+VIDEO原生类型)+Kling 3.0全节点体系(T2V/I2V/Audio/MotionControl/Element Binding)+Seedance Pro(1080p/cameraFixed/首尾帧)+Veo 3.1(8s固定/800字符)+第三方节点生态(fal-API/Kie-API/wavespeed)+混合工作流范式+Kling vs Veo对比实验(¥0.75 vs ¥0.10) | day12-comfyui-api-node-ecosystem.md |
 | 22 | 2026-03-21 14:03 | Day14-自定义节点开发 | 节点类4必需属性(CATEGORY/INPUT_TYPES/RETURN_TYPES/FUNCTION)+INPUT_TYPES三级字典(required/optional/hidden)+全数据类型系统(14种)+执行控制(缓存/IS_CHANGED/VALIDATE_INPUTS)+高级特性7项(自定义类型/通配符/动态输入/Lazy Eval/ExecutionBlocker/Node Expansion/List处理)+前后端通信(send_sync/aiohttp路由/JS扩展)+V3规范+Vue迁移+真实世界4种模式分析 | day14-custom-node-development.md |
 | 23 | 2026-03-21 16:03 | Day15-Flux/SD3新架构 | Rectified Flow数学(v-prediction vs ε-prediction/线性插值/OT路径/Logit-Normal采样)+SD3 MMDiT架构(Joint Attention with Separate Weights/三编码器CLIP-L+G+T5/adaLN/QKV RMSNorm)+SD3.5变体对比(Medium 2.5B MMDiT-X/Large 8B/Turbo ADD蒸馏)+Flux.1架构逆向(19 Double-Stream+38 Single-Stream/渐进融合设计/RoPE位置编码/16通道VAE)+Flux变体(Pro/Dev Guidance Distillation/Schnell LADD)+ComfyUI工作流差异(SD3专用节点/Flux无negative prompt/CFG=1/FluxGuidance)+LoRA训练差异+社区生态对比+架构概念图实验 | day15-flux-sd3-new-architectures.md |
+| 24 | 2026-03-21 18:03 | Day16-综合实战视频管线 | 三阶段管线架构(关键帧→视频→后处理)+四种范式(全本地/混合/全API/RunningHub)+Flux+Kling混合工作流JSON+LTX-2.3两阶段工作流JSON+多分镜管线脚本(storyboard_pipeline.py)+三模型I2V对比(Seedance ¥0.30/Kling ¥0.75/Vidu首尾帧 ¥0.20)+关键帧生成+模型选择决策树+生产级错误处理+管线成本分析 | day16-comprehensive-video-pipeline.md |
 
 ## Day 9 进度 (LoRA 训练 — kohya_ss / sd-scripts)
 - [x] LoRA 训练工具生态概览
@@ -358,3 +359,26 @@
   - [x] Flux 无 negative prompt 的设计原因
 - [x] Flux LoRA 训练与 SD3 LoRA 差异对比
 - [x] RunningHub 实验 #22（架构对比概念图生成）
+
+## Day 16 进度 (综合实战 — 从零编排完整视频生成工作流) ✅
+- [x] 三阶段管线架构设计（概念→关键帧→视频→后处理）
+  - [x] 四种关键帧策略（单帧/首尾帧/多关键帧/参考帧）
+  - [x] 三种 ComfyUI 编排范式（全本地/混合/全 API）
+  - [x] 模型选择决策树（按 GPU/预算/需求分支）
+- [x] ComfyUI 工作流 JSON 从零编写
+  - [x] Flux T2I → Kling 3.0 I2V 混合管线（11 节点完整工作流）
+  - [x] LTX-2.3 两阶段 T2V 管线（18 节点，低分辨率→潜空间上采样→解码）
+- [x] 生产级管线工具编写
+  - [x] storyboard_pipeline.py（分镜→关键帧→视频→拼接，带重试/报告）
+  - [x] ComfyUI WebSocket API 客户端模板
+  - [x] 错误处理与重试策略设计
+  - [x] phoenix-storyboard.json 三幕分镜示例
+- [x] RunningHub 多模型实验（4 个实验）
+  - [x] 实验 #23: 凤凰关键帧生成（rhart-image-n-pro, 30s/¥0.03）
+  - [x] 实验 #24: Seedance 1.5 Pro I2V（1280×720, 60s/¥0.30）
+  - [x] 实验 #25: Kling 3.0 Pro I2V（1928×1076, 115s/¥0.75）
+  - [x] 实验 #26: Vidu Q2 Pro 首尾帧视频（首帧+尾帧+prompt, 125s/¥0.20）
+- [x] 三模型同图对比分析（分辨率/成本/速度/性价比）
+- [x] 四种管线架构对比（GPU要求/控制精度/质量/成本/适用场景）
+- [x] 关键帧质量对视频质量影响分析
+- [x] Prompt 工程差异总结（图像 vs 视频）

@@ -1,0 +1,30 @@
+{
+  "title": "Phoenix Rising - 3-Scene Demo Storyboard",
+  "description": "凤凰涅槃三幕分镜 — Day 16 管线测试用例",
+  "scenes": [
+    {
+      "scene_id": 1,
+      "keyframe_prompt": "A dark volcanic crater at night, green flames flickering from deep cracks, a faint golden glow emerging from the center, cinematic wide shot, moody atmosphere, 8K quality",
+      "motion_prompt": "The green flames intensify, flickering higher, golden sparks begin rising from the crater center, camera slowly pushes in toward the glow",
+      "duration": 5,
+      "aspect_ratio": "16:9",
+      "video_model": "seedance-v1.5-pro/image-to-video"
+    },
+    {
+      "scene_id": 2,
+      "keyframe_prompt": "A majestic phoenix rising from emerald flames in a dark volcanic landscape, cinematic lighting, dramatic composition, hyper-detailed feathers glowing with golden and crimson fire, dark moody atmosphere, 8K quality, wide shot",
+      "motion_prompt": "The phoenix spreads its wings wide, ascending from the green flames with a powerful upward thrust, feathers trailing golden sparks, camera slowly zooms out",
+      "duration": 5,
+      "aspect_ratio": "16:9",
+      "video_model": "seedance-v1.5-pro/image-to-video"
+    },
+    {
+      "scene_id": 3,
+      "keyframe_prompt": "A phoenix soaring high above clouds with golden sunset behind it, wide cinematic shot, the phoenix trailing a long stream of golden light and embers, volcanic landscape far below, epic wide angle, 8K quality",
+      "motion_prompt": "The phoenix soars gracefully through the golden sunset sky, its light trail streaming behind, camera tracking the flight path, clouds parting as it passes",
+      "duration": 5,
+      "aspect_ratio": "16:9",
+      "video_model": "seedance-v1.5-pro/image-to-video"
+    }
+  ]
+}
