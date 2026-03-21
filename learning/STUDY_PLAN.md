@@ -20,7 +20,7 @@
 - [x] **Day 9**: LoRA 训练管线（sd-scripts + 参数深度 + 3套配置）
 - [x] **Day 10**: RunningHub 实操（12个实验 + 5模型对比 + 视频生成方案全景）
 - [x] **Day 11**: LTX-2.3 视频工作流深度（47节点体系 + 两阶段管线 + Wan 2.6 对比）
-- [ ] **Day 12**: ComfyUI API 节点体系（Partner Nodes / Kling / Seedance / Veo3.1 集成）
+- [x] **Day 12**: ComfyUI API 节点体系（Partner Nodes / Kling / Seedance / Veo3.1 集成）
 
 ### Phase 4: 视频 & 动画专精（Day 13-16）— 纠正后新增
 - [ ] **Day 13**: AnimateDiff 运动模块（基于 SD 的视频生成）
@@ -40,3 +40,4 @@
 | 3/20 | Day4-9 核心+高级 | ~12h | 28个工作流JSON | 7个笔记文件 |
 | 3/21 | Day10 RunningHub实操 | ~2h | 14个实验(图/视频) | 2个笔记文件 |
 | 3/21 | Day11 LTX-2.3工作流深度 | ~1h | Wan2.6 T2V+Ref2V | 1个笔记文件 |
+| 3/21 | Day12 ComfyUI API节点体系 | ~1.5h | Kling 3.0 + Veo 3.1 I2V对比 | 1个笔记文件 |

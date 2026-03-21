@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 3 - 高级技术 (学习路径已纠正)
-- **当前天数**: Day 11 — LTX-2.3 视频工作流深度学习
-- **上次学习时间**: 2026-03-21 08:30 UTC
-- **累计学习轮数**: 19
+- **当前天数**: Day 12 — ComfyUI API 节点体系
+- **上次学习时间**: 2026-03-21 10:03 UTC
+- **累计学习轮数**: 20
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -62,6 +62,7 @@
 | 15 | 2026-03-21 00:03 | Day8-SDXL架构+Refiner工作流 | SDXL架构深度(2.6B U-Net/异构Transformer[0,2,10]/移除8x层)+双编码器(CLIP-L 768d+OpenCLIP-bigG 1280d=2048d拼接/Pooled Embedding)+微条件三件套(c_size/c_crop/c_ar Fourier编码→timestep)+CLIPTextEncodeSDXL源码(text_g/text_l分离/token长度补齐)+SDXL-VAE(batch256+EMA)+Refiner(ascore条件/只用OpenCLIP-bigG/step分割交接/80-20推荐比例)+社区共识(fine-tune替代/LoRA不兼容)+分辨率推荐表+SD1.5对照 | day08-sdxl-architecture-refiner.md + sdxl/sdxl-base-refiner-step-split.json + sdxl-micro-conditioning-experiment.json + refiner-ratio-comparison.json + sdxl_refiner_sweep.py |
 | 16 | 2026-03-21 06:03 | Day9-LoRA训练管线+参数深度 | 训练工具生态(sd-scripts/kohya_ss/OneTrainer/SimpleTuner/ai-toolkit)+数据准备全流程(质量>数量/SD1.5:30-100/SDXL:20-50/Flux:10-30/Tag vs NL打标/触发词/正则化)+核心参数深度(dim/alpha/分层LR/6种Optimizer/6种Scheduler/NoiseOffset/MinSNR/GradCheckpoint)+训练循环伪代码(ε-pred vs v-pred/MinSNR数学)+三架构对比(SD1.5/SDXL/Flux全维度)+Loss曲线诊断+三套快速启动配置 | day09-lora-training.md + lora-training/sd15-character-lora-config.toml + sdxl-style-lora-config.toml + flux-character-lora-config.toml + lora-strength-evaluation.json + prepare_dataset.py |
 | 19 | 2026-03-21 08:30 | Day11-LTX-2.3工作流深度 | LTX-2.3全47节点体系分析(5类:加载/潜空间/条件/采样/后处理)+两阶段管线原理(latent upscale>pixel upscale)+sigma序列分析(蒸馏从0.85/完整从1.0)+I2V两模式对比(Inplace vs ConditionOnly)+IC-LoRA Union Control原理+Wan 2.6 T2V+Ref2V实验+LTX vs Wan架构对比 | day11-ltx2-workflow-deep-dive.md |
+| 20 | 2026-03-21 10:03 | Day12-ComfyUI API节点体系 | Partner Nodes架构(ApiEndpoint/SynchronousOp/PollingOp三层抽象+AUTH_TOKEN_COMFY_ORG+VIDEO原生类型)+Kling 3.0全节点体系(T2V/I2V/Audio/MotionControl/Element Binding)+Seedance Pro(1080p/cameraFixed/首尾帧)+Veo 3.1(8s固定/800字符)+第三方节点生态(fal-API/Kie-API/wavespeed)+混合工作流范式+Kling vs Veo对比实验(¥0.75 vs ¥0.10) | day12-comfyui-api-node-ecosystem.md |
 
 ## Day 9 进度 (LoRA 训练 — kohya_ss / sd-scripts)
 - [x] LoRA 训练工具生态概览
@@ -214,3 +215,29 @@
   - [x] 实验 16: Wan 2.6 Ref2V（赛博朋克狗参考生视频，75s/¥0.40）
 - [x] LTX-2.3 vs Wan 2.6 架构对比（DiT + Flow Matching 共性与差异）
 - [ ] ComfyUI API 调用 LTX 完整实操（需本地 GPU 环境）
+
+## Day 12 进度 (ComfyUI API 节点体系 — Partner Nodes / Kling / Seedance / Veo3.1)
+- [x] Partner Nodes 架构总览
+  - [x] Partner Nodes 设计理念（内置/统一认证/Opt-in/Credits）
+  - [x] 技术架构（ApiEndpoint/SynchronousOperation/PollingOperation 三层抽象）
+  - [x] 源码分析（以 KlingTextToVideoNode 为例的三步模式）
+  - [x] AUTH_TOKEN_COMFY_ORG 隐藏参数注入机制
+  - [x] VIDEO 原生数据类型（PR #7844）
+- [x] 视频生成 Partner Nodes 全景分析
+  - [x] Kling 3.0 节点体系（T2V/I2V/Audio/MotionControl/CameraControl/StartEnd）
+  - [x] Kling 3.0 Motion Control + Element Binding 面部一致性
+  - [x] Seedance Pro 节点体系（T2V/I2V/FirstLastFrame/1080p/cameraFixed）
+  - [x] Veo 3.1 节点（Google DeepMind / 8s固定 / 800字符限制）
+  - [x] MiniMax Hailuo / Luma Ray2 / PixVerse / Pika / Wan 2.6 概览
+- [x] 三大模型 ComfyUI 集成深度对比（Kling vs Seedance vs Veo）
+- [x] 第三方 API 节点生态
+  - [x] ComfyUI-fal-API / ComfyUI-Kie-API / wavespeed-comfyui / ComfyUI-KLingAI-API
+  - [x] Partner Nodes vs 第三方节点全维度对比
+  - [x] Headless API Key Integration 机制
+- [x] 视频工作流编排模式
+  - [x] 三层集成层次（封装API / Partner Nodes / 本地模型）
+  - [x] 混合工作流范式（Local ControlNet + Cloud API + Local Upscale）
+- [x] RunningHub 实验
+  - [x] 实验 17: Kling 3.0 Pro I2V（samurai 动画化, 150s/¥0.75）
+  - [x] 实验 18: Veo 3.1 Pro I2V（同图对比, 125s/¥0.10）
+  - [x] Kling 3.0 vs Veo 3.1 全维度对比分析
