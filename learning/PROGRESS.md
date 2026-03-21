@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 3 - 高级技术 (学习路径已纠正)
-- **当前天数**: Day 10 — RunningHub 实操 + 视频生成方案全景
-- **上次学习时间**: 2026-03-21 07:10 UTC
-- **累计学习轮数**: 18
+- **当前天数**: Day 11 — LTX-2.3 视频工作流深度学习
+- **上次学习时间**: 2026-03-21 08:30 UTC
+- **累计学习轮数**: 19
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -61,6 +61,7 @@
 | 14 | 2026-03-20 22:03 | Day7-LoRA基础+多LoRA融合 | LoRA数学原理(低秩分解W=W₀+α/r·B·A/参数压缩66x)+LyCORIS全家族(LoCon/LoHa/LoKR/DoRA/DyLoRA对比)+ComfyUI源码(load_lora_for_models/Clone+Patch延迟应用/KeyMapping多格式适配/weight_adapter统一系统/BypassLoRA)+多LoRA堆叠(线性叠加/model vs clip分离调优/冲突诊断)+strength对比实验+model×clip网格实验+API批量sweep脚本 | day07-lora-fundamentals.md + lora/single-lora.json + multi-lora-chain.json + lora-strength-comparison.json + model-vs-clip-strength-grid.json + lora_strength_sweep.py |
 | 15 | 2026-03-21 00:03 | Day8-SDXL架构+Refiner工作流 | SDXL架构深度(2.6B U-Net/异构Transformer[0,2,10]/移除8x层)+双编码器(CLIP-L 768d+OpenCLIP-bigG 1280d=2048d拼接/Pooled Embedding)+微条件三件套(c_size/c_crop/c_ar Fourier编码→timestep)+CLIPTextEncodeSDXL源码(text_g/text_l分离/token长度补齐)+SDXL-VAE(batch256+EMA)+Refiner(ascore条件/只用OpenCLIP-bigG/step分割交接/80-20推荐比例)+社区共识(fine-tune替代/LoRA不兼容)+分辨率推荐表+SD1.5对照 | day08-sdxl-architecture-refiner.md + sdxl/sdxl-base-refiner-step-split.json + sdxl-micro-conditioning-experiment.json + refiner-ratio-comparison.json + sdxl_refiner_sweep.py |
 | 16 | 2026-03-21 06:03 | Day9-LoRA训练管线+参数深度 | 训练工具生态(sd-scripts/kohya_ss/OneTrainer/SimpleTuner/ai-toolkit)+数据准备全流程(质量>数量/SD1.5:30-100/SDXL:20-50/Flux:10-30/Tag vs NL打标/触发词/正则化)+核心参数深度(dim/alpha/分层LR/6种Optimizer/6种Scheduler/NoiseOffset/MinSNR/GradCheckpoint)+训练循环伪代码(ε-pred vs v-pred/MinSNR数学)+三架构对比(SD1.5/SDXL/Flux全维度)+Loss曲线诊断+三套快速启动配置 | day09-lora-training.md + lora-training/sd15-character-lora-config.toml + sdxl-style-lora-config.toml + flux-character-lora-config.toml + lora-strength-evaluation.json + prepare_dataset.py |
+| 19 | 2026-03-21 08:30 | Day11-LTX-2.3工作流深度 | LTX-2.3全47节点体系分析(5类:加载/潜空间/条件/采样/后处理)+两阶段管线原理(latent upscale>pixel upscale)+sigma序列分析(蒸馏从0.85/完整从1.0)+I2V两模式对比(Inplace vs ConditionOnly)+IC-LoRA Union Control原理+Wan 2.6 T2V+Ref2V实验+LTX vs Wan架构对比 | day11-ltx2-workflow-deep-dive.md |
 
 ## Day 9 进度 (LoRA 训练 — kohya_ss / sd-scripts)
 - [x] LoRA 训练工具生态概览
@@ -191,3 +192,25 @@
   - [x] 现代替代方案（Hires Fix / Tile ControlNet / Flux）
 - [x] SDXL 推荐分辨率与宽高比表
 - [x] SDXL vs SD1.5 工作流差异对照表（节点/参数/prompt 策略）
+
+## Day 11 进度 (LTX-2.3 视频工作流深度)
+- [x] LTX-2.3 模型架构与规格梳理
+  - [x] 22B DiT + Gemma 3 12B 文本编码器 + 新 VAE + 原生音频
+  - [x] vs LTX-2.0 的 6 大改进
+- [x] ComfyUI 节点体系完整分析（5 类 47 节点）
+  - [x] 模型加载类（CheckpointLoader / LTXAVTextEncoderLoader / AudioVAELoader）
+  - [x] 潜空间创建类（EmptyLTXVLatentVideo / EmptyLatentAudio / ConcatAVLatent）
+  - [x] 条件编码类（LTXVConditioning / ImgToVideoInplace / ConditionOnly / GemmaAPI）
+  - [x] 采样类（SamplerCustomAdvanced / CFGGuider / MultimodalGuider / ManualSigmas）
+  - [x] 后处理类（SeparateAVLatent / LatentUpsampler / VAEDecodeTiled / CreateVideo）
+- [x] 两阶段管线原理深入
+  - [x] Stage 1 低分辨率快速生成 + Stage 2 潜空间上采样精炼
+  - [x] Sigma 序列分析（蒸馏 vs 完整模式差异）
+- [x] I2V 两种模式对比（Inplace vs ConditionOnly）
+- [x] IC-LoRA Union Control 工作原理
+- [x] LTX vs Kling vs Seedance vs AnimateDiff 集成方式对比
+- [x] RunningHub 实验
+  - [x] 实验 15: Wan 2.6 T2V（金龙穿雾山，45s/¥0.38）
+  - [x] 实验 16: Wan 2.6 Ref2V（赛博朋克狗参考生视频，75s/¥0.40）
+- [x] LTX-2.3 vs Wan 2.6 架构对比（DiT + Flow Matching 共性与差异）
+- [ ] ComfyUI API 调用 LTX 完整实操（需本地 GPU 环境）
