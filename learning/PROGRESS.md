@@ -1,10 +1,10 @@
 # ComfyUI 学习进度追踪
 
 ## 当前状态
-- **当前阶段**: Phase 4 完成 ✅ → 准备进入 Phase 5
-- **当前天数**: Day 16 — 综合实战（完成）
-- **上次学习时间**: 2026-03-21 18:03 UTC
-- **累计学习轮数**: 24
+- **当前阶段**: Phase 5 进行中
+- **当前天数**: Day 17 — 模型合并（完成）
+- **上次学习时间**: 2026-03-21 20:03 UTC
+- **累计学习轮数**: 25
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -66,6 +66,7 @@
 | 22 | 2026-03-21 14:03 | Day14-自定义节点开发 | 节点类4必需属性(CATEGORY/INPUT_TYPES/RETURN_TYPES/FUNCTION)+INPUT_TYPES三级字典(required/optional/hidden)+全数据类型系统(14种)+执行控制(缓存/IS_CHANGED/VALIDATE_INPUTS)+高级特性7项(自定义类型/通配符/动态输入/Lazy Eval/ExecutionBlocker/Node Expansion/List处理)+前后端通信(send_sync/aiohttp路由/JS扩展)+V3规范+Vue迁移+真实世界4种模式分析 | day14-custom-node-development.md |
 | 23 | 2026-03-21 16:03 | Day15-Flux/SD3新架构 | Rectified Flow数学(v-prediction vs ε-prediction/线性插值/OT路径/Logit-Normal采样)+SD3 MMDiT架构(Joint Attention with Separate Weights/三编码器CLIP-L+G+T5/adaLN/QKV RMSNorm)+SD3.5变体对比(Medium 2.5B MMDiT-X/Large 8B/Turbo ADD蒸馏)+Flux.1架构逆向(19 Double-Stream+38 Single-Stream/渐进融合设计/RoPE位置编码/16通道VAE)+Flux变体(Pro/Dev Guidance Distillation/Schnell LADD)+ComfyUI工作流差异(SD3专用节点/Flux无negative prompt/CFG=1/FluxGuidance)+LoRA训练差异+社区生态对比+架构概念图实验 | day15-flux-sd3-new-architectures.md |
 | 24 | 2026-03-21 18:03 | Day16-综合实战视频管线 | 三阶段管线架构(关键帧→视频→后处理)+四种范式(全本地/混合/全API/RunningHub)+Flux+Kling混合工作流JSON+LTX-2.3两阶段工作流JSON+多分镜管线脚本(storyboard_pipeline.py)+三模型I2V对比(Seedance ¥0.30/Kling ¥0.75/Vidu首尾帧 ¥0.20)+关键帧生成+模型选择决策树+生产级错误处理+管线成本分析 | day16-comprehensive-video-pipeline.md |
+| 25 | 2026-03-21 20:03 | Day17-模型合并 | Mode Connectivity/Linear Mode Connectivity理论基础+6种经典方法(Weighted Sum/SLERP/Add Difference/Block Weighted/Task Arithmetic)+3种高级方法(TIES-Merging/DARE/Git Re-Basin)+DARE-TIES组合方法+ComfyUI源码分析(nodes_model_merging.py全11节点+add_patches机制)+SD1.5/SDXL/Flux合并差异+合并策略决策树+最佳实践8条+3个工作流JSON(基础合并/Add Difference/分块合并)+实验#27概念图 | day17-model-merging.md |
 
 ## Day 9 进度 (LoRA 训练 — kohya_ss / sd-scripts)
 - [x] LoRA 训练工具生态概览
@@ -382,3 +383,39 @@
 - [x] 四种管线架构对比（GPU要求/控制精度/质量/成本/适用场景）
 - [x] 关键帧质量对视频质量影响分析
 - [x] Prompt 工程差异总结（图像 vs 视频）
+
+## Day 17 进度 (模型合并 — Model Merging) ✅
+- [x] 模型合并理论基础
+  - [x] Mode Connectivity（Garipov 2018）— 独立训练模型可通过简单曲线连接
+  - [x] Linear Mode Connectivity（Frankle 2020）— 同基础模型微调后线性插值安全
+  - [x] 神经网络稀疏性 — 为什么合并时关键参数冲突概率低
+  - [x] Task Vector 定义（τ = θ_ft - θ_base）
+- [x] 6 种经典合并方法（数学公式 + ComfyUI 实现）
+  - [x] Weighted Sum: (1-α)·A + α·B + 源码 add_patches 机制
+  - [x] Add Difference: C + α·(A - B) + ModelSubtract/ModelAdd 源码
+  - [x] SLERP: 球面线性插值（sin 公式 + 范数保持优势）
+  - [x] Block Weighted Merge: input/middle/out 分块 + 最长前缀匹配源码
+  - [x] Task Arithmetic: θ_base + Σαᵢ·τᵢ
+  - [x] CosXL 转换案例
+- [x] 3 种高级合并方法（2023-2025 前沿）
+  - [x] TIES-Merging (NeurIPS 2023): Trim + Elect Sign + Merge 三步法
+  - [x] DARE (2024): Random Drop + Rescale（可丢 90-99% delta 参数）
+  - [x] DARE-TIES 组合方法
+  - [x] Git Re-Basin: 排列对齐后合并
+- [x] ComfyUI 源码深度分析（nodes_model_merging.py）
+  - [x] 全 11 个内置节点（Model/CLIP 各 Simple/Subtract/Add + Blocks + 3 Save）
+  - [x] add_patches(strength_patch, strength_model) 数学语义
+  - [x] CLIP 合并跳过 position_ids/logit_scale 的原因
+  - [x] CheckpointSave 元数据（modelspec 架构标记 + predict_key）
+  - [x] 架构特定 MBW 节点（SD1/SD2/SDXL/SD3/Flux）
+- [x] 第三方合并工具
+  - [x] ComfyUI-DareMerge（DARE-TIES + Gradient + Mask + Normalize）
+  - [x] SuperMerger / Chattiori-Model-Merger
+- [x] SD 各架构合并差异（SD1.5/SDXL/Flux block 结构 + 注意事项）
+- [x] LoRA 合并（合入模型 / 多 LoRA 叠加 / LoRA 间合并）
+- [x] 合并质量评估与诊断（6 种症状→原因→方案）
+- [x] 合并策略决策树
+- [x] 3 个工作流 JSON
+  - [x] model-merge-compare.json（Simple + Block 对比）
+  - [x] add-difference-inpaint.json（三模型能力迁移）
+- [x] RunningHub 实验 #27（模型合并概念信息图，25s/¥0.03）

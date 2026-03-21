@@ -1,0 +1,115 @@
+{
+  "_comment": "ComfyUI Model Merge + Test Workflow: Weighted Sum + Block Weighted + Add Difference",
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": { "ckpt_name": "sd_xl_base_1.0.safetensors" },
+    "_meta": { "title": "Model A (SDXL Base)" }
+  },
+  "2": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": { "ckpt_name": "albedobaseXL_v21.safetensors" },
+    "_meta": { "title": "Model B (AlbedoBase XL)" }
+  },
+  "10": {
+    "class_type": "ModelMergeSimple",
+    "inputs": {
+      "model1": ["1", 0],
+      "model2": ["2", 0],
+      "ratio": 0.5
+    },
+    "_meta": { "title": "Simple Merge (50/50)" }
+  },
+  "11": {
+    "class_type": "ModelMergeBlocks",
+    "inputs": {
+      "model1": ["1", 0],
+      "model2": ["2", 0],
+      "input": 0.3,
+      "middle": 0.5,
+      "out": 0.8
+    },
+    "_meta": { "title": "Block Merge (构图A + 风格B)" }
+  },
+  "20": {
+    "class_type": "CLIPMergeSimple",
+    "inputs": {
+      "clip1": ["1", 1],
+      "clip2": ["2", 1],
+      "ratio": 0.5
+    },
+    "_meta": { "title": "CLIP Merge (50/50)" }
+  },
+  "30": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "a majestic phoenix rising from flames, golden feathers, dramatic lighting, cinematic composition, 8k ultra detailed",
+      "clip": ["20", 0]
+    },
+    "_meta": { "title": "Positive Prompt" }
+  },
+  "31": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "blurry, low quality, deformed, ugly, text, watermark",
+      "clip": ["20", 0]
+    },
+    "_meta": { "title": "Negative Prompt" }
+  },
+  "40": {
+    "class_type": "EmptyLatentImage",
+    "inputs": { "width": 1024, "height": 1024, "batch_size": 1 },
+    "_meta": { "title": "SDXL Resolution" }
+  },
+  "50": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["10", 0],
+      "positive": ["30", 0],
+      "negative": ["31", 0],
+      "latent_image": ["40", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1.0
+    },
+    "_meta": { "title": "KSampler (Simple Merge)" }
+  },
+  "51": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["11", 0],
+      "positive": ["30", 0],
+      "negative": ["31", 0],
+      "latent_image": ["40", 0],
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1.0
+    },
+    "_meta": { "title": "KSampler (Block Merge)" }
+  },
+  "60": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["50", 0], "vae": ["1", 2] },
+    "_meta": { "title": "Decode Simple Merge" }
+  },
+  "61": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["51", 0], "vae": ["1", 2] },
+    "_meta": { "title": "Decode Block Merge" }
+  },
+  "70": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["60", 0], "filename_prefix": "merge_simple" },
+    "_meta": { "title": "Save Simple Merge Result" }
+  },
+  "71": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["61", 0], "filename_prefix": "merge_block" },
+    "_meta": { "title": "Save Block Merge Result" }
+  }
+}

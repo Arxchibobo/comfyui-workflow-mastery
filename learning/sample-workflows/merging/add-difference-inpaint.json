@@ -1,0 +1,45 @@
+{
+  "_comment": "Add Difference Workflow: Transfer inpaint capability to any model. Formula: (inpaint - base) * 1.0 + target",
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": { "ckpt_name": "sd_xl_base_1.0_inpainting.safetensors" },
+    "_meta": { "title": "Inpaint Model (Source)" }
+  },
+  "2": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": { "ckpt_name": "sd_xl_base_1.0.safetensors" },
+    "_meta": { "title": "Base Model (Reference)" }
+  },
+  "3": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": { "ckpt_name": "albedobaseXL_v21.safetensors" },
+    "_meta": { "title": "Target Model (Recipient)" }
+  },
+  "10": {
+    "class_type": "ModelSubtract",
+    "inputs": {
+      "model1": ["1", 0],
+      "model2": ["2", 0],
+      "multiplier": 1.0
+    },
+    "_meta": { "title": "Extract Inpaint Delta: Inpaint - Base" }
+  },
+  "11": {
+    "class_type": "ModelAdd",
+    "inputs": {
+      "model1": ["3", 0],
+      "model2": ["10", 0]
+    },
+    "_meta": { "title": "Apply Delta to Target: Target + Delta" }
+  },
+  "20": {
+    "class_type": "CheckpointSave",
+    "inputs": {
+      "model": ["11", 0],
+      "clip": ["3", 1],
+      "vae": ["3", 2],
+      "filename_prefix": "checkpoints/albedo_inpaint_merged"
+    },
+    "_meta": { "title": "Save Merged Inpaint Model" }
+  }
+}
