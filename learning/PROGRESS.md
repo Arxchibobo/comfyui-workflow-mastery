@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 5 进行中
-- **当前天数**: Day 18 — ComfyUI API 自动化 + 批量任务（完成）
-- **上次学习时间**: 2026-03-22 00:03 UTC
-- **累计学习轮数**: 26
+- **当前天数**: Day 19 — 性能优化（TensorRT / 量化 / 显存管理）（完成）
+- **上次学习时间**: 2026-03-22 02:03 UTC
+- **累计学习轮数**: 27
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -68,6 +68,7 @@
 | 24 | 2026-03-21 18:03 | Day16-综合实战视频管线 | 三阶段管线架构(关键帧→视频→后处理)+四种范式(全本地/混合/全API/RunningHub)+Flux+Kling混合工作流JSON+LTX-2.3两阶段工作流JSON+多分镜管线脚本(storyboard_pipeline.py)+三模型I2V对比(Seedance ¥0.30/Kling ¥0.75/Vidu首尾帧 ¥0.20)+关键帧生成+模型选择决策树+生产级错误处理+管线成本分析 | day16-comprehensive-video-pipeline.md |
 | 25 | 2026-03-21 20:03 | Day17-模型合并 | Mode Connectivity/Linear Mode Connectivity理论基础+6种经典方法(Weighted Sum/SLERP/Add Difference/Block Weighted/Task Arithmetic)+3种高级方法(TIES-Merging/DARE/Git Re-Basin)+DARE-TIES组合方法+ComfyUI源码分析(nodes_model_merging.py全11节点+add_patches机制)+SD1.5/SDXL/Flux合并差异+合并策略决策树+最佳实践8条+3个工作流JSON(基础合并/Add Difference/分块合并)+实验#27概念图 | day17-model-merging.md |
 | 26 | 2026-03-22 00:03 | Day18-API自动化+批量任务 | ComfyUI全API端点深度(30+路由/WebSocket 8种消息类型/prompt POST格式)+Python自动化工具生态(官方示例/comfyui_utils/comfy-nodekit/ComfyUI-to-Python/ComfyScript 5库对比)+生产部署方案(SaladTech无状态API/BentoML comfy-pack/Cloud平台)+批量4模式(串行/预提交/多WS并行/分布式)+参数扫描6维度+错误处理5类+生产级batch_api_runner.py(469行/CSV+JSON/重试/OOM恢复)+RunningHub批量实验#28(3风格龙,72.5s,¥0.09) | day18-comfyui-api-automation.md + batch_api_runner.py |
+| 27 | 2026-03-22 02:03 | Day19-性能优化 | VRAM三大消耗源(权重/激活/注意力二次方缩放)+精度格式全景(FP32/BF16/FP16/FP8/GGUF Q2-Q8/NF4/NVFP4共8级对比)+GGUF量化深度(city96/block缩放/DiT vs U-Net适配性)+注意力优化5种方法(xFormers/FlashAttn/SageAttn/SDPA/Slicing)+卸载策略4级(TE/VAE/lowvram/novram)+Async Offloading+Pinned Memory(10-50%加速)+TensorRT(2-3x但不兼容LoRA/CN)+torch.compile(30%加速)+Tiled VAE(43%省VRAM)+NVFP4 Nunchaku(3x加速/Blackwell)+ComfyUI Dynamic VRAM+综合决策树(按GPU分4档)+7个性能节点包+实验#29概念图 | day19-performance-optimization.md |
 
 ## Day 9 进度 (LoRA 训练 — kohya_ss / sd-scripts)
 - [x] LoRA 训练工具生态概览
@@ -457,3 +458,64 @@
   - [x] CUDA OOM 自动恢复
   - [x] 结果摘要报告
 - [x] RunningHub 实验 #28（批量 3 风格龙图，72.5s/¥0.09）
+
+## Day 19 进度 (性能优化 — TensorRT / 量化 / 显存管理) ✅
+- [x] VRAM 消耗原理深度分析
+  - [x] 三大 VRAM 消耗源（模型权重/激活值/注意力矩阵）
+  - [x] 注意力的二次方缩放行为（1024x1024 = 4x 512x512 注意力内存）
+  - [x] PyTorch 内存分配器行为（块分配/碎片化/reserved vs allocated）
+- [x] ComfyUI 内置 VRAM 管理机制
+  - [x] Smart Memory 系统（load_models_gpu/free_memory/LRU 驱逐）
+  - [x] Dynamic VRAM（0.5.0+ 默认启用）
+  - [x] 启动参数全集（--gpu-only/--highvram/默认/--lowvram/--novram/--reserve-vram/--disable-smart-memory）
+- [x] 精度格式全景对比（8 级）
+  - [x] FP32/BF16/FP16/FP8/GGUF Q8_0/GGUF Q5_K/NF4/NVFP4 全维度对比
+  - [x] FP16 vs BF16 选择策略（精度 vs 范围/NaN 问题）
+  - [x] FP8 vs GGUF Q8 深度对比（硬件加速 vs block 缩放）
+- [x] GGUF 量化深度解析
+  - [x] city96/ComfyUI-GGUF 节点系统（Unet Loader GGUF / CLIPLoader GGUF）
+  - [x] block 缩放机制原理（32 值一组 + 独立缩放因子）
+  - [x] DiT vs U-Net 量化适配性（线性层 vs conv2d 敏感度差异）
+  - [x] 预量化模型生态（Flux/SD3.5/T5 全系列）
+  - [x] LoRA 实验性兼容
+- [x] NF4 (BitsAndBytes) 与 NVFP4 (Nunchaku)
+  - [x] NF4 正态分布假设 + 分位数编码
+  - [x] NVFP4 SVDQuant（ICLR 2025 Spotlight）低秩分量吸收离群值
+  - [x] Nunchaku 引擎 + ComfyUI-nunchaku 插件
+  - [x] RTX 5090 上 3x 加速（需 cu130 PyTorch）
+- [x] 注意力优化 5 种方法对比
+  - [x] xFormers（分块/近线性/+20%/广泛兼容）
+  - [x] Flash Attention（IO-Aware/融合/+25-30%/Ampere+）
+  - [x] SageAttention（Triton kernel/+30-40%/需编译）
+  - [x] PyTorch SDPA（自动选择/+15-25%/2.0+内置）
+  - [x] Attention Slicing（极省内存/极慢/最后手段）
+- [x] 卸载策略 4 级
+  - [x] 文本编码器卸载（省 1-2GB/极小影响）
+  - [x] VAE 卸载（省 160-320MB）
+  - [x] lowvram 模式（5-10x 慢但能跑）
+  - [x] novram/CPU 模式
+- [x] Async Offloading + Pinned Memory（2025 年 12 月默认启用）
+  - [x] Pinned Memory 原理（页锁定/DMA 直接访问）
+  - [x] Async Offloading 原理（权重传输与计算异步并行）
+  - [x] 10-50% 加速（仅卸载场景有效）
+  - [x] PCIe 代数/通道数直接影响收益
+- [x] TensorRT 加速
+  - [x] 图优化/核融合/精度校准/GPU 特定优化
+  - [x] ComfyUI_TensorRT 节点（Static vs Dynamic Engine）
+  - [x] 性能 2-3x 加速
+  - [x] ⚠️ 不兼容 ControlNet/LoRA（致命限制）
+  - [x] 决策树（需要 CN/LoRA → 不用 TRT）
+- [x] torch.compile 优化
+  - [x] TorchCompileModel 内置节点
+  - [x] GGUF Flux Q8_0 约 30% 加速
+  - [x] LoRA-Safe TorchCompile 社区节点
+- [x] VAE 分块处理（Tiled VAE）
+  - [x] VAEDecodeTiled/VAEEncodeTiled 原理
+  - [x] VRAM 从 14GB → 8GB（43% 节省，RTX 4090 实测）
+- [x] 综合优化策略决策树
+  - [x] 按 GPU VRAM 分 4 档（24GB+/12-16GB/8GB/4GB/Blackwell）
+  - [x] 速度优化清单 7 条
+  - [x] VRAM 节省清单 6 条
+  - [x] 常见问题诊断表（7 种症状→原因→方案）
+- [x] 性能相关自定义节点生态（7 个核心节点包）
+- [x] RunningHub 实验 #29（性能优化概念信息图，30s/¥0.03）
