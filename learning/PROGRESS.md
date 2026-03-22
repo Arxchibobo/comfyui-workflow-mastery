@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 7 进行中
-- **当前天数**: Day 24 — 视频后期处理与帧插值（完成）
-- **上次学习时间**: 2026-03-22 18:30 UTC
-- **累计学习轮数**: 32
+- **当前天数**: Day 25 — 高级视频控制技术（完成）
+- **上次学习时间**: 2026-03-22 20:03 UTC
+- **累计学习轮数**: 33
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -74,6 +74,7 @@
 | 30 | 2026-03-22 14:08 | Day22-角色一致性与人脸技术 | 角色一致性技术全景(训练型/零样本/人脸替换/组合4大类)+IP-Adapter架构深度(解耦交叉注意力/CLIP ViT-H→新Cross-Attn分支/22M参数/8种变体全对比)+IP-Adapter FaceID(ArcFace 512d→CLIP空间/Plus V2双路融合/需配套LoRA)+InstantID三组件(InsightFace AntelopeV2+IdentityNet ControlNet+IP-Adapter/零样本SDXL only)+PuLID架构(NeurIPS 2024/对比对齐+闪电T2I双分支训练/最小化模型污染/91%身份精度最高/PuLID-FLUX适配)+PhotoMaker(CVPR 2024/堆叠ID Embedding/多图融合)+ReActor深度(inswapper_128后处理/128px限制/必配FaceDetailer)+生产级组合4方案(PuLID+ReActor精修/InstantID+Canny多控/IPAdapter+AnimateDiff视频/LoRA+零样本混合)+全方法6维对比表+方法选择决策树+InsightFace基础设施(AntelopeV2组件/ArcFace 512d)+实验#34概念图(¥0.03)+实验#35角色参考生成(¥0.03)+实验#36图生图一致性(¥0.03) | day22-character-consistency-face-techniques.md |
 | 31 | 2026-03-22 16:30 | Day23-高级蒙版与自动分割 | SAM架构深度(ViT-H/MAE/Prompt Encoder三种提示/Mask Decoder歧义感知3层级输出)+SAM2革新(Hiera层次骨干/Memory Bank流式记忆/Memory Attention跨帧传播/Occlusion Score/6x faster)+GroundingDINO架构(ECCV 2024/三阶段紧密融合A+B+C/Feature Enhancer双向Cross-Attn/Language-Guided Query Selection/Sub-Sentence文本表示)+Grounded-SAM管线(文本→bbox→mask)+Impact Pack SEGS体系深度(数据结构/FaceDetailer 4步管线/检测器体系/SEGS操作全集/denoise调优)+Florence-2统一视觉模型(caption+detect+segment+OCR)+背景移除(RMBG 2.0/BiRefNet/ComfyUI-RMBG统一节点)+ComfyUI内置Mask操作(MaskComposite 6种操作/Masquerade Nodes)+5种生产级工作流模式+方法选择决策树+实验#37概念图(¥0.03)+实验#38角色生成(¥0.03)+实验#39背景替换编辑(¥0.03) | day23-advanced-masking-segmentation.md |
 | 32 | 2026-03-22 18:30 | Day24-视频后期处理与帧插值 | 帧插值技术全景(RIFE IFNet架构/多尺度粗到细/Privileged Distillation/版本4.0-4.15演进)+FILM(大运动/递归中点)+GIMM-VFI(NeurIPS 2024隐式运动建模/四变体)+IFRNet/AMT/GMFSS等14种VFI算法对比+ComfyUI-Frame-Interpolation节点体系(14算法/调度器/clear_cache)+视频放大技术(SeedVR2扩散式放大/Hann Window时间一致性/四阶段管线/Topaz Proteus v5/DiffVSR流式超分)+去闪烁4种方法(统计/光流引导/颜色匹配/FreeLong频谱)+色彩校正(LUT 3D查找表/4个ComfyUI LUT节点包/EasyColorCorrector)+视频编辑节点生态(VHS全节点体系/Mana-Nodes/VideoDirCombiner/速度控制)+生产级4阶段后期管线(修复→放大→插帧→调色)+参数速查+诊断表+实验#40龙虾冲浪关键帧(¥0.03)+实验#41 Seedance I2V(¥0.30)+实验#42 Topaz视频放大(¥0.11) | day24-video-post-processing-frame-interpolation.md |
+| 33 | 2026-03-22 20:03 | Day25-高级视频控制技术 | 6维视频控制全景(镜头/运动/参考/首尾帧/编辑/多镜头)+Kling Camera Controls深度(6DOF参数/5种预设/KlingCameraControlI2V源码分析/硬编码限制)+Seedance prompt-driven镜头+AnimateDiff CameraCtrl本地方案(CameraCtrl_pruned/6种预设运动)+MotionCtrl学术方案(SIGGRAPH Asia/相机+物体解耦)+Kling 3.0 Motion Control(Element Binding面部一致性/characterOrientation双模式/30s连续)+Reference-to-Video全景(O3 vs O1 vs Wan2.6 vs Vidu)+首尾帧技术(语义理解vs像素插值/Vidu参数详解/最佳实践)+Kling V3/O1/O3全系列对比+ComfyUI 4种工作流模式+混合管线设计+实验#43关键帧生成(¥0.06)+实验#44 Vidu首尾帧(90s/¥0.20)+实验#45 Seedance镜头控制(70s/¥0.30) | day25-advanced-video-control-techniques.md |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
@@ -773,3 +774,51 @@
   - [x] 实验 #40: 龙虾冲浪关键帧生成（rhart-image-n-pro, 20s/¥0.03）
   - [x] 实验 #41: Seedance Fast I2V 视频生成（50s/¥0.30）
   - [x] 实验 #42: Topaz 视频放大（75s/¥0.11）
+
+## Day 25 进度 (高级视频控制技术 — Advanced Video Control Techniques) ✅
+- [x] 视频控制技术全景
+  - [x] 6 维控制维度分类（镜头/运动/参考/首尾帧/编辑/多镜头）
+  - [x] 技术演进时间线（AnimateDiff 2023 → CameraCtrl → MotionCtrl → Kling O1 → O3 2025 → Seedance 1.5 2026）
+- [x] 镜头运动控制 (Camera Control) 深度解析
+  - [x] 6DOF 数学基础（3 平移 + 3 旋转）
+  - [x] Kling Camera Controls 源码分析（KlingCameraControls / 6 个 float 参数 / 5 种预设 / VALIDATE_INPUTS 验证）
+  - [x] KlingCameraControlI2VNode 源码（⚠️ 硬编码 kling-v1-5 / pro / 5s 限制）
+  - [x] KlingCameraControlT2VNode（文生视频+相机控制）
+  - [x] Seedance 镜头控制（cameraFixed 参数 + Prompt-driven 方式）
+  - [x] AnimateDiff CameraCtrl 本地方案（CameraCtrl_pruned.safetensors / RT矩阵注入 / 6 种预设运动 / SD1.5 限制）
+  - [x] MotionCtrl 学术方案（SIGGRAPH Asia 2024 / 相机+物体解耦控制 / SVD 版本）
+  - [x] 5 种镜头控制方案全维度对比（精度/画质/成本/GPU/生态）
+- [x] 运动控制 (Motion Control) 深度解析
+  - [x] Motion Control 概念与原理（参考视频动作提取→迁移到目标角色）
+  - [x] Kling 2.6 → 3.0 Motion Control 演进（Element Binding 面部一致性系统）
+  - [x] 3.0 新能力（多角度面部稳定/精确复杂表情/遮挡恢复/镜头运动中保持清晰）
+  - [x] Motion Control API 参数详解（characterOrientation video/image 双模式）
+  - [x] ComfyUI KlingMotionControl 工作流（3 节点拓扑）
+  - [x] 最佳实践（参考图/参考视频要求 + 常见陷阱）
+- [x] 参考生视频 (Reference-to-Video) 深度解析
+  - [x] 与 Motion Control 关键区别（动作迁移 vs 身份保持）
+  - [x] Kling O3 Reference-to-Video（最强大: 视频+7图+声音克隆）
+  - [x] Kling O1 / Wan 2.6 / Vidu / Seedance 方案对比
+  - [x] ComfyUI KlingOmniEditModel 工作流
+- [x] 首尾帧控制 (Start-End-to-Video) 深度解析
+  - [x] 与传统帧插值的本质区别（语义理解 vs 像素插值）
+  - [x] 6 大应用场景（过渡/变形/场景转换/动作序列/循环/Before-After）
+  - [x] Vidu Start-End API 参数详解（duration/resolution/movementAmplitude/bgm）
+  - [x] Kling O1 Start-to-End（@Image1/@Image2 prompt 引用）
+  - [x] Seedance FLF2V ComfyUI Partner Node
+  - [x] 首尾帧设计最佳实践（一致性/变化幅度匹配时长/运动幅度/Prompt引导）
+- [x] Kling 模型系列全景（V3/O1/O3）
+  - [x] V3 "导演"模式 vs O1 "导演+后期" vs O3 "全能"模式
+  - [x] RunningHub 全端点映射表（T2V/I2V/MotionControl/Ref2V/StartEnd × V3/O1/O3）
+  - [x] 选择决策树（按需求→模型映射）
+- [x] ComfyUI 4 种高级视频控制工作流模式
+  - [x] 模式一: 镜头控制 I2V（Camera Controls → I2V）
+  - [x] 模式二: 动作迁移（Image + Video → MotionControl）
+  - [x] 模式三: 首尾帧控制（首帧+尾帧 → FLF2V）
+  - [x] 模式四: 参考生视频（多角度参考 → OmniEdit）
+  - [x] 混合管线设计（本地关键帧 + API视频 + 本地后期）
+- [x] 成本对比表（7 种功能 × RunningHub 价格）
+- [x] RunningHub 实验
+  - [x] 实验 #43: 功夫大师关键帧生成（首帧+尾帧，各 20s/¥0.03）
+  - [x] 实验 #44: Vidu 首尾帧生视频（站立→飞踢过渡，90s/¥0.20）
+  - [x] 实验 #45: Seedance Prompt 镜头控制（环绕式镜头，70s/¥0.30）
