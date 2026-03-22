@@ -1,10 +1,10 @@
 # ComfyUI 学习进度追踪
 
 ## 当前状态
-- **当前阶段**: Phase 5 进行中
-- **当前天数**: Day 19 — 性能优化（TensorRT / 量化 / 显存管理）（完成）
-- **上次学习时间**: 2026-03-22 02:03 UTC
-- **累计学习轮数**: 27
+- **当前阶段**: Phase 6 进行中
+- **当前天数**: Day 20 — 高级条件控制与构图技术（完成）
+- **上次学习时间**: 2026-03-22 04:03 UTC
+- **累计学习轮数**: 28
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -69,6 +69,7 @@
 | 25 | 2026-03-21 20:03 | Day17-模型合并 | Mode Connectivity/Linear Mode Connectivity理论基础+6种经典方法(Weighted Sum/SLERP/Add Difference/Block Weighted/Task Arithmetic)+3种高级方法(TIES-Merging/DARE/Git Re-Basin)+DARE-TIES组合方法+ComfyUI源码分析(nodes_model_merging.py全11节点+add_patches机制)+SD1.5/SDXL/Flux合并差异+合并策略决策树+最佳实践8条+3个工作流JSON(基础合并/Add Difference/分块合并)+实验#27概念图 | day17-model-merging.md |
 | 26 | 2026-03-22 00:03 | Day18-API自动化+批量任务 | ComfyUI全API端点深度(30+路由/WebSocket 8种消息类型/prompt POST格式)+Python自动化工具生态(官方示例/comfyui_utils/comfy-nodekit/ComfyUI-to-Python/ComfyScript 5库对比)+生产部署方案(SaladTech无状态API/BentoML comfy-pack/Cloud平台)+批量4模式(串行/预提交/多WS并行/分布式)+参数扫描6维度+错误处理5类+生产级batch_api_runner.py(469行/CSV+JSON/重试/OOM恢复)+RunningHub批量实验#28(3风格龙,72.5s,¥0.09) | day18-comfyui-api-automation.md + batch_api_runner.py |
 | 27 | 2026-03-22 02:03 | Day19-性能优化 | VRAM三大消耗源(权重/激活/注意力二次方缩放)+精度格式全景(FP32/BF16/FP16/FP8/GGUF Q2-Q8/NF4/NVFP4共8级对比)+GGUF量化深度(city96/block缩放/DiT vs U-Net适配性)+注意力优化5种方法(xFormers/FlashAttn/SageAttn/SDPA/Slicing)+卸载策略4级(TE/VAE/lowvram/novram)+Async Offloading+Pinned Memory(10-50%加速)+TensorRT(2-3x但不兼容LoRA/CN)+torch.compile(30%加速)+Tiled VAE(43%省VRAM)+NVFP4 Nunchaku(3x加速/Blackwell)+ComfyUI Dynamic VRAM+综合决策树(按GPU分4档)+7个性能节点包+实验#29概念图 | day19-performance-optimization.md |
+| 28 | 2026-03-22 04:03 | Day20-高级条件控制与构图 | Conditioning数据结构深度(list of [tensor,dict])+四种操作数学本质(Combine=噪声预测级加权平均/Concat=torch.cat(dim=1)突破77token/Average=嵌入空间线性插值/SetArea+Combine=区域分离)+源码分析(nodes.py全8个条件节点+samplers.py的_calc_cond_batch/get_area_and_mult/cfg_function)+区域控制3方案(SetArea矩形+SetMask自由形状+Attention Couple注意力级)+时间维度(SetTimestepRange prompt调度)+GLIGEN接地式布局+CLIP Vision/unCLIP/Style Model+注意力操控(SAG/PAG/SEG/NAG)+ConditioningZeroOut+高级构图模式3种+决策树+实验#30区域构图(¥0.03)+实验#31超长prompt(¥0.03) | day20-advanced-conditioning-composition.md |
 
 ## Day 9 进度 (LoRA 训练 — kohya_ss / sd-scripts)
 - [x] LoRA 训练工具生态概览
@@ -519,3 +520,51 @@
   - [x] 常见问题诊断表（7 种症状→原因→方案）
 - [x] 性能相关自定义节点生态（7 个核心节点包）
 - [x] RunningHub 实验 #29（性能优化概念信息图，30s/¥0.03）
+
+## Day 20 进度 (高级条件控制与构图技术 — Advanced Conditioning & Composition) ✅
+- [x] Conditioning 数据结构深度解析
+  - [x] 内部表示：list of [tensor, metadata_dict]
+  - [x] 元数据全字段：pooled_output/area/strength/mask/start_percent/end_percent/gligen/control/hooks/uuid
+  - [x] 采样器消费流程：_calc_cond_batch → get_area_and_mult → 加权平均
+- [x] 四种 Conditioning 操作的数学本质（源码级分析）
+  - [x] Combine: Python list 拼接 → 噪声预测级加权平均（每条目独立 model forward）
+  - [x] Concat: torch.cat(dim=1) → token 序列拼接（突破 77 token 限制）
+  - [x] Average: α×t1 + (1-α)×t0 → 嵌入空间线性插值（单次 forward）
+  - [x] 四种操作的混合层级/数学操作/Forward次数/用途对比表
+- [x] 区域条件控制（Regional Prompting）
+  - [x] ConditioningSetArea 源码（像素→latent 坐标转换 + 8px fuzz 渐变机制）
+  - [x] ConditioningSetAreaPercentage（百分比版，分辨率无关）
+  - [x] ConditioningSetMask 源码（mask×mask_strength + set_area_to_bounds 优化）
+  - [x] SetArea vs SetMask 全维度对比
+  - [x] 社区方案：Impact Pack RegionalConditioningByColorMask / ComfyCouple Attention Couple / Inspire Pack
+- [x] 时间维度控制
+  - [x] ConditioningSetTimestepRange 源码（start_percent/end_percent + 采样器 timestep 检查）
+  - [x] Prompt Scheduling 设计模式（三阶段：构图→细节→质量）
+  - [x] FizzNodes PromptSchedule（动画/视频用）
+  - [x] comfyui-prompt-control（A1111 语法兼容）
+- [x] GLIGEN 接地式布局控制
+  - [x] 架构（gated self-attention + bounding box + text）
+  - [x] ComfyUI 实现（gligen 元数据 → middle_patch 注入）
+  - [x] 局限性（仅 SD1.5/SD2.1，被 ControlNet + Regional Prompting 替代）
+- [x] CLIP Vision & unCLIP & Style Model
+  - [x] CLIPVisionEncode（图像→向量）
+  - [x] unCLIPConditioning（图像语义注入 + noise_augmentation）
+  - [x] ApplyStyleModel（CLIP Vision → conditioning tokens → 拼接）
+  - [x] 被 IP-Adapter 方案功能性替代
+- [x] 注意力操控技术
+  - [x] SAG（Self-Attention Guidance）：模糊 self-attention map 引导结构
+  - [x] PAG（Perturbed-Attention Guidance，CVPR 2024）：恒等映射替换 self-attention
+  - [x] sd-perturbed-attention 扩展生态（SEG/SWG/NAG/TPG/FDG/MG/SMC-CFG 共 8 种）
+  - [x] Attention Couple vs 噪声预测级区域混合的本质差异
+- [x] ConditioningZeroOut 特殊用途（Flux negative / 无文本引导测试）
+- [x] 高级构图模式
+  - [x] 方案 A: SetArea + Combine（简单矩形）
+  - [x] 方案 B: SetMask + Combine（精确形状）
+  - [x] 方案 C: Attention Couple（模型层面隔离）
+  - [x] 多阶段 Prompt 策略
+  - [x] Negative Prompt 分时段控制
+- [x] 条件系统决策树
+- [x] 关键源码函数速查表（7 个核心函数）
+- [x] RunningHub 实验
+  - [x] 实验 #30: 区域构图对比（红甲战士 vs 蓝衣法师，35s/¥0.03）
+  - [x] 实验 #31: 超长 Prompt 细节测试（200 token 赛博朋克场景，40s/¥0.03）
