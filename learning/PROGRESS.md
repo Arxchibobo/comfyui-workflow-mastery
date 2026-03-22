@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 5 进行中
-- **当前天数**: Day 17 — 模型合并（完成）
-- **上次学习时间**: 2026-03-21 20:03 UTC
-- **累计学习轮数**: 25
+- **当前天数**: Day 18 — ComfyUI API 自动化 + 批量任务（完成）
+- **上次学习时间**: 2026-03-22 00:03 UTC
+- **累计学习轮数**: 26
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -67,6 +67,7 @@
 | 23 | 2026-03-21 16:03 | Day15-Flux/SD3新架构 | Rectified Flow数学(v-prediction vs ε-prediction/线性插值/OT路径/Logit-Normal采样)+SD3 MMDiT架构(Joint Attention with Separate Weights/三编码器CLIP-L+G+T5/adaLN/QKV RMSNorm)+SD3.5变体对比(Medium 2.5B MMDiT-X/Large 8B/Turbo ADD蒸馏)+Flux.1架构逆向(19 Double-Stream+38 Single-Stream/渐进融合设计/RoPE位置编码/16通道VAE)+Flux变体(Pro/Dev Guidance Distillation/Schnell LADD)+ComfyUI工作流差异(SD3专用节点/Flux无negative prompt/CFG=1/FluxGuidance)+LoRA训练差异+社区生态对比+架构概念图实验 | day15-flux-sd3-new-architectures.md |
 | 24 | 2026-03-21 18:03 | Day16-综合实战视频管线 | 三阶段管线架构(关键帧→视频→后处理)+四种范式(全本地/混合/全API/RunningHub)+Flux+Kling混合工作流JSON+LTX-2.3两阶段工作流JSON+多分镜管线脚本(storyboard_pipeline.py)+三模型I2V对比(Seedance ¥0.30/Kling ¥0.75/Vidu首尾帧 ¥0.20)+关键帧生成+模型选择决策树+生产级错误处理+管线成本分析 | day16-comprehensive-video-pipeline.md |
 | 25 | 2026-03-21 20:03 | Day17-模型合并 | Mode Connectivity/Linear Mode Connectivity理论基础+6种经典方法(Weighted Sum/SLERP/Add Difference/Block Weighted/Task Arithmetic)+3种高级方法(TIES-Merging/DARE/Git Re-Basin)+DARE-TIES组合方法+ComfyUI源码分析(nodes_model_merging.py全11节点+add_patches机制)+SD1.5/SDXL/Flux合并差异+合并策略决策树+最佳实践8条+3个工作流JSON(基础合并/Add Difference/分块合并)+实验#27概念图 | day17-model-merging.md |
+| 26 | 2026-03-22 00:03 | Day18-API自动化+批量任务 | ComfyUI全API端点深度(30+路由/WebSocket 8种消息类型/prompt POST格式)+Python自动化工具生态(官方示例/comfyui_utils/comfy-nodekit/ComfyUI-to-Python/ComfyScript 5库对比)+生产部署方案(SaladTech无状态API/BentoML comfy-pack/Cloud平台)+批量4模式(串行/预提交/多WS并行/分布式)+参数扫描6维度+错误处理5类+生产级batch_api_runner.py(469行/CSV+JSON/重试/OOM恢复)+RunningHub批量实验#28(3风格龙,72.5s,¥0.09) | day18-comfyui-api-automation.md + batch_api_runner.py |
 
 ## Day 9 进度 (LoRA 训练 — kohya_ss / sd-scripts)
 - [x] LoRA 训练工具生态概览
@@ -419,3 +420,40 @@
   - [x] model-merge-compare.json（Simple + Block 对比）
   - [x] add-difference-inpaint.json（三模型能力迁移）
 - [x] RunningHub 实验 #27（模型合并概念信息图，25s/¥0.03）
+
+## Day 18 进度 (ComfyUI API 自动化 + 批量任务) ✅
+- [x] ComfyUI HTTP API 全端点深度分析
+  - [x] 30+ 内置路由完整列表（Core API + User Data + Queue Management）
+  - [x] /prompt POST 请求格式详解（prompt/client_id/prompt_id/extra_data/front/number）
+  - [x] WebSocket 消息协议（8 种消息类型 + 二进制 latent preview 解码）
+  - [x] 完整 API 调用流程（5 步：连接→提交→监听→查历史→下载）
+- [x] Python 自动化工具生态对比
+  - [x] 官方 websockets_api_example.py 源码分析
+  - [x] 5 个第三方库对比（comfyui_utils/comfy-api-simplified/ComfyUI-to-Python/comfy-nodekit/ComfyScript）
+  - [x] 各库适用场景决策树
+- [x] 生产级部署方案分析
+  - [x] SaladTechnologies/comfyui-api（无状态 API + Webhook + S3/Azure 存储 + LRU 缓存）
+  - [x] BentoML/comfy-pack（环境快照 → Docker → 云部署）
+  - [x] Cloud 平台生态（RunComfy / ViewComfy / Comfy.org Cloud）
+- [x] 批量任务自动化模式
+  - [x] 批量生成架构图（数据源→调度器→参数替换→队列→输出处理）
+  - [x] 4 种批量模式对比（串行/预提交/多WS并行/分布式）
+  - [x] 参数扫描 6 维度（Seed/CFG/Sampler/Prompt/LoRA/Resolution）
+  - [x] XY Plot 节点（Efficiency Nodes 社区方案）
+- [x] 错误处理与重试策略
+  - [x] 5 种关键错误类型处理（CUDA OOM/WS 断连/验证失败/模型缺失/队列满）
+  - [x] 指数退避重试模式
+- [x] 高级自动化技术
+  - [x] 工作流动态修改（参数注入）
+  - [x] 图片上传 + Img2Img 批量流程
+  - [x] ComfyUI Cloud API（wss 协议 + token 认证）
+  - [x] 进度追踪 + 回调系统
+  - [x] 模型预检查 + 环境验证
+- [x] GUI 格式 vs API 格式对比 + 转换方法
+- [x] 生产级 batch_api_runner.py（469 行）
+  - [x] CSV/JSON 任务加载
+  - [x] WebSocket 实时进度
+  - [x] 指数退避重试（最多 3 次）
+  - [x] CUDA OOM 自动恢复
+  - [x] 结果摘要报告
+- [x] RunningHub 实验 #28（批量 3 风格龙图，72.5s/¥0.09）
