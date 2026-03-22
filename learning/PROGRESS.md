@@ -1,10 +1,10 @@
 # ComfyUI 学习进度追踪
 
 ## 当前状态
-- **当前阶段**: Phase 6 进行中
-- **当前天数**: Day 23 — 高级蒙版与自动分割（完成）
-- **上次学习时间**: 2026-03-22 16:30 UTC
-- **累计学习轮数**: 31
+- **当前阶段**: Phase 7 进行中
+- **当前天数**: Day 24 — 视频后期处理与帧插值（完成）
+- **上次学习时间**: 2026-03-22 18:30 UTC
+- **累计学习轮数**: 32
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -73,6 +73,7 @@
 | 29 | 2026-03-22 08:03 | Day21-超分辨率与图像增强 | 两类放大方式(插值vs AI模型vs SD重绘)+Spandrel统一加载库(自动架构检测/15+架构)+ImageUpscaleWithModel源码深度(分块处理/OOM自动降级tile÷2/overlap融合/内存估算384x经验系数)+ESRGAN系列(RRDB/Real-ESRGAN真实退化/社区模型6款对比)+SwinIR(窗口自注意力/纹理保真)+HAT(Hybrid Attention SOTA)+6种超分工作流模式(纯模型/生成+放大/Hires Fix/Tile ControlNet/Ultimate SD Upscale/Latent放大)+denoise值调优(0.3-0.5推荐)+人脸修复(CodeFormer fidelity/GFPGAN/FaceDetailer 4步检测-裁剪-重绘-贴回)+CropAndStitch替代方案+三阶段管线最佳实践+模型选择决策树+Topaz放大实验#32#33(Standard vs HiFi V2,各¥0.10) | day21-upscaling-super-resolution.md |
 | 30 | 2026-03-22 14:08 | Day22-角色一致性与人脸技术 | 角色一致性技术全景(训练型/零样本/人脸替换/组合4大类)+IP-Adapter架构深度(解耦交叉注意力/CLIP ViT-H→新Cross-Attn分支/22M参数/8种变体全对比)+IP-Adapter FaceID(ArcFace 512d→CLIP空间/Plus V2双路融合/需配套LoRA)+InstantID三组件(InsightFace AntelopeV2+IdentityNet ControlNet+IP-Adapter/零样本SDXL only)+PuLID架构(NeurIPS 2024/对比对齐+闪电T2I双分支训练/最小化模型污染/91%身份精度最高/PuLID-FLUX适配)+PhotoMaker(CVPR 2024/堆叠ID Embedding/多图融合)+ReActor深度(inswapper_128后处理/128px限制/必配FaceDetailer)+生产级组合4方案(PuLID+ReActor精修/InstantID+Canny多控/IPAdapter+AnimateDiff视频/LoRA+零样本混合)+全方法6维对比表+方法选择决策树+InsightFace基础设施(AntelopeV2组件/ArcFace 512d)+实验#34概念图(¥0.03)+实验#35角色参考生成(¥0.03)+实验#36图生图一致性(¥0.03) | day22-character-consistency-face-techniques.md |
 | 31 | 2026-03-22 16:30 | Day23-高级蒙版与自动分割 | SAM架构深度(ViT-H/MAE/Prompt Encoder三种提示/Mask Decoder歧义感知3层级输出)+SAM2革新(Hiera层次骨干/Memory Bank流式记忆/Memory Attention跨帧传播/Occlusion Score/6x faster)+GroundingDINO架构(ECCV 2024/三阶段紧密融合A+B+C/Feature Enhancer双向Cross-Attn/Language-Guided Query Selection/Sub-Sentence文本表示)+Grounded-SAM管线(文本→bbox→mask)+Impact Pack SEGS体系深度(数据结构/FaceDetailer 4步管线/检测器体系/SEGS操作全集/denoise调优)+Florence-2统一视觉模型(caption+detect+segment+OCR)+背景移除(RMBG 2.0/BiRefNet/ComfyUI-RMBG统一节点)+ComfyUI内置Mask操作(MaskComposite 6种操作/Masquerade Nodes)+5种生产级工作流模式+方法选择决策树+实验#37概念图(¥0.03)+实验#38角色生成(¥0.03)+实验#39背景替换编辑(¥0.03) | day23-advanced-masking-segmentation.md |
+| 32 | 2026-03-22 18:30 | Day24-视频后期处理与帧插值 | 帧插值技术全景(RIFE IFNet架构/多尺度粗到细/Privileged Distillation/版本4.0-4.15演进)+FILM(大运动/递归中点)+GIMM-VFI(NeurIPS 2024隐式运动建模/四变体)+IFRNet/AMT/GMFSS等14种VFI算法对比+ComfyUI-Frame-Interpolation节点体系(14算法/调度器/clear_cache)+视频放大技术(SeedVR2扩散式放大/Hann Window时间一致性/四阶段管线/Topaz Proteus v5/DiffVSR流式超分)+去闪烁4种方法(统计/光流引导/颜色匹配/FreeLong频谱)+色彩校正(LUT 3D查找表/4个ComfyUI LUT节点包/EasyColorCorrector)+视频编辑节点生态(VHS全节点体系/Mana-Nodes/VideoDirCombiner/速度控制)+生产级4阶段后期管线(修复→放大→插帧→调色)+参数速查+诊断表+实验#40龙虾冲浪关键帧(¥0.03)+实验#41 Seedance I2V(¥0.30)+实验#42 Topaz视频放大(¥0.11) | day24-video-post-processing-frame-interpolation.md |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
@@ -720,3 +721,55 @@
   - [x] 实验 #37: 分割技术全景概念图（30s/¥0.03）
   - [x] 实验 #38: 龙虾角色办公室场景生成（20s/¥0.03）
   - [x] 实验 #39: 图生图背景替换编辑（25s/¥0.03）
+
+## Day 24 进度 (视频后期处理与帧插值 — Video Post-Processing & Frame Interpolation) ✅
+- [x] 帧插值 (VFI) 技术全景
+  - [x] 帧插值核心原理（前向/后向 warp / 中间流直接估计）
+  - [x] RIFE 架构深度（IFNet 多尺度 / Privileged Distillation / Timestep 编码 / 版本 4.0-4.15 演进）
+  - [x] FILM（大运动专用 / 递归中点插值）
+  - [x] GIMM-VFI（NeurIPS 2024 / 隐式运动建模 / 四变体 R/F/R-P/F-P）
+  - [x] IFRNet / AMT / GMFSS Fortuna / STMFNet / FLAVR / ATM-VFI / MoMo 等算法概述
+  - [x] 算法选择决策树（实时/大运动/最高质量/AI视频/动画 分支）
+- [x] ComfyUI 帧插值节点生态
+  - [x] Fannovel16/ComfyUI-Frame-Interpolation（14 种 VFI 算法 / 调度器 / clear_cache）
+  - [x] kijai/ComfyUI-GIMM-VFI（NeurIPS 2024 SOTA / ds_scale 高分辨率适配）
+  - [x] ComfyUI-WhiteRabbit RIFE VFI（优化版）
+  - [x] ComfyUI-Rife-TensorRT（GPU 加速 RIFE）
+- [x] 视频放大 (Video Upscaling) 技术
+  - [x] 图像放大 vs 视频放大核心区别（时间一致性挑战）
+  - [x] SeedVR2 扩散式视频放大（DiT+VAE / Hann Window / 四阶段管线 / batch_size≥5 / RGBA / V3 兼容）
+  - [x] Topaz Video AI（Proteus v5 改进 / 商业 API via RunningHub）
+  - [x] ComfyUI-FL-DiffVSR（Stream-DiffVSR / 文本引导 / 流式架构）
+  - [x] 逐帧放大 + 去闪烁折中方案
+  - [x] 视频放大策略决策树
+- [x] 去闪烁 (Deflicker) 与时间一致性
+  - [x] 闪烁来源分析（独立生成/Vid2Vid/逐帧放大/权重波动）
+  - [x] 统计去闪烁（SuperBeasts Deflicker + Pixel Deflicker）
+  - [x] 光流引导一致性（comfyui-optical-flow / warp 前帧输出）
+  - [x] 颜色匹配（histogram matching）
+  - [x] FreeLong 频谱混合（NeurIPS 2024 / Wan 2.2 专用）
+  - [x] 生产级去闪烁管线
+- [x] 色彩校正与调色 (Color Grading)
+  - [x] LUT 原理（1D / 3D LUT / 三线性插值）
+  - [x] ComfyUI_essentials ImageApplyLUT+
+  - [x] ComfyUI_LayerStyle LUT Apply
+  - [x] ComfyUI-ProPost（Log LUT / 混合模式）
+  - [x] ComfyUI-lut ImageToLUT（从参考图自动生成 LUT）
+  - [x] ComfyUI-EasyColorCorrector（色温/HSL/AI 自动校色）
+  - [x] 视频调色最佳实践
+- [x] 视频编辑节点生态
+  - [x] ComfyUI-VideoHelperSuite (VHS) 全节点体系（加载/输出/操作/音频 4 类）
+  - [x] VHS_VideoCombine 详解（format/crf/pingpong/audio）
+  - [x] ComfyUI-Mana-Nodes（Split/Merge/Speed/Reverse/Loop）
+  - [x] ComfyUI-VideoDirCombiner（批量拼接 + 转场）
+  - [x] 速度控制与慢动作 3 种方法（VHS 帧率 / AKatz Speed / Wan Motion Scale）
+  - [x] ComfyUI 内置视频节点（TrimVideoLatent / CreateVideo）
+- [x] 生产级视频后期管线
+  - [x] 四阶段完整管线（基础修复 → 分辨率提升 → 帧率提升 → 调色输出）
+  - [x] 关键参数速查表
+  - [x] 常见问题诊断表（7 种症状→原因→方案）
+  - [x] 工作流 JSON 示例（基础帧插值 + 放大+插帧+调色完整管线）
+- [x] RunningHub 实验
+  - [x] 实验 #40: 龙虾冲浪关键帧生成（rhart-image-n-pro, 20s/¥0.03）
+  - [x] 实验 #41: Seedance Fast I2V 视频生成（50s/¥0.30）
+  - [x] 实验 #42: Topaz 视频放大（75s/¥0.11）
