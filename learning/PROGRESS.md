@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 6 进行中
-- **当前天数**: Day 22 — 角色一致性与人脸技术（完成）
-- **上次学习时间**: 2026-03-22 14:08 UTC
-- **累计学习轮数**: 30
+- **当前天数**: Day 23 — 高级蒙版与自动分割（完成）
+- **上次学习时间**: 2026-03-22 16:30 UTC
+- **累计学习轮数**: 31
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -72,6 +72,7 @@
 | 28 | 2026-03-22 04:03 | Day20-高级条件控制与构图 | Conditioning数据结构深度(list of [tensor,dict])+四种操作数学本质(Combine=噪声预测级加权平均/Concat=torch.cat(dim=1)突破77token/Average=嵌入空间线性插值/SetArea+Combine=区域分离)+源码分析(nodes.py全8个条件节点+samplers.py的_calc_cond_batch/get_area_and_mult/cfg_function)+区域控制3方案(SetArea矩形+SetMask自由形状+Attention Couple注意力级)+时间维度(SetTimestepRange prompt调度)+GLIGEN接地式布局+CLIP Vision/unCLIP/Style Model+注意力操控(SAG/PAG/SEG/NAG)+ConditioningZeroOut+高级构图模式3种+决策树+实验#30区域构图(¥0.03)+实验#31超长prompt(¥0.03) | day20-advanced-conditioning-composition.md |
 | 29 | 2026-03-22 08:03 | Day21-超分辨率与图像增强 | 两类放大方式(插值vs AI模型vs SD重绘)+Spandrel统一加载库(自动架构检测/15+架构)+ImageUpscaleWithModel源码深度(分块处理/OOM自动降级tile÷2/overlap融合/内存估算384x经验系数)+ESRGAN系列(RRDB/Real-ESRGAN真实退化/社区模型6款对比)+SwinIR(窗口自注意力/纹理保真)+HAT(Hybrid Attention SOTA)+6种超分工作流模式(纯模型/生成+放大/Hires Fix/Tile ControlNet/Ultimate SD Upscale/Latent放大)+denoise值调优(0.3-0.5推荐)+人脸修复(CodeFormer fidelity/GFPGAN/FaceDetailer 4步检测-裁剪-重绘-贴回)+CropAndStitch替代方案+三阶段管线最佳实践+模型选择决策树+Topaz放大实验#32#33(Standard vs HiFi V2,各¥0.10) | day21-upscaling-super-resolution.md |
 | 30 | 2026-03-22 14:08 | Day22-角色一致性与人脸技术 | 角色一致性技术全景(训练型/零样本/人脸替换/组合4大类)+IP-Adapter架构深度(解耦交叉注意力/CLIP ViT-H→新Cross-Attn分支/22M参数/8种变体全对比)+IP-Adapter FaceID(ArcFace 512d→CLIP空间/Plus V2双路融合/需配套LoRA)+InstantID三组件(InsightFace AntelopeV2+IdentityNet ControlNet+IP-Adapter/零样本SDXL only)+PuLID架构(NeurIPS 2024/对比对齐+闪电T2I双分支训练/最小化模型污染/91%身份精度最高/PuLID-FLUX适配)+PhotoMaker(CVPR 2024/堆叠ID Embedding/多图融合)+ReActor深度(inswapper_128后处理/128px限制/必配FaceDetailer)+生产级组合4方案(PuLID+ReActor精修/InstantID+Canny多控/IPAdapter+AnimateDiff视频/LoRA+零样本混合)+全方法6维对比表+方法选择决策树+InsightFace基础设施(AntelopeV2组件/ArcFace 512d)+实验#34概念图(¥0.03)+实验#35角色参考生成(¥0.03)+实验#36图生图一致性(¥0.03) | day22-character-consistency-face-techniques.md |
+| 31 | 2026-03-22 16:30 | Day23-高级蒙版与自动分割 | SAM架构深度(ViT-H/MAE/Prompt Encoder三种提示/Mask Decoder歧义感知3层级输出)+SAM2革新(Hiera层次骨干/Memory Bank流式记忆/Memory Attention跨帧传播/Occlusion Score/6x faster)+GroundingDINO架构(ECCV 2024/三阶段紧密融合A+B+C/Feature Enhancer双向Cross-Attn/Language-Guided Query Selection/Sub-Sentence文本表示)+Grounded-SAM管线(文本→bbox→mask)+Impact Pack SEGS体系深度(数据结构/FaceDetailer 4步管线/检测器体系/SEGS操作全集/denoise调优)+Florence-2统一视觉模型(caption+detect+segment+OCR)+背景移除(RMBG 2.0/BiRefNet/ComfyUI-RMBG统一节点)+ComfyUI内置Mask操作(MaskComposite 6种操作/Masquerade Nodes)+5种生产级工作流模式+方法选择决策树+实验#37概念图(¥0.03)+实验#38角色生成(¥0.03)+实验#39背景替换编辑(¥0.03) | day23-advanced-masking-segmentation.md |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
@@ -666,3 +667,56 @@
   - [x] 实验 #34: 角色一致性技术全景概念图（35s/¥0.03）
   - [x] 实验 #35: 角色参考图生成（红发女性 1:1, 25s/¥0.03）
   - [x] 实验 #36: 图生图角色场景变换（赛博朋克场景, 30s/¥0.03）
+
+## Day 23 进度 (高级蒙版与自动分割 — Advanced Masking & Segmentation) ✅
+- [x] SAM (Segment Anything Model) 深度解析
+  - [x] SAM 原始架构（Image Encoder ViT-H + Prompt Encoder + Mask Decoder）
+  - [x] 三种提示类型（Point/Box/Mask）+ 歧义感知 3 层级输出
+  - [x] SAM 模型变体全对比（ViT-H/L/B + SAM-HQ + MobileSAM）
+- [x] SAM 2 架构革新
+  - [x] Hiera 层次化骨干网络（多尺度金字塔 / 6x faster）
+  - [x] Memory Bank 流式记忆机制（FIFO Queue / Memory Attention）
+  - [x] 遮挡感知（Occlusion Score 预测）
+  - [x] 视频分割统一架构（图像+视频 / SA-V 数据集 51K 视频）
+  - [x] SAM2 模型变体（tiny/small/base_plus/large）
+- [x] ComfyUI SAM/SAM2 节点体系
+  - [x] kijai/ComfyUI-segment-anything-2（主流 SAM2 集成）
+  - [x] Impact Pack SAMLoader + SAMDetector
+  - [x] storyicon/comfyui_segment_anything（Grounded-SAM）
+- [x] GroundingDINO 深度解析（ECCV 2024）
+  - [x] 三阶段紧密融合架构（A: Feature Enhancer + B: Language-Guided Query Selection + C: Cross-Modality Decoder）
+  - [x] Sub-Sentence 文本表示（避免语义污染）
+  - [x] GroundingDINO vs YOLO 全维度对比
+  - [x] 模型变体（SwinT 694MB / SwinB 938MB / 1.5 Pro）
+- [x] Grounded-SAM 组合管线
+  - [x] 文本→bbox→mask 完整流程
+  - [x] ComfyUI 两种实现方式
+- [x] Impact Pack 深度解析
+  - [x] SEGS 数据结构详解（vs MASK 对比）
+  - [x] FaceDetailer 4 步内部流程（Detection→Segmentation→Crop&Enhance→Paste）
+  - [x] FaceDetailer 关键参数矩阵（denoise/guide_size/noise_mask 调优）
+  - [x] 检测器体系（BBOX_DETECTOR / SEGM_DETECTOR / 常用模型文件）
+  - [x] SEGS 操作节点全集（检测/过滤/像素操作/增强/转换）
+- [x] Florence-2 统一视觉基础模型
+  - [x] 多任务能力（Caption/Detection/Segmentation/OCR）
+  - [x] vs GroundingDINO 对比与选择策略
+- [x] 背景移除专用技术
+  - [x] RMBG 2.0（BRIA AI / BiRefNet 架构）
+  - [x] BiRefNet 多变体（general/portrait/matting/lite/dynamic）
+  - [x] ComfyUI-RMBG 统一节点（1038lab / 支持 10+ 模型）
+- [x] ComfyUI 内置 Mask 操作深度
+  - [x] MASK tensor 格式（[B,H,W] float32 [0,1]）
+  - [x] 内置节点全集（创建/操作/变换）
+  - [x] MaskComposite 6 种操作详解（multiply/add/subtract/and/or/xor）
+  - [x] Masquerade Nodes（Mask by Text / Combine Masks）
+- [x] 5 种生产级组合工作流模式
+  - [x] 模式一: 文本驱动精确分割（Grounded-SAM）
+  - [x] 模式二: 人脸增强管线（FaceDetailer）
+  - [x] 模式三: 分层 Inpainting（RMBG + 背景重绘）
+  - [x] 模式四: 多区域独立控制（SEGS Filter + SEGSDetailer）
+  - [x] 模式五: 视频帧一致性分割（SAM2 Video）
+- [x] 方法选择决策树
+- [x] RunningHub 实验
+  - [x] 实验 #37: 分割技术全景概念图（30s/¥0.03）
+  - [x] 实验 #38: 龙虾角色办公室场景生成（20s/¥0.03）
+  - [x] 实验 #39: 图生图背景替换编辑（25s/¥0.03）
