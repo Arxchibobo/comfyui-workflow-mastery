@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 7 进行中
-- **当前天数**: Day 25 — 高级视频控制技术（完成）
-- **上次学习时间**: 2026-03-22 20:03 UTC
-- **累计学习轮数**: 33
+- **当前天数**: Day 26 — 音频生成与多模态工作流（完成）
+- **上次学习时间**: 2026-03-22 22:03 UTC
+- **累计学习轮数**: 34
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -75,6 +75,7 @@
 | 31 | 2026-03-22 16:30 | Day23-高级蒙版与自动分割 | SAM架构深度(ViT-H/MAE/Prompt Encoder三种提示/Mask Decoder歧义感知3层级输出)+SAM2革新(Hiera层次骨干/Memory Bank流式记忆/Memory Attention跨帧传播/Occlusion Score/6x faster)+GroundingDINO架构(ECCV 2024/三阶段紧密融合A+B+C/Feature Enhancer双向Cross-Attn/Language-Guided Query Selection/Sub-Sentence文本表示)+Grounded-SAM管线(文本→bbox→mask)+Impact Pack SEGS体系深度(数据结构/FaceDetailer 4步管线/检测器体系/SEGS操作全集/denoise调优)+Florence-2统一视觉模型(caption+detect+segment+OCR)+背景移除(RMBG 2.0/BiRefNet/ComfyUI-RMBG统一节点)+ComfyUI内置Mask操作(MaskComposite 6种操作/Masquerade Nodes)+5种生产级工作流模式+方法选择决策树+实验#37概念图(¥0.03)+实验#38角色生成(¥0.03)+实验#39背景替换编辑(¥0.03) | day23-advanced-masking-segmentation.md |
 | 32 | 2026-03-22 18:30 | Day24-视频后期处理与帧插值 | 帧插值技术全景(RIFE IFNet架构/多尺度粗到细/Privileged Distillation/版本4.0-4.15演进)+FILM(大运动/递归中点)+GIMM-VFI(NeurIPS 2024隐式运动建模/四变体)+IFRNet/AMT/GMFSS等14种VFI算法对比+ComfyUI-Frame-Interpolation节点体系(14算法/调度器/clear_cache)+视频放大技术(SeedVR2扩散式放大/Hann Window时间一致性/四阶段管线/Topaz Proteus v5/DiffVSR流式超分)+去闪烁4种方法(统计/光流引导/颜色匹配/FreeLong频谱)+色彩校正(LUT 3D查找表/4个ComfyUI LUT节点包/EasyColorCorrector)+视频编辑节点生态(VHS全节点体系/Mana-Nodes/VideoDirCombiner/速度控制)+生产级4阶段后期管线(修复→放大→插帧→调色)+参数速查+诊断表+实验#40龙虾冲浪关键帧(¥0.03)+实验#41 Seedance I2V(¥0.30)+实验#42 Topaz视频放大(¥0.11) | day24-video-post-processing-frame-interpolation.md |
 | 33 | 2026-03-22 20:03 | Day25-高级视频控制技术 | 6维视频控制全景(镜头/运动/参考/首尾帧/编辑/多镜头)+Kling Camera Controls深度(6DOF参数/5种预设/KlingCameraControlI2V源码分析/硬编码限制)+Seedance prompt-driven镜头+AnimateDiff CameraCtrl本地方案(CameraCtrl_pruned/6种预设运动)+MotionCtrl学术方案(SIGGRAPH Asia/相机+物体解耦)+Kling 3.0 Motion Control(Element Binding面部一致性/characterOrientation双模式/30s连续)+Reference-to-Video全景(O3 vs O1 vs Wan2.6 vs Vidu)+首尾帧技术(语义理解vs像素插值/Vidu参数详解/最佳实践)+Kling V3/O1/O3全系列对比+ComfyUI 4种工作流模式+混合管线设计+实验#43关键帧生成(¥0.06)+实验#44 Vidu首尾帧(90s/¥0.20)+实验#45 Seedance镜头控制(70s/¥0.30) | day25-advanced-video-control-techniques.md |
+| 34 | 2026-03-22 22:03 | Day26-音频生成与多模态工作流 | 音频AI三大方向(T2M/TTS/T2SFX)+两大范式(自回归Transformer+EnCodec vs 潜空间扩散DiT)+MusicGen架构深度(EnCodec 4 codebook×50Hz+延迟模式+Melody条件+Stereo)+Stable Audio Open架构(DiT 1057M+音频VAE 2048x压缩+Timing Conditioning)+AudioLDM2(GPT-2 LOA+AudioMAE)+MiniMax Music2.5/Speech2.8+ComfyUI音频节点全景(LTX-2.3原生音频/Stable Audio 2.5 Partner/Kling Audio Partner/comfyui-sound-lab/TTS-Audio-Suite等6+TTS节点)+音频VAE vs图像VAE对比+EnCodec RVQ原理+三种音视频同步策略(原生/后配音/音频驱动)+生产级四层管线设计+LTX-2.3音频I2V工作流JSON+唇同步5种方案(Wav2Lip/SadTalker/LatentSync/Kling/LTX)+LatentSync架构+完整短视频成本估算(¥0.59)+实验#46 MiniMax Music(60s/¥0.14)+实验#47 MiniMax Speech(10s/¥0.016) | day26-audio-generation-multimodal.md |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
@@ -822,3 +823,40 @@
   - [x] 实验 #43: 功夫大师关键帧生成（首帧+尾帧，各 20s/¥0.03）
   - [x] 实验 #44: Vidu 首尾帧生视频（站立→飞踢过渡，90s/¥0.20）
   - [x] 实验 #45: Seedance Prompt 镜头控制（环绕式镜头，70s/¥0.30）
+
+## Day 26 进度 (音频生成与多模态工作流 — Audio Generation & Multimodal Workflows) ✅
+- [x] 音频生成技术全景
+  - [x] 音频 AI 三大方向（Text-to-Music / Text-to-Speech / Text-to-SFX）
+  - [x] 两大技术范式对比（自回归 Transformer + Codec vs 潜空间扩散 DiT）
+- [x] 核心音频模型深度分析
+  - [x] MusicGen 架构（EnCodec 4 codebook × 50Hz + 延迟交错模式 + T5 条件 + Melody Conditioning）
+  - [x] MusicGen 模型变体（small 300M / medium 1.5B / large 3.3B / melody）
+  - [x] Stable Audio Open 架构（arXiv:2407.14358 / DiT 1057M + 音频 VAE 2048x 压缩 + Timing Conditioning）
+  - [x] Stable Audio 2.5 Partner Node（3 分钟 < 2 秒 / 商用许可 / Text-to-Audio + Audio-to-Audio + Inpainting）
+  - [x] AudioLDM 2 架构（GPT-2 "Language of Audio" + AudioMAE 潜空间 + 多模态输入）
+  - [x] MiniMax Music 2.5（自回归 Transformer / 完整歌曲含人声）
+  - [x] MiniMax Speech 2.8（HD + Turbo 版本 / 多语言 / Voice Clone）
+- [x] ComfyUI 音频节点生态全景
+  - [x] LTX-2.3 原生音频节点体系（8 节点 / MultimodalGuider / 音频条件 I2V）
+  - [x] Stable Audio 2.5 Partner Nodes（3 节点 / AUTH_TOKEN_COMFY_ORG）
+  - [x] Kling 音频 Partner Nodes（T2V+Audio / I2V+Audio / V2A / LipSync）
+  - [x] comfyui-sound-lab（MusicGen + Stable Audio Open 本地推理）
+  - [x] TTS 节点生态（6+ 节点包: TTS-Audio-Suite / XTTS / F5-TTS / Qwen3-TTS / FishAudioS2 / StepAudio）
+  - [x] Lip Sync 节点生态（Wav2Lip / LatentSync / SadTalker / Kling）
+- [x] 音频模型架构对比
+  - [x] 9 模型全维度对比表（类型/架构/参数/本地vs API/时长/用途）
+  - [x] 音频 VAE vs 图像 VAE 深度对比（压缩比/潜空间/解码器/训练目标）
+  - [x] EnCodec RVQ（残差向量量化）原理详解
+- [x] 视频+音频多模态工作流
+  - [x] 三种音视频同步策略（原生同时生成 / 视频→后配音 / 音频驱动视频）
+  - [x] 生产级四层管线设计（视觉→音频→同步→后期）
+  - [x] LTX-2.3 音频同步 I2V 工作流 JSON 骨架
+  - [x] 后配音混音工作流设计
+- [x] 唇形同步技术深度
+  - [x] 5 种方案全维度对比（Wav2Lip / SadTalker / LatentSync / Kling / LTX-2.3）
+  - [x] LatentSync 架构解析（Whisper + 潜空间扩散 / 无中间运动表示）
+  - [x] 唇同步决策树
+- [x] 完整短视频成本估算（30s 视频全栈 ¥0.59-0.62）
+- [x] RunningHub 实验
+  - [x] 实验 #46: MiniMax Music 2.5 音乐生成（60s/¥0.14/1.6MB）
+  - [x] 实验 #47: MiniMax Speech 2.8 HD 语音合成（10s/¥0.016/213KB）
