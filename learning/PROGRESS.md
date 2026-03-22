@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 6 进行中
-- **当前天数**: Day 20 — 高级条件控制与构图技术（完成）
-- **上次学习时间**: 2026-03-22 04:03 UTC
-- **累计学习轮数**: 28
+- **当前天数**: Day 22 — 角色一致性与人脸技术（完成）
+- **上次学习时间**: 2026-03-22 14:08 UTC
+- **累计学习轮数**: 30
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -70,6 +70,46 @@
 | 26 | 2026-03-22 00:03 | Day18-API自动化+批量任务 | ComfyUI全API端点深度(30+路由/WebSocket 8种消息类型/prompt POST格式)+Python自动化工具生态(官方示例/comfyui_utils/comfy-nodekit/ComfyUI-to-Python/ComfyScript 5库对比)+生产部署方案(SaladTech无状态API/BentoML comfy-pack/Cloud平台)+批量4模式(串行/预提交/多WS并行/分布式)+参数扫描6维度+错误处理5类+生产级batch_api_runner.py(469行/CSV+JSON/重试/OOM恢复)+RunningHub批量实验#28(3风格龙,72.5s,¥0.09) | day18-comfyui-api-automation.md + batch_api_runner.py |
 | 27 | 2026-03-22 02:03 | Day19-性能优化 | VRAM三大消耗源(权重/激活/注意力二次方缩放)+精度格式全景(FP32/BF16/FP16/FP8/GGUF Q2-Q8/NF4/NVFP4共8级对比)+GGUF量化深度(city96/block缩放/DiT vs U-Net适配性)+注意力优化5种方法(xFormers/FlashAttn/SageAttn/SDPA/Slicing)+卸载策略4级(TE/VAE/lowvram/novram)+Async Offloading+Pinned Memory(10-50%加速)+TensorRT(2-3x但不兼容LoRA/CN)+torch.compile(30%加速)+Tiled VAE(43%省VRAM)+NVFP4 Nunchaku(3x加速/Blackwell)+ComfyUI Dynamic VRAM+综合决策树(按GPU分4档)+7个性能节点包+实验#29概念图 | day19-performance-optimization.md |
 | 28 | 2026-03-22 04:03 | Day20-高级条件控制与构图 | Conditioning数据结构深度(list of [tensor,dict])+四种操作数学本质(Combine=噪声预测级加权平均/Concat=torch.cat(dim=1)突破77token/Average=嵌入空间线性插值/SetArea+Combine=区域分离)+源码分析(nodes.py全8个条件节点+samplers.py的_calc_cond_batch/get_area_and_mult/cfg_function)+区域控制3方案(SetArea矩形+SetMask自由形状+Attention Couple注意力级)+时间维度(SetTimestepRange prompt调度)+GLIGEN接地式布局+CLIP Vision/unCLIP/Style Model+注意力操控(SAG/PAG/SEG/NAG)+ConditioningZeroOut+高级构图模式3种+决策树+实验#30区域构图(¥0.03)+实验#31超长prompt(¥0.03) | day20-advanced-conditioning-composition.md |
+| 29 | 2026-03-22 08:03 | Day21-超分辨率与图像增强 | 两类放大方式(插值vs AI模型vs SD重绘)+Spandrel统一加载库(自动架构检测/15+架构)+ImageUpscaleWithModel源码深度(分块处理/OOM自动降级tile÷2/overlap融合/内存估算384x经验系数)+ESRGAN系列(RRDB/Real-ESRGAN真实退化/社区模型6款对比)+SwinIR(窗口自注意力/纹理保真)+HAT(Hybrid Attention SOTA)+6种超分工作流模式(纯模型/生成+放大/Hires Fix/Tile ControlNet/Ultimate SD Upscale/Latent放大)+denoise值调优(0.3-0.5推荐)+人脸修复(CodeFormer fidelity/GFPGAN/FaceDetailer 4步检测-裁剪-重绘-贴回)+CropAndStitch替代方案+三阶段管线最佳实践+模型选择决策树+Topaz放大实验#32#33(Standard vs HiFi V2,各¥0.10) | day21-upscaling-super-resolution.md |
+| 30 | 2026-03-22 14:08 | Day22-角色一致性与人脸技术 | 角色一致性技术全景(训练型/零样本/人脸替换/组合4大类)+IP-Adapter架构深度(解耦交叉注意力/CLIP ViT-H→新Cross-Attn分支/22M参数/8种变体全对比)+IP-Adapter FaceID(ArcFace 512d→CLIP空间/Plus V2双路融合/需配套LoRA)+InstantID三组件(InsightFace AntelopeV2+IdentityNet ControlNet+IP-Adapter/零样本SDXL only)+PuLID架构(NeurIPS 2024/对比对齐+闪电T2I双分支训练/最小化模型污染/91%身份精度最高/PuLID-FLUX适配)+PhotoMaker(CVPR 2024/堆叠ID Embedding/多图融合)+ReActor深度(inswapper_128后处理/128px限制/必配FaceDetailer)+生产级组合4方案(PuLID+ReActor精修/InstantID+Canny多控/IPAdapter+AnimateDiff视频/LoRA+零样本混合)+全方法6维对比表+方法选择决策树+InsightFace基础设施(AntelopeV2组件/ArcFace 512d)+实验#34概念图(¥0.03)+实验#35角色参考生成(¥0.03)+实验#36图生图一致性(¥0.03) | day22-character-consistency-face-techniques.md |
+
+## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
+- [x] 超分辨率技术全景
+  - [x] 三大放大方式对比（传统插值 / AI 模型放大 / SD 重绘放大）
+  - [x] 技术发展时间线（ESRGAN 2018 → PMRF 2024 → SPAN 2025）
+- [x] ComfyUI 超分源码深度分析
+  - [x] Spandrel 统一模型加载库（自动架构检测 / 15+ 支持架构列表）
+  - [x] UpscaleModelLoader 源码（state_dict 前缀处理 / ImageModelDescriptor 类型检查）
+  - [x] ImageUpscaleWithModel 源码深度（内存估算 384x 经验系数 / 分块处理 512 默认 / 32px overlap / OOM 自动降级 tile÷2 / 最小 128）
+  - [x] tiled_scale 分块放大机制（网格分割 / 扩展 overlap / 线性渐变融合权重）
+  - [x] ImageScale / ImageScaleBy 传统插值（nearest/bilinear/bicubic/lanczos/area 对比）
+- [x] 超分模型架构深度对比
+  - [x] ESRGAN 系列（RRDB 架构 / Real-ESRGAN 真实退化建模 / 6 款社区模型对比）
+  - [x] SwinIR（Swin Transformer 窗口自注意力 / RSTB / 纹理保真最优）
+  - [x] HAT（Hybrid Attention / OCAB / 当前学术 SOTA）
+  - [x] PMRF / SPAN / DAT 新架构概述
+  - [x] 模型选择决策树（按场景/速度/质量分支）
+- [x] 6 种 ComfyUI 超分工作流模式
+  - [x] 模式一：纯模型放大（2-3 节点）
+  - [x] 模式二：生成+放大流水线
+  - [x] 模式三：Hires Fix（低分辨率生成 + 放大 + 低 denoise 重采样）
+  - [x] 模式四：Tile ControlNet 超分（最高质量 / strength 调优）
+  - [x] 模式五：Ultimate SD Upscale（分块 SD 放大 / 任意大尺寸 / 参数详解）
+  - [x] 模式六：Latent 放大（直接插值 latent tensor）
+  - [x] denoise 值对放大的影响（0.2-0.3 保守 → 0.7+ 危险）
+- [x] 人脸修复与细节增强
+  - [x] CodeFormer（Transformer + CodeBook / fidelity 参数 0.5-0.7 推荐）
+  - [x] GFPGAN（GAN + 通道注意力 / 更激进修复）
+  - [x] FaceDetailer（Impact Pack / 4 步工作流: BBOX 检测→裁剪→重绘→贴回 / 关键参数 7 个）
+  - [x] CropAndStitch 替代方案（2025 社区趋势 / 手动控制 / REACTOR 兼容）
+- [x] 完整超分管线最佳实践
+  - [x] 三阶段管线（ESRGAN 预放大 → SD 重采样 → 人脸修复）
+  - [x] 分辨率规划表（1080p/2K/4K/8K）
+  - [x] 常见问题诊断表（7 种症状→原因→解决方案）
+- [x] RunningHub 实验
+  - [x] 实验 #32: Topaz Standard V2 放大（1024→2048, 20s/¥0.10）
+  - [x] 实验 #33: Topaz High Fidelity V2 放大（1024→2048, 20s/¥0.10）
+  - [x] Standard vs High Fidelity 对比分析
 
 ## Day 9 进度 (LoRA 训练 — kohya_ss / sd-scripts)
 - [x] LoRA 训练工具生态概览
@@ -568,3 +608,61 @@
 - [x] RunningHub 实验
   - [x] 实验 #30: 区域构图对比（红甲战士 vs 蓝衣法师，35s/¥0.03）
   - [x] 实验 #31: 超长 Prompt 细节测试（200 token 赛博朋克场景，40s/¥0.03）
+
+## Day 22 进度 (角色一致性与人脸技术 — Character Consistency & Face Techniques) ✅
+- [x] 角色一致性技术全景
+  - [x] 四大技术路线分类（训练型 / 零样本型 / 人脸替换型 / 组合型）
+  - [x] 技术演进时间线（IP-Adapter 2023.08 → PhotoMaker 2023.12 → InstantID 2024.02 → PuLID 2024.04 → PuLID-FLUX 2024.09）
+  - [x] 核心问题定义（身份保真度 / 自然度 / Prompt 遵从度三角平衡）
+- [x] IP-Adapter 架构深度解析
+  - [x] 解耦交叉注意力核心公式 (Output = TextAttn + λ × ImageAttn)
+  - [x] CLIP ViT-H/14 编码器 → 257 tokens 1024d → Trainable Projection → K_img, V_img
+  - [x] IP-Adapter 变体全家族（8 种: 基础/Plus/Plus Face/FaceID/FaceID Plus V2/Portrait/SDXL/Flux）
+  - [x] FaceID 技术细节（ArcFace 512d → CLIP 空间投影 / 需配套 LoRA 的原因）
+  - [x] FaceID Plus V2 双路融合（InsightFace 身份 + CLIP 细节特征）
+  - [x] ComfyUI_IPAdapter_plus 节点体系（cubiq, 4.93K⭐, 2025.04 维护模式）
+  - [x] Weight Types 14 种注入方式详解（linear/ease in/ease out/style transfer/composition 等）
+  - [x] start_at / end_at 参数调优策略
+- [x] InstantID 架构深度解析
+  - [x] 三组件架构（InsightFace AntelopeV2 + IdentityNet ControlNet + IP-Adapter）
+  - [x] InsightFace 提供面部嵌入 512d + 5 点关键点
+  - [x] IdentityNet = 定制 ControlNet（控制面部空间布局）
+  - [x] IP-Adapter 模块（控制身份语义特征）
+  - [x] vs IP-Adapter FaceID 关键区别（空间控制 / 模型依赖 / LoRA 需求）
+  - [x] ComfyUI_InstantID 节点（ip_weight + cn_strength 分离控制）
+  - [x] 关键参数推荐（ip_weight 0.8-1.2, cn_strength 0.4-0.7, noise 0.35）
+- [x] PuLID 架构深度解析
+  - [x] NeurIPS 2024 论文解读（对比对齐 + 闪电 T2I 双分支训练）
+  - [x] 双分支训练架构（Standard Diffusion + Lightning T2I）
+  - [x] Contrastive Alignment Loss（正样本 vs 负样本身份对比学习）
+  - [x] Accurate ID Loss（InsightFace 特征空间余弦相似度）
+  - [x] 纯净性 (Purity): FID 偏移 <0.5，无 ID 时 ≈ 原始模型
+  - [x] PuLID-FLUX 适配（DiT Double-Stream Block 注入）
+  - [x] vs InstantID 全维度对比（身份 91% vs 84% / 自然度 92% vs 86% / Prompt 83% vs 88%）
+  - [x] ComfyUI PuLID 节点参数（weight / method: fidelity vs style）
+- [x] PhotoMaker 架构解析
+  - [x] CVPR 2024 论文（堆叠 ID Embedding）
+  - [x] 多图输入 (1-4张) → CLIP Image Encoder → MLP Projection → 堆叠嵌入
+  - [x] Trigger Token 机制（替换 prompt 中特殊 token）
+  - [x] PhotoMaker V2 改进
+- [x] ReActor 人脸替换深度解析
+  - [x] 后处理型管线（InsightFace 检测 → inswapper_128 替换 → GFPGAN/CodeFormer 修复 → Mask 融合）
+  - [x] 128px 致命限制（必须配合 FaceDetailer）
+  - [x] vs ID 注入方法全维度对比（精度 98% vs 84-91% / 自然度 75% vs 81-92%）
+  - [x] ComfyUI-ReActor 核心节点（FaceSwap / BuildFaceModel / RestoreFace）
+- [x] 生产级组合工作流 4 方案
+  - [x] 方案 A: PuLID 生成 + ReActor 精修（最高保真度）
+  - [x] 方案 B: InstantID + ControlNet Canny（精确姿态控制）
+  - [x] 方案 C: IP-Adapter + AnimateDiff（视频一致性）
+  - [x] 方案 D: LoRA + 零样本混合（长期角色项目）
+- [x] 全方法 6 维对比总结
+  - [x] 身份精度 / 自然度 / Prompt 遵从 / VRAM / 速度 / 最佳场景
+  - [x] 方法选择决策树（单图/视频/长期项目/多人场景分支）
+  - [x] 2025-2026 趋势展望（Flux 主导 / 官方内置化 / 视频 ID 条件 / 组合管线标准化）
+- [x] InsightFace 面部分析库详解
+  - [x] AntelopeV2 模型 5 组件（3D关键点/2D关键点/性别年龄/人脸识别/人脸检测）
+  - [x] ArcFace Embedding 512d + angular margin loss + 同一人阈值 cos_sim > 0.68
+- [x] RunningHub 实验
+  - [x] 实验 #34: 角色一致性技术全景概念图（35s/¥0.03）
+  - [x] 实验 #35: 角色参考图生成（红发女性 1:1, 25s/¥0.03）
+  - [x] 实验 #36: 图生图角色场景变换（赛博朋克场景, 30s/¥0.03）
