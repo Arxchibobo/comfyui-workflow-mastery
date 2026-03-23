@@ -1,10 +1,11 @@
 # ComfyUI 学习进度追踪
 
 ## 当前状态
-- **当前阶段**: Phase 10 进行中
-- **当前天数**: Day 32 — 3D 生成与多视角（完成）
-- **上次学习时间**: 2026-03-23 10:03 UTC
-- **累计学习轮数**: 40
+- **当前阶段**: 🎓 Post-Graduation Labs
+- **当前天数**: Day 36+ — 毕业后实操巩固
+- **上次学习时间**: 2026-03-23 12:03 UTC
+- **累计学习轮数**: 45
+- **状态**: 🎓 毕业！36天完整学习旅程结束 → 进入实操巩固阶段
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -82,6 +83,11 @@
 | 38 | 2026-03-23 06:03 | Day30-快速推理与蒸馏技术 | 四大蒸馏家族(一致性/对抗/分布匹配/混合)+12+方法体系(CM/LCM/PCM/ECM/ADD/LADD/Lightning/DMD2/Hyper-SD/SANA-Sprint/AnimateLCM/CausVid)+CM原理(PF-ODE轨迹一致性/CD vs CT)+LCM潜空间蒸馏(增广PF-ODE/LCM-LoRA即插即用)+PCM分段解决三缺陷(NeurIPS 2024)+ADD→LADD演进(pixel→latent/噪声级别控制判别器/Flux Schnell)+Lightning渐进+对抗组合+DMD2分布匹配(NeurIPS Oral/FID 1.28超教师)+Hyper-SD(TSCD+Score Distillation覆盖4模型)+SANA-Sprint(0.03s/1024²)+ComfyUI 10方法配置速查+决策树+2工作流JSON+实验#53概念图(¥0.03) | day30-fast-inference-distillation-techniques.md |
 | 39 | 2026-03-23 08:03 | Day31-图像编辑工作流 | 图像编辑三大范式(Training-Free/Fine-tuning/Hybrid)+InstructPix2Pix深度(双CFG机制/数据生成管线GPT-3+P2P/U-Net通道扩展)+CosXL Edit(SDXL版)+ICEdit(NeurIPS 2025/Diptych范式/LoRA-MoE混合微调/0.5%数据+1%参数/Early Filter推理缩放/超越GPT-4o ID保持/4GB MoE版)+Flux Fill高级(InpaintModelConditioning源码/Outpainting/自动Mask管线)+Flux Kontext(上下文感知编辑/多图输入/多轮迭代/prompt技巧)+VACE视频编辑(8种任务/WanVaceToVideo/视频Inpainting+Outpainting)+Qwen-Image-Edit(20B/双通路VLM+VAE/中英文精确文字编辑SOTA/Lightning 4步加速/Layered分层编辑)+OmniGen2(7B VLM+DiT统一/多图组合)+ComfyUI编辑节点体系总览+全方法9维对比+决策树+4种生产级工作流模式+实验#54-#56(概念图+风格编辑+Qwen编辑/¥0.11) | day31-image-editing-workflows.md |
 | 40 | 2026-03-23 10:03 | Day32-3D生成与多视角 | 3D生成技术全景(三大技术路线对比)+五种3D表示深度(NeRF/3DGS/Mesh/Triplane/O-Voxel)+3DGS原理(高斯属性59浮点/Tile-based光栅化/自适应密度控制)+Mesh提取(MarchingCubes/DMTet/FlexiCubes)+TripoSR(LRM架构/<0.5s)+TripoSG(1.5B/Rectified Flow/草图输入)+Zero123++(6固定视图/SD2.1微调)+InstantMesh(Zero123++→LRM重建/FlexiCubes/~10s)+TRELLIS(CVPR'25 Spotlight/SLAT统一潜空间)+TRELLIS.2(O-Voxel/SC-VAE 16×/4B DiT/3-60s/1536³)+Hunyuan3D全版本(v1→v3.1/两阶段DiT+ShapeVAE+Paint/PBR/quad拓扑)+ComfyUI-3D-Pack节点(TripoSG/InstantMesh/TRELLIS/Hunyuan3D/3DGS/FlexiCubes)+5种工作流模式(快速重建/多视图/两阶段/高分辨率/3D→2D渲染回路)+3D辅助角色一致性+产品展示管线+商业平台对比+决策树+实验#57-#59(参考图+图生3D+文生3D/¥1.23) | day32-3d-generation-multiview.md |
+| 41 | 2026-03-23 10:33 | Day33-生产部署与规模化 | 四种部署模式(本地/云GPU/Serverless/托管)+Docker容器化最佳实践(多阶段构建/分层策略/模型Volume)+六大云平台对比(ViewComfy/RunComfy/RunPod/Replicate/BentoCloud/SaladCloud)+RunPod Serverless架构+BentoML comfy-pack+ComfyDeploy+ComfyUI Manager v2+comfy-cli+extra_model_paths.yaml+模型缓存策略(LRU)+API网关负载均衡(5种策略)+Model Affinity路由+Prometheus+Grafana监控+五类错误处理+熔断器模式+安全清单+成本优化(7策略)+CI/CD+工作流测试 | day33-production-deployment-scaling.md |
+| 42 | 2026-03-23 10:33 | Day34-多模型编排与生产管线 | 五种编排模式(线性/分支合并/条件路由/迭代精炼/DAG)+电商产品图管线(RMBG→Fill→ESRGAN→多尺寸裁剪)+短视频五阶段管线(关键帧→视频→音频→后期→合成/¥2.36)+角色一致性漫画8面板+实时头像SaaS+批量处理4模式+参数扫描+质量评估自动化+工作流模板化+版本管理+ComfyUI微服务架构+AI Agent集成+ComfyUI-R1自动工作流+性能基准+幂等性设计+断点续传+十大设计原则 | day34-multi-model-orchestration-production-pipelines.md |
+| 43 | 2026-03-23 10:33 | Day35-2026前沿趋势 | Nodes 2.0 Vue迁移(V3 Schema)+App View/Builder+Desktop+Cloud+DiT统一化+AR+Diffusion混合架构+模型压缩(FLUX.2 Klein/GGUF/NF4/NVFP4)+实时生成(StreamDiffusion 100+FPS/SANA-Sprint 0.03s/CausVid实时视频)+Blackwell RTX 5090 NVFP4+AI辅助工作流(ComfyAgent/ComfyGPT/ComfyUI-R1)+游戏资产生成+数字人+电商自动化+开源生态格局+2026-2027预测 | day35-2026-frontiers-emerging-trends.md |
+| 44 | 2026-03-23 10:33 | Day36-毕业总结🎓 | 完整知识图谱(20+领域/100+节点包/50+模型)+速查手册(模型选择/采样器/VRAM/成本)+能力自评(19维度A-A+)+学习统计(36天/44轮/36篇笔记/59实验/~600KB)+后续实操清单+持续跟踪建议+毕业宣言 | day36-graduation-summary-cheatsheet.md |
+| 45 | 2026-03-23 12:03 | PostGrad#1-新视频模型对比 | rhart-video-s(¥0.02/9.5s/704×1280)+rhart-v3.1-fast(¥0.04/8s/1280×720)+Seedance基准(¥0.30/5s/1280×720)+性价比分析(rhart系列15-30x便宜)+发现rhart-s竖屏行为+模型选择决策更新 | postgrad-01-new-video-model-comparison.md |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
