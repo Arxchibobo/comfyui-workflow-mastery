@@ -1,0 +1,80 @@
+# Wan 2.2 T2V 14B LoRA Training Config — Annotated Reference
+# Framework: ostris/ai-toolkit
+# Hardware: NVIDIA 4090 (24GB VRAM) / 48GB DDR5
+
+---
+job:
+  extension: train
+  type: sd_trainer
+  name: "wan22_t2v_dance_lora"
+  process:
+    - type: sd_trainer
+      training_folder: "output/wan22_dance_lora"
+      device: cuda:0
+      trigger_word: "dance_trend"  # Must appear in every caption
+
+      # --- Model Config ---
+      model:
+        name_or_path: "Wan-AI/Wan2.2-T2V-14B"
+        is_wan: true          # Enable Wan-specific pipeline
+        quantize: true        # NF4 quantization (required for 24GB)
+        quantize_type: "nf4"  # Best quality-to-memory ratio
+
+      # --- Multistage Training ---
+      # Alternates between high-noise and low-noise training
+      # Helps model learn both coarse structure and fine detail
+      multistage:
+        stages: "both"       # "high", "low", or "both"
+        switch_every: 15     # Steps between stage switches (low = less VRAM spikes)
+
+      low_vram: true         # Enable all VRAM optimization tricks
+
+      # --- LoRA Architecture ---
+      network:
+        type: "lora"
+        linear: 16           # Rank 16 — good balance for motion patterns
+        linear_alpha: 16     # alpha = rank → scale factor = 1.0
+
+      # --- Training Hyperparameters ---
+      train:
+        batch_size: 1                    # Limited by VRAM
+        gradient_accumulation_steps: 1   # Effective batch = 1 (increase for stability)
+        steps: 3000                      # ~85 epochs for 35 clips
+        lr: 0.0002                       # 2e-4, standard for video LoRA
+        optimizer: "adamw8bit"           # 8-bit Adam (memory efficient)
+        lr_scheduler: "cosine"           # Smooth decay to 0
+        max_grad_norm: 1.0               # Gradient clipping (prevents explosion)
+
+        # --- Timestep Sampling ---
+        timestep:
+          type: "sigmoid"      # Options: uniform, sigmoid, logit-normal
+          bias: "balanced"     # "balanced" for person/character; "high" for style transfer
+          # sigmoid+balanced: emphasizes mid-noise range where motion structure lives
+
+        cache_text_encoders: true  # Cache embeddings, offload encoder (saves ~4GB)
+
+      # --- Dataset Config ---
+      datasets:
+        - folder_path: "dataset/clips"
+          caption_ext: ".txt"      # Caption file extension
+          resolution: 480          # Training resolution (height for portrait)
+          num_frames: 41           # 40+1 frames ≈ 2.5s at 16fps
+          flip: false              # Don't flip dance videos (asymmetric choreo)
+          cache_latents: true      # Pre-encode to latent space (faster training)
+
+      # --- Sample Generation ---
+      sample:
+        sampler: "flowmatch"       # Wan 2.2 native sampler
+        sample_every: 500          # Generate test videos every N steps
+        width: 480
+        height: 832                # 9:16 portrait aspect ratio
+        num_frames: 41
+        fps: 16
+        prompts:
+          - "dance_trend a person dancing smoothly with flowing arm movements, trending TikTok choreography, good lighting"
+          - "dance_trend energetic dance moves, amapiano style, rhythmic body movements, professional quality"
+
+      # --- Checkpoint Saving ---
+      save:
+        save_every: 500
+        max_step_saves_to_keep: 3  # Keep only last 3 checkpoints

@@ -80,6 +80,18 @@ python3 scripts/workflow_compiler.py \
   --steps 25 --cfg 7.5
 ```
 
+## Training Knowledge
+
+The `training/` directory contains hands-on fine-tuning knowledge:
+
+| Topic | Path | Description |
+|-------|------|-------------|
+| Wan 2.2 LoRA Guide | `training/wan22-lora/training-guide.md` | End-to-end training workflow |
+| Config Reference | `training/wan22-lora/config-reference.yaml` | Annotated training config |
+| Dataset Preparation | `training/wan22-lora/dataset-preparation.md` | Data quality rules & pipeline |
+| Dance Trends | `training/wan22-lora/dance-trends-research.md` | TikTok/IG trend analysis |
+| Lessons Learned | `training/wan22-lora/lessons-learned.md` | Mistakes & best practices |
+
 ## Requirements
 
 - Python 3.8+
