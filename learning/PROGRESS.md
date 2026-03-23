@@ -1,10 +1,10 @@
 # ComfyUI 学习进度追踪
 
 ## 当前状态
-- **当前阶段**: Phase 9 进行中
-- **当前天数**: Day 29 — Flux 实战工作流生态（完成）
-- **上次学习时间**: 2026-03-23 04:03 UTC
-- **累计学习轮数**: 37
+- **当前阶段**: Phase 10 进行中
+- **当前天数**: Day 30 — 快速推理与蒸馏技术（完成）
+- **上次学习时间**: 2026-03-23 06:03 UTC
+- **累计学习轮数**: 38
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -78,6 +78,8 @@
 | 34 | 2026-03-22 22:03 | Day26-音频生成与多模态工作流 | 音频AI三大方向(T2M/TTS/T2SFX)+两大范式(自回归Transformer+EnCodec vs 潜空间扩散DiT)+MusicGen架构深度(EnCodec 4 codebook×50Hz+延迟模式+Melody条件+Stereo)+Stable Audio Open架构(DiT 1057M+音频VAE 2048x压缩+Timing Conditioning)+AudioLDM2(GPT-2 LOA+AudioMAE)+MiniMax Music2.5/Speech2.8+ComfyUI音频节点全景(LTX-2.3原生音频/Stable Audio 2.5 Partner/Kling Audio Partner/comfyui-sound-lab/TTS-Audio-Suite等6+TTS节点)+音频VAE vs图像VAE对比+EnCodec RVQ原理+三种音视频同步策略(原生/后配音/音频驱动)+生产级四层管线设计+LTX-2.3音频I2V工作流JSON+唇同步5种方案(Wav2Lip/SadTalker/LatentSync/Kling/LTX)+LatentSync架构+完整短视频成本估算(¥0.59)+实验#46 MiniMax Music(60s/¥0.14)+实验#47 MiniMax Speech(10s/¥0.016) | day26-audio-generation-multimodal.md |
 | 35 | 2026-03-23 00:03 | Day27-Wan视频生成深度解析 | Wan全系列版本演进(2.1→VACE→2.2→S2V→Animate→2.6)+Wan-VAE 3D因果卷积架构(时空压缩4×8×8/因果性/2.2新VAE 4×16×16)+UMT5-XXL编码器(多语言/4096d)+Wan 2.2 MoE(SNR时间步切换/高噪声=布局+低噪声=细节/27B total 14B active)+VACE统一编辑(8种任务单模型)+ComfyUI原生vs WanVideoWrapper对比+Wan扩展(S2V/Animate/2.6 API Only)+本地部署GPU需求矩阵+开源视频模型6家对比+5种工作流模式+实验#48 T2V(50s/¥0.63)+实验#49 I2V(210s/¥0.63) | day27-wan-video-generation-deep-dive.md |
 | 36 | 2026-03-23 02:05 | Day28-微调技术全景+工作流工程化 | SD微调5方法全景(TI/HN/LoRA/DreamBooth/Full)+Textual Inversion数学原理(仅优化embedding向量/冻结全模型/多token机制)+DreamBooth深度(Prior Preservation Loss防遗忘/稀有token绑定/+LoRA最佳实践)+Hypernetwork原理与弃用(CrossAttn K/V修改/被LoRA全面替代)+5方法全维度对比表+ComfyUI Subgraph系统(vs Legacy Group Nodes/嵌套图/参数面板)+App Mode+App Builder+ComfyHub(workflow→app转化/URL分享)+Node Registry发布流程(pyproject.toml/comfy-cli/CI-CD)+5种工作流设计模式(管线/分支合并/多阶段精炼/条件路由/迭代循环)+工作流最佳实践+实验#50信息图(35s/¥0.03) | day28-finetuning-ecosystem-workflow-engineering.md |
+| 37 | 2026-03-23 04:03 | Day29-Flux实战工作流生态 | Flux模型家族全景(FLUX.1 pro/dev/schnell/Ultra+Tools套件Fill/Depth/Canny/Redux+Kontext+FLUX.2 Klein)+Flux ControlNet生态(BFL官方Canny/Depth+Shakker-Labs Union-Pro-2.0+XLabs-AI+InstantX)+Flux Fill工作流(Inpainting/Outpainting)+Redux工作流(SigLIP→Style Adapter/AdvancedRefluxControl)+FLUX.2 Klein(4B/9B)+量化方案(BF16/NF4/GGUF/FP8/NVFP4)+最佳实践5大差异+2个工作流JSON+实验#51-#52(¥0.06) | day29-flux-practical-workflow-ecosystem.md |
+| 38 | 2026-03-23 06:03 | Day30-快速推理与蒸馏技术 | 四大蒸馏家族(一致性/对抗/分布匹配/混合)+12+方法体系(CM/LCM/PCM/ECM/ADD/LADD/Lightning/DMD2/Hyper-SD/SANA-Sprint/AnimateLCM/CausVid)+CM原理(PF-ODE轨迹一致性/CD vs CT)+LCM潜空间蒸馏(增广PF-ODE/LCM-LoRA即插即用)+PCM分段解决三缺陷(NeurIPS 2024)+ADD→LADD演进(pixel→latent/噪声级别控制判别器/Flux Schnell)+Lightning渐进+对抗组合+DMD2分布匹配(NeurIPS Oral/FID 1.28超教师)+Hyper-SD(TSCD+Score Distillation覆盖4模型)+SANA-Sprint(0.03s/1024²)+ComfyUI 10方法配置速查+决策树+2工作流JSON+实验#53概念图(¥0.03) | day30-fast-inference-distillation-techniques.md |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
@@ -999,3 +1001,45 @@
 - [x] RunningHub 实验
   - [x] 实验 #51: T2I 日式庭园基准（rhart-image-n-pro, 20s/¥0.03）
   - [x] 实验 #52: I2I 风格迁移（写实→魔幻, 20s/¥0.03）
+
+## Day 30 进度 (快速推理与蒸馏技术 — Fast Inference & Distillation Techniques) ✅
+
+- [x] 蒸馏方法学术体系全景
+  - [x] 四大蒸馏家族分类（一致性/对抗/分布匹配/混合）
+  - [x] 完整技术演进时间线（2022.04 PD → 2025.03 SANA-Sprint）
+  - [x] 12+ 种蒸馏方法系统梳理
+- [x] 一致性蒸馏 (Consistency Distillation) 深度解析
+  - [x] Consistency Models 原理（Song et al., ICML 2023）— PF-ODE 轨迹一致性 / 自一致性函数 / skip connection 参数化 / CD vs CT 两种训练
+  - [x] LCM 潜空间一致性模型（增广 PF-ODE / CFG 内化 / LCM-LoRA 即插即用创新）
+  - [x] PCM 分段一致性模型（NeurIPS 2024 — LCM 三个缺陷 / 分段 ODE 解决累积误差 / 灵活 CFG / 支持视频）
+  - [x] ECM 易训一致性模型（ICLR 2025 — loss 权重修正 / 1 小时单卡 A100 / 训练成本降 100x）
+- [x] 对抗式蒸馏 (Adversarial Distillation) 深度解析
+  - [x] ADD 原理（Stability AI, 2023 — 三组件架构 / DINOv2 判别器 / 蒸馏+对抗双 loss → SDXL Turbo）
+  - [x] ADD 的四大局限（固定分辨率 / pixel space / 不可控特征 / 训练不稳定）
+  - [x] LADD 原理（SIGGRAPH Asia 2024 — 全潜空间蒸馏 / 扩散模型作判别器 / 噪声级别控制感知 / 任意分辨率 → SD3-Turbo / Flux Schnell）
+  - [x] ADD vs LADD 全维度对比（6 个维度）
+  - [x] SDXL-Lightning 原理（ByteDance — 渐进式+对抗式组合 / Full UNet + LoRA 双格式）
+- [x] 分布匹配蒸馏
+  - [x] DMD2 原理（NeurIPS 2024 Oral — 分布级 KL 散度匹配 / Two-timescale 更新 / FID 1.28 超越教师 / 500x 加速）
+- [x] 混合蒸馏方法
+  - [x] Hyper-SD 三阶段训练（ByteDance — TSCD + Score Distillation + 人类偏好 / 覆盖 SD1.5/SDXL/SD3/Flux / 1-8 step 全系列）
+  - [x] SANA-Sprint 混合蒸馏（NVIDIA, ICCV 2025 — sCM + LADD / 0.03s 1024² / 比 Flux Schnell 快 64x）
+- [x] 视频蒸馏
+  - [x] AnimateLCM 解耦一致性学习（SIGGRAPH Asia 2024 — 先图像后视频 / 4 步视频生成 / ComfyUI AnimateDiff-Evolved 集成）
+  - [x] CausVid 因果视频蒸馏（CVPR 2025 — 双向→因果自回归 / 实时流式视频）
+- [x] Flux 快速推理特殊机制
+  - [x] Flux Dev: Guidance Distillation（guidance scale 作为模型输入 / 单次 forward 替代双次）
+  - [x] Flux Schnell: LADD 蒸馏（1-4 步 / Apache 2.0）
+  - [x] FLUX.2 Klein: 架构蒸馏（12B → 4B/9B）
+- [x] ComfyUI 快速推理实战汇总
+  - [x] 10 种方法 ComfyUI 配置速查表（sampler/scheduler/steps/cfg 全参数）
+  - [x] CFG 行为分类（内化 vs 灵活 vs 显式）
+  - [x] 方法选择决策树（按基础模型+需求分支）
+- [x] 蒸馏方法深度对比
+  - [x] 学术指标对比（FID/CLIP Score/Aes Score）
+  - [x] 实用维度对比（LoRA兼容/ControlNet兼容/Negative Prompt/灵活步数/分辨率）
+- [x] 2 个 ComfyUI 工作流 JSON
+  - [x] sdxl-lightning-4step-lora.json（SDXL-Lightning LoRA 快速工作流）
+  - [x] lcm-lora-sdxl.json（LCM-LoRA 即插即用快速工作流）
+- [x] RunningHub 实验
+  - [x] 实验 #53: 蒸馏技术全景概念信息图（rhart-image-n-pro, 30s/¥0.03）

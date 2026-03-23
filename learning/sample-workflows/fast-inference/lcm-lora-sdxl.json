@@ -1,0 +1,75 @@
+{
+  "_comment": "LCM-LoRA SDXL 快速推理工作流 (ComfyUI)",
+  "_description": "使用 LCM-LoRA 即插即用加速。关键: 使用 lcm sampler + 极低 CFG (1.0-2.0)。需要: 1) 任意 SDXL checkpoint, 2) lcm-lora-sdxl.safetensors (~395MB from latent-consistency/lcm-lora-sdxl)",
+  "3": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "LoraLoader",
+    "_meta": { "title": "LCM-LoRA (即插即用加速)" },
+    "inputs": {
+      "lora_name": "lcm-lora-sdxl.safetensors",
+      "strength_model": 1.0,
+      "strength_clip": 1.0,
+      "model": ["3", 0],
+      "clip": ["3", 1]
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "_meta": { "title": "Positive Prompt" },
+    "inputs": {
+      "text": "a futuristic cyberpunk city at night, neon lights reflecting on wet streets, flying cars, dramatic atmosphere",
+      "clip": ["5", 1]
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "_meta": { "title": "Negative Prompt" },
+    "inputs": {
+      "text": "",
+      "clip": ["5", 1]
+    }
+  },
+  "8": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    }
+  },
+  "10": {
+    "class_type": "KSampler",
+    "_meta": { "title": "KSampler (LCM: lcm sampler + low CFG)" },
+    "inputs": {
+      "seed": 42,
+      "steps": 6,
+      "cfg": 1.5,
+      "sampler_name": "lcm",
+      "scheduler": "sgm_uniform",
+      "denoise": 1.0,
+      "model": ["5", 0],
+      "positive": ["6", 0],
+      "negative": ["7", 0],
+      "latent_image": ["8", 0]
+    }
+  },
+  "11": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["10", 0],
+      "vae": ["3", 2]
+    }
+  },
+  "12": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "lcm_lora_sdxl",
+      "images": ["11", 0]
+    }
+  }
+}

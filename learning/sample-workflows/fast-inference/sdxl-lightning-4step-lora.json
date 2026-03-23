@@ -1,0 +1,74 @@
+{
+  "_comment": "SDXL-Lightning 4-step 快速推理工作流 (ComfyUI)",
+  "_description": "使用 SDXL-Lightning 4-step LoRA 进行快速图像生成。需要: 1) SDXL Base 1.0 checkpoint, 2) sdxl_lightning_4step_lora.safetensors",
+  "3": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "lora_name": "sdxl_lightning_4step_lora.safetensors",
+      "strength_model": 1.0,
+      "strength_clip": 1.0,
+      "model": ["3", 0],
+      "clip": ["3", 1]
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "_meta": { "title": "Positive Prompt" },
+    "inputs": {
+      "text": "a majestic dragon flying over a crystal mountain at sunset, volumetric lighting, cinematic, 8k",
+      "clip": ["5", 1]
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "_meta": { "title": "Negative Prompt (minimal effect with distilled models)" },
+    "inputs": {
+      "text": "blurry, low quality, ugly",
+      "clip": ["5", 1]
+    }
+  },
+  "8": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    }
+  },
+  "10": {
+    "class_type": "KSampler",
+    "_meta": { "title": "KSampler (Lightning 4-step)" },
+    "inputs": {
+      "seed": 42,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "sgm_uniform",
+      "denoise": 1.0,
+      "model": ["5", 0],
+      "positive": ["6", 0],
+      "negative": ["7", 0],
+      "latent_image": ["8", 0]
+    }
+  },
+  "11": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["10", 0],
+      "vae": ["3", 2]
+    }
+  },
+  "12": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "lightning_4step",
+      "images": ["11", 0]
+    }
+  }
+}

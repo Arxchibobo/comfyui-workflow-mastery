@@ -48,6 +48,14 @@
 - [x] **Day 27**: Wan 视频生成模型深度解析（Wan 2.1→VACE→2.2 MoE→S2V→Animate→2.6全系列 + ComfyUI 原生 vs WanVideoWrapper + 本地部署 + 开源生态对比）
 - [x] **Day 28**: SD 微调技术全景 + ComfyUI 工作流工程化（TI/DreamBooth/HN 全对比 + Subgraph/Registry/App Mode）
 
+### Phase 9: Flux 实战（Day 29）✅ 完成
+- [x] **Day 29**: Flux 实战工作流生态（模型家族全景 + ControlNet/Fill/Redux 生态 + FLUX.2 Klein + 量化 + 最佳实践）
+
+### Phase 10: 推理加速与前沿（Day 30+）🔧 进行中
+- [x] **Day 30**: 快速推理与蒸馏技术（四大蒸馏家族 + 12+ 方法 + ComfyUI 配置速查 + 决策树）
+- [ ] **Day 31**: 图像编辑工作流（InstructPix2Pix / IC-Edit / Flux Fill 高级 / VACE 编辑）
+- [ ] **Day 32**: 3D 生成与多视角（TripoSR / InstantMesh / Zero123++ / ComfyUI 3D 节点）
+
 ## 📊 每日学习记录
 | 日期 | 主题 | 时长 | 实操 | 笔记 |
 |------|------|------|------|------|
@@ -71,3 +79,5 @@
 | 3/22 | Day26 音频生成与多模态工作流 | ~1h | 2个实验(¥0.156) | 1个笔记 |
 | 3/23 | Day27 Wan视频生成深度解析 | ~1h | 3个实验(¥1.29) | 1个笔记 |
 | 3/23 | Day28 微调技术全景+工作流工程化 | ~1h | 1个实验(¥0.03) | 1个笔记 |
+| 3/23 | Day29 Flux实战工作流生态 | ~1h | 2个实验(¥0.06) | 1个笔记+2个工作流JSON |
+| 3/23 | Day30 快速推理与蒸馏技术 | ~1h | 1个实验(¥0.03) | 1个笔记+2个工作流JSON |
