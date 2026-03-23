@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 8 进行中
-- **当前天数**: Day 27 — Wan 视频生成模型深度解析（完成）
-- **上次学习时间**: 2026-03-23 00:03 UTC
-- **累计学习轮数**: 35
+- **当前天数**: Day 28 — SD 微调技术全景 + ComfyUI 工作流工程化（完成）
+- **上次学习时间**: 2026-03-23 02:05 UTC
+- **累计学习轮数**: 36
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -77,6 +77,7 @@
 | 33 | 2026-03-22 20:03 | Day25-高级视频控制技术 | 6维视频控制全景(镜头/运动/参考/首尾帧/编辑/多镜头)+Kling Camera Controls深度(6DOF参数/5种预设/KlingCameraControlI2V源码分析/硬编码限制)+Seedance prompt-driven镜头+AnimateDiff CameraCtrl本地方案(CameraCtrl_pruned/6种预设运动)+MotionCtrl学术方案(SIGGRAPH Asia/相机+物体解耦)+Kling 3.0 Motion Control(Element Binding面部一致性/characterOrientation双模式/30s连续)+Reference-to-Video全景(O3 vs O1 vs Wan2.6 vs Vidu)+首尾帧技术(语义理解vs像素插值/Vidu参数详解/最佳实践)+Kling V3/O1/O3全系列对比+ComfyUI 4种工作流模式+混合管线设计+实验#43关键帧生成(¥0.06)+实验#44 Vidu首尾帧(90s/¥0.20)+实验#45 Seedance镜头控制(70s/¥0.30) | day25-advanced-video-control-techniques.md |
 | 34 | 2026-03-22 22:03 | Day26-音频生成与多模态工作流 | 音频AI三大方向(T2M/TTS/T2SFX)+两大范式(自回归Transformer+EnCodec vs 潜空间扩散DiT)+MusicGen架构深度(EnCodec 4 codebook×50Hz+延迟模式+Melody条件+Stereo)+Stable Audio Open架构(DiT 1057M+音频VAE 2048x压缩+Timing Conditioning)+AudioLDM2(GPT-2 LOA+AudioMAE)+MiniMax Music2.5/Speech2.8+ComfyUI音频节点全景(LTX-2.3原生音频/Stable Audio 2.5 Partner/Kling Audio Partner/comfyui-sound-lab/TTS-Audio-Suite等6+TTS节点)+音频VAE vs图像VAE对比+EnCodec RVQ原理+三种音视频同步策略(原生/后配音/音频驱动)+生产级四层管线设计+LTX-2.3音频I2V工作流JSON+唇同步5种方案(Wav2Lip/SadTalker/LatentSync/Kling/LTX)+LatentSync架构+完整短视频成本估算(¥0.59)+实验#46 MiniMax Music(60s/¥0.14)+实验#47 MiniMax Speech(10s/¥0.016) | day26-audio-generation-multimodal.md |
 | 35 | 2026-03-23 00:03 | Day27-Wan视频生成深度解析 | Wan全系列版本演进(2.1→VACE→2.2→S2V→Animate→2.6)+Wan-VAE 3D因果卷积架构(时空压缩4×8×8/因果性/2.2新VAE 4×16×16)+UMT5-XXL编码器(多语言/4096d)+Wan 2.2 MoE(SNR时间步切换/高噪声=布局+低噪声=细节/27B total 14B active)+VACE统一编辑(8种任务单模型)+ComfyUI原生vs WanVideoWrapper对比+Wan扩展(S2V/Animate/2.6 API Only)+本地部署GPU需求矩阵+开源视频模型6家对比+5种工作流模式+实验#48 T2V(50s/¥0.63)+实验#49 I2V(210s/¥0.63) | day27-wan-video-generation-deep-dive.md |
+| 36 | 2026-03-23 02:05 | Day28-微调技术全景+工作流工程化 | SD微调5方法全景(TI/HN/LoRA/DreamBooth/Full)+Textual Inversion数学原理(仅优化embedding向量/冻结全模型/多token机制)+DreamBooth深度(Prior Preservation Loss防遗忘/稀有token绑定/+LoRA最佳实践)+Hypernetwork原理与弃用(CrossAttn K/V修改/被LoRA全面替代)+5方法全维度对比表+ComfyUI Subgraph系统(vs Legacy Group Nodes/嵌套图/参数面板)+App Mode+App Builder+ComfyHub(workflow→app转化/URL分享)+Node Registry发布流程(pyproject.toml/comfy-cli/CI-CD)+5种工作流设计模式(管线/分支合并/多阶段精炼/条件路由/迭代循环)+工作流最佳实践+实验#50信息图(35s/¥0.03) | day28-finetuning-ecosystem-workflow-engineering.md |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
@@ -908,3 +909,50 @@
   - [x] 实验 #48: Wan 2.6 T2V 龙虾厨师（50s/¥0.63）
   - [x] 实验 #49: Wan 2.6 I2V 金龙穿雾（210s/¥0.63）
   - [x] 总成本: ¥1.29
+
+## Day 28 进度 (SD 微调技术全景 + ComfyUI 工作流工程化) ✅
+
+- [x] SD 微调方法全景（5 种方法完整对比）
+  - [x] 方法分类与修改范围排列（TI → HN → LoRA → DB → Full）
+  - [x] 5 方法全维度对比表（12 个维度）
+  - [x] 方法选择决策树
+- [x] Textual Inversion 深度解析
+  - [x] 论文原理（Gal et al., 2022, arXiv:2208.01618）
+  - [x] 数学公式（仅优化 embedding 向量 v*，冻结 U-Net/VAE/其他 token）
+  - [x] 训练核心伪代码（梯度 mask 只保留新 token）
+  - [x] 多 Token Embedding（1-16 tokens / 容量 vs prompt 空间权衡）
+  - [x] 训练参数推荐（SD1.5 vs SDXL）
+  - [x] ComfyUI 使用方式（embedding:xxx 语法 / 加载机制源码分析）
+  - [x] 文件格式（.pt 旧式 vs .safetensors 新式）
+  - [x] 经典 Negative Embedding 案例（EasyNegative / badhandv4 / FastNegativeV2）
+- [x] DreamBooth 深度解析
+  - [x] 论文原理（Ruiz et al., Google, 2022, arXiv:2208.12242）
+  - [x] 两步训练法（实例微调 + Prior Preservation Loss）
+  - [x] Prior Preservation Loss 数学（L_total = L_instance + λ × L_prior）
+  - [x] 防语言漂移/过拟合的机制
+  - [x] DreamBooth + LoRA 现代最佳实践（kohya_ss 配置示例）
+  - [x] DreamBooth vs Full Fine-tune 对比
+- [x] Hypernetwork 原理与弃用
+  - [x] Cross-Attention K/V 修改架构
+  - [x] HN 小型 MLP 结构（Input → Linear → Dropout → GELU → Linear → Output）
+  - [x] 弃用原因分析（LoRA 全面超越 4 个维度）
+  - [x] 2024+ 社区共识：不应再使用
+- [x] ComfyUI Subgraph 系统（现代标准）
+  - [x] 概念与创建流程（选中 → 点击图标 → 自动分析 IO）
+  - [x] 内部结构（Input/Output Slots + 内部节点图）
+  - [x] Subgraph vs Group Nodes (Legacy) 全维度对比（6 个维度）
+  - [x] 编辑模式与参数面板（v0.3.66+）
+- [x] App Mode & App Builder & ComfyHub (2026 新特性)
+  - [x] App Mode 概念（一键从节点图切换到用户界面）
+  - [x] App Builder 配置（选择暴露的输入/输出）
+  - [x] URL 分享机制（编码工作流 + 布局 + 绑定）
+  - [x] ComfyHub 公共平台（创作者发布 App 和工作流）
+- [x] ComfyUI Node Registry
+  - [x] 发布流程（Publisher 账号 → pyproject.toml → comfy node publish）
+  - [x] GitHub Actions CI/CD 自动发布配置
+- [x] 工作流设计模式（5 种）
+  - [x] 管线模式 / 分支合并 / 多阶段精炼 / 条件路由 / 迭代循环
+  - [x] 最佳实践（命名规范 / 模块化原则 / 版本管理）
+- [x] ComfyUI 生态系统全景 2026 Q1（开发层 + 平台层 + 用户层）
+- [x] RunningHub 实验
+  - [x] 实验 #50: 微调技术全景信息图（35s/¥0.03）
