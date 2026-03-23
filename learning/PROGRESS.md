@@ -3,8 +3,8 @@
 ## 当前状态
 - **当前阶段**: 🎓 Post-Graduation Labs
 - **当前天数**: Day 36+ — 毕业后实操巩固
-- **上次学习时间**: 2026-03-23 12:03 UTC
-- **累计学习轮数**: 45
+- **上次学习时间**: 2026-03-23 14:03 UTC
+- **累计学习轮数**: 46
 - **状态**: 🎓 毕业！36天完整学习旅程结束 → 进入实操巩固阶段
 
 ## Day 1 进度 (SD 核心算法原理)
@@ -88,6 +88,7 @@
 | 43 | 2026-03-23 10:33 | Day35-2026前沿趋势 | Nodes 2.0 Vue迁移(V3 Schema)+App View/Builder+Desktop+Cloud+DiT统一化+AR+Diffusion混合架构+模型压缩(FLUX.2 Klein/GGUF/NF4/NVFP4)+实时生成(StreamDiffusion 100+FPS/SANA-Sprint 0.03s/CausVid实时视频)+Blackwell RTX 5090 NVFP4+AI辅助工作流(ComfyAgent/ComfyGPT/ComfyUI-R1)+游戏资产生成+数字人+电商自动化+开源生态格局+2026-2027预测 | day35-2026-frontiers-emerging-trends.md |
 | 44 | 2026-03-23 10:33 | Day36-毕业总结🎓 | 完整知识图谱(20+领域/100+节点包/50+模型)+速查手册(模型选择/采样器/VRAM/成本)+能力自评(19维度A-A+)+学习统计(36天/44轮/36篇笔记/59实验/~600KB)+后续实操清单+持续跟踪建议+毕业宣言 | day36-graduation-summary-cheatsheet.md |
 | 45 | 2026-03-23 12:03 | PostGrad#1-新视频模型对比 | rhart-video-s(¥0.02/9.5s/704×1280)+rhart-v3.1-fast(¥0.04/8s/1280×720)+Seedance基准(¥0.30/5s/1280×720)+性价比分析(rhart系列15-30x便宜)+发现rhart-s竖屏行为+模型选择决策更新 | postgrad-01-new-video-model-comparison.md |
+| 46 | 2026-03-23 14:03 | PostGrad#2-Ref2V多模型对比 | 5模型Ref2V对比(Kling O3¥0.50/Wan2.6¥0.65/Seedance¥0.15/rhart V3.1¥1.36/Vidu余额不足)+Hailuo2.3 fast I2V(¥0.17)+性价比排名(Seedance>Kling O3>Wan>rhart)+ComfyUI Ref2V工作流JSON+混合管线设计(本地Flux+API Ref2V+本地后处理)+Partner Nodes源码分析 | postgrad-02-reference-to-video-comparison.md + kling-o3-ref2v-with-postprocess.json |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景

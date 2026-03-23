@@ -1,0 +1,128 @@
+{
+  "_meta": {
+    "title": "Reference-to-Video Multi-Model Comparison Pipeline",
+    "description": "ComfyUI workflow for comparing Kling O3 Ref2V output with local post-processing (RIFE interpolation + ESRGAN upscale). Demonstrates hybrid local+API pipeline.",
+    "author": "ComfyUI Learning PostGrad#2",
+    "date": "2026-03-23"
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "swordsman-ref.jpg"
+    },
+    "_meta": {
+      "title": "Load Reference Image"
+    }
+  },
+  "2": {
+    "class_type": "KlingOmniEditModel",
+    "inputs": {
+      "model_name": "kling-video-o3",
+      "mode": "std"
+    },
+    "_meta": {
+      "title": "Kling O3 Model Config"
+    }
+  },
+  "3": {
+    "class_type": "KlingReferenceToVideoNode",
+    "inputs": {
+      "kling_model": ["2", 0],
+      "reference_image": ["1", 0],
+      "prompt": "The swordsman draws his jade sword and performs a flowing wuxia sword dance on the misty cliff, robes billowing in the wind, cinematic camera orbiting slowly around him",
+      "negative_prompt": "blurry, low quality, distorted face, extra limbs, static, frozen",
+      "duration": "5",
+      "aspect_ratio": "16:9"
+    },
+    "_meta": {
+      "title": "Kling O3 Reference-to-Video Generation"
+    }
+  },
+  "10": {
+    "class_type": "VHS_LoadVideoFromURL",
+    "inputs": {
+      "video": ["3", 0],
+      "force_rate": 24,
+      "force_size": "Disabled",
+      "frame_load_cap": 0,
+      "skip_first_frames": 0,
+      "select_every_nth": 1
+    },
+    "_meta": {
+      "title": "Decode Video to Frames"
+    }
+  },
+  "11": {
+    "class_type": "RIFE VFI",
+    "inputs": {
+      "frames": ["10", 0],
+      "ckpt_name": "rife49.pth",
+      "clear_cache_after_n_frames": 10,
+      "multiplier": 2,
+      "fast_mode": true,
+      "ensemble": true,
+      "scale_factor": 1.0
+    },
+    "_meta": {
+      "title": "RIFE Frame Interpolation 2x (24→48fps)"
+    }
+  },
+  "12": {
+    "class_type": "UpscaleModelLoader",
+    "inputs": {
+      "model_name": "RealESRGAN_x4plus.pth"
+    },
+    "_meta": {
+      "title": "Load ESRGAN 4x Upscaler"
+    }
+  },
+  "13": {
+    "class_type": "ImageUpscaleWithModel",
+    "inputs": {
+      "upscale_model": ["12", 0],
+      "image": ["11", 0]
+    },
+    "_meta": {
+      "title": "ESRGAN 4x Upscale (720p → 2880p)"
+    }
+  },
+  "14": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": ["13", 0],
+      "upscale_method": "lanczos",
+      "width": 1920,
+      "height": 1080,
+      "crop": "center"
+    },
+    "_meta": {
+      "title": "Resize to 1080p"
+    }
+  },
+  "20": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["14", 0],
+      "frame_rate": 48,
+      "loop_count": 0,
+      "filename_prefix": "ref2v-kling-o3-upscaled",
+      "format": "video/h264-mp4",
+      "pingpong": false,
+      "save_output": true,
+      "crf": 18
+    },
+    "_meta": {
+      "title": "Export Final 1080p 48fps Video"
+    }
+  },
+  "30": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["3", 0],
+      "filename_prefix": "ref2v-kling-o3-raw"
+    },
+    "_meta": {
+      "title": "Save Raw Video (for comparison)"
+    }
+  }
+}
