@@ -1,10 +1,10 @@
 # ComfyUI 学习进度追踪
 
 ## 当前状态
-- **当前阶段**: Phase 7 进行中
-- **当前天数**: Day 26 — 音频生成与多模态工作流（完成）
-- **上次学习时间**: 2026-03-22 22:03 UTC
-- **累计学习轮数**: 34
+- **当前阶段**: Phase 8 进行中
+- **当前天数**: Day 27 — Wan 视频生成模型深度解析（完成）
+- **上次学习时间**: 2026-03-23 00:03 UTC
+- **累计学习轮数**: 35
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -76,6 +76,7 @@
 | 32 | 2026-03-22 18:30 | Day24-视频后期处理与帧插值 | 帧插值技术全景(RIFE IFNet架构/多尺度粗到细/Privileged Distillation/版本4.0-4.15演进)+FILM(大运动/递归中点)+GIMM-VFI(NeurIPS 2024隐式运动建模/四变体)+IFRNet/AMT/GMFSS等14种VFI算法对比+ComfyUI-Frame-Interpolation节点体系(14算法/调度器/clear_cache)+视频放大技术(SeedVR2扩散式放大/Hann Window时间一致性/四阶段管线/Topaz Proteus v5/DiffVSR流式超分)+去闪烁4种方法(统计/光流引导/颜色匹配/FreeLong频谱)+色彩校正(LUT 3D查找表/4个ComfyUI LUT节点包/EasyColorCorrector)+视频编辑节点生态(VHS全节点体系/Mana-Nodes/VideoDirCombiner/速度控制)+生产级4阶段后期管线(修复→放大→插帧→调色)+参数速查+诊断表+实验#40龙虾冲浪关键帧(¥0.03)+实验#41 Seedance I2V(¥0.30)+实验#42 Topaz视频放大(¥0.11) | day24-video-post-processing-frame-interpolation.md |
 | 33 | 2026-03-22 20:03 | Day25-高级视频控制技术 | 6维视频控制全景(镜头/运动/参考/首尾帧/编辑/多镜头)+Kling Camera Controls深度(6DOF参数/5种预设/KlingCameraControlI2V源码分析/硬编码限制)+Seedance prompt-driven镜头+AnimateDiff CameraCtrl本地方案(CameraCtrl_pruned/6种预设运动)+MotionCtrl学术方案(SIGGRAPH Asia/相机+物体解耦)+Kling 3.0 Motion Control(Element Binding面部一致性/characterOrientation双模式/30s连续)+Reference-to-Video全景(O3 vs O1 vs Wan2.6 vs Vidu)+首尾帧技术(语义理解vs像素插值/Vidu参数详解/最佳实践)+Kling V3/O1/O3全系列对比+ComfyUI 4种工作流模式+混合管线设计+实验#43关键帧生成(¥0.06)+实验#44 Vidu首尾帧(90s/¥0.20)+实验#45 Seedance镜头控制(70s/¥0.30) | day25-advanced-video-control-techniques.md |
 | 34 | 2026-03-22 22:03 | Day26-音频生成与多模态工作流 | 音频AI三大方向(T2M/TTS/T2SFX)+两大范式(自回归Transformer+EnCodec vs 潜空间扩散DiT)+MusicGen架构深度(EnCodec 4 codebook×50Hz+延迟模式+Melody条件+Stereo)+Stable Audio Open架构(DiT 1057M+音频VAE 2048x压缩+Timing Conditioning)+AudioLDM2(GPT-2 LOA+AudioMAE)+MiniMax Music2.5/Speech2.8+ComfyUI音频节点全景(LTX-2.3原生音频/Stable Audio 2.5 Partner/Kling Audio Partner/comfyui-sound-lab/TTS-Audio-Suite等6+TTS节点)+音频VAE vs图像VAE对比+EnCodec RVQ原理+三种音视频同步策略(原生/后配音/音频驱动)+生产级四层管线设计+LTX-2.3音频I2V工作流JSON+唇同步5种方案(Wav2Lip/SadTalker/LatentSync/Kling/LTX)+LatentSync架构+完整短视频成本估算(¥0.59)+实验#46 MiniMax Music(60s/¥0.14)+实验#47 MiniMax Speech(10s/¥0.016) | day26-audio-generation-multimodal.md |
+| 35 | 2026-03-23 00:03 | Day27-Wan视频生成深度解析 | Wan全系列版本演进(2.1→VACE→2.2→S2V→Animate→2.6)+Wan-VAE 3D因果卷积架构(时空压缩4×8×8/因果性/2.2新VAE 4×16×16)+UMT5-XXL编码器(多语言/4096d)+Wan 2.2 MoE(SNR时间步切换/高噪声=布局+低噪声=细节/27B total 14B active)+VACE统一编辑(8种任务单模型)+ComfyUI原生vs WanVideoWrapper对比+Wan扩展(S2V/Animate/2.6 API Only)+本地部署GPU需求矩阵+开源视频模型6家对比+5种工作流模式+实验#48 T2V(50s/¥0.63)+实验#49 I2V(210s/¥0.63) | day27-wan-video-generation-deep-dive.md |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
@@ -860,3 +861,50 @@
 - [x] RunningHub 实验
   - [x] 实验 #46: MiniMax Music 2.5 音乐生成（60s/¥0.14/1.6MB）
   - [x] 实验 #47: MiniMax Speech 2.8 HD 语音合成（10s/¥0.016/213KB）
+
+## Day 27 进度 (Wan 视频生成模型深度解析 — Wan Video Generation Deep Dive) ✅
+
+- [x] Wan 全系列版本演进（2025.03-2026.03 完整时间线）
+  - [x] Wan 2.1 首发（T2V-1.3B/14B + I2V-14B）
+  - [x] Wan 2.1 VACE 统一视频编辑模型
+  - [x] Wan 2.2 MoE 架构升级（T2V-A14B / I2V-A14B / TI2V-5B）
+  - [x] Wan 2.2-S2V-14B 音频驱动视频
+  - [x] Wan 2.2-Animate-14B 角色动画与替换
+  - [x] Wan 2.6（API Only，未开源权重）
+- [x] Wan-VAE 3D 因果变分自编码器深度
+  - [x] 3D 因果卷积原理（时空压缩 4×8×8 = 256，因果性单向 padding）
+  - [x] Wan 2.2 新 VAE（4×16×16 = 1024 超高压缩比，5B 专用）
+  - [x] 第一帧独立编码（兼容图像输入）
+- [x] UMT5-XXL 文本编码器
+  - [x] 多语言原生支持（101 种语言）
+  - [x] vs T5-XXL / mT5-XXL / Gemma 3 对比
+  - [x] FP16 vs FP8 加载选择
+- [x] Wan 2.2 MoE 架构革新
+  - [x] SNR 阈值时间步切换机制
+  - [x] 高噪声专家（布局/构图/主体）+ 低噪声专家（细节/纹理/精炼）
+  - [x] 27B 总参数 / 14B 每步活跃（推理成本≈Wan 2.1）
+  - [x] vs 传统逐 token MoE 路由的区别
+  - [x] 训练数据增量（+65.6% 图片 / +83.2% 视频）
+- [x] VACE 统一视频编辑框架
+  - [x] 8 种任务单模型（T2V/I2V/V2V/运动迁移/局部替换/扩展/背景替换/参考生成）
+  - [x] ComfyUI Bypass 节点切换模式
+  - [x] 性能参考（4090: 640×640 49帧 ~7min, 720P 81帧 ~40min）
+- [x] ComfyUI 集成对比
+  - [x] 原生节点体系（Load Diffusion Model / CLIPLoader / EmptyHunyuanLatentVideo）
+  - [x] kijai WanVideoWrapper（TeaCache/MagCache/GGUF/Animate/S2V/面部控制）
+  - [x] 8 维度深度对比表
+- [x] 本地部署 GPU 需求与优化
+  - [x] VRAM 需求矩阵（6 种配置）
+  - [x] 消费级 vs 数据中心优化策略
+  - [x] 7 种前沿优化（TeaCache/MagCache/CausVid/GGUF/LightX2V/FastVideo/Cache-dit）
+  - [x] 部署成本对比表
+- [x] 开源视频模型生态对比
+  - [x] 6 家模型全维度对比（Wan/HunyuanVideo/CogVideoX/LTX/Mochi/Open-Sora）
+  - [x] Wan 2.2 vs 竞品 10 维度详细对比
+- [x] 5 种 ComfyUI 工作流模式
+  - [x] 纯本地 Wan / VACE 多任务 / 混合管线 / 多模态 S2V / 角色动画
+- [x] RunningHub 实验
+  - [x] 关键帧生成: rhart-image-n-pro T2I（25s/¥0.03）
+  - [x] 实验 #48: Wan 2.6 T2V 龙虾厨师（50s/¥0.63）
+  - [x] 实验 #49: Wan 2.6 I2V 金龙穿雾（210s/¥0.63）
+  - [x] 总成本: ¥1.29
