@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 10 进行中
-- **当前天数**: Day 31 — 图像编辑工作流（完成）
-- **上次学习时间**: 2026-03-23 08:03 UTC
-- **累计学习轮数**: 39
+- **当前天数**: Day 32 — 3D 生成与多视角（完成）
+- **上次学习时间**: 2026-03-23 10:03 UTC
+- **累计学习轮数**: 40
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -81,6 +81,7 @@
 | 37 | 2026-03-23 04:03 | Day29-Flux实战工作流生态 | Flux模型家族全景(FLUX.1 pro/dev/schnell/Ultra+Tools套件Fill/Depth/Canny/Redux+Kontext+FLUX.2 Klein)+Flux ControlNet生态(BFL官方Canny/Depth+Shakker-Labs Union-Pro-2.0+XLabs-AI+InstantX)+Flux Fill工作流(Inpainting/Outpainting)+Redux工作流(SigLIP→Style Adapter/AdvancedRefluxControl)+FLUX.2 Klein(4B/9B)+量化方案(BF16/NF4/GGUF/FP8/NVFP4)+最佳实践5大差异+2个工作流JSON+实验#51-#52(¥0.06) | day29-flux-practical-workflow-ecosystem.md |
 | 38 | 2026-03-23 06:03 | Day30-快速推理与蒸馏技术 | 四大蒸馏家族(一致性/对抗/分布匹配/混合)+12+方法体系(CM/LCM/PCM/ECM/ADD/LADD/Lightning/DMD2/Hyper-SD/SANA-Sprint/AnimateLCM/CausVid)+CM原理(PF-ODE轨迹一致性/CD vs CT)+LCM潜空间蒸馏(增广PF-ODE/LCM-LoRA即插即用)+PCM分段解决三缺陷(NeurIPS 2024)+ADD→LADD演进(pixel→latent/噪声级别控制判别器/Flux Schnell)+Lightning渐进+对抗组合+DMD2分布匹配(NeurIPS Oral/FID 1.28超教师)+Hyper-SD(TSCD+Score Distillation覆盖4模型)+SANA-Sprint(0.03s/1024²)+ComfyUI 10方法配置速查+决策树+2工作流JSON+实验#53概念图(¥0.03) | day30-fast-inference-distillation-techniques.md |
 | 39 | 2026-03-23 08:03 | Day31-图像编辑工作流 | 图像编辑三大范式(Training-Free/Fine-tuning/Hybrid)+InstructPix2Pix深度(双CFG机制/数据生成管线GPT-3+P2P/U-Net通道扩展)+CosXL Edit(SDXL版)+ICEdit(NeurIPS 2025/Diptych范式/LoRA-MoE混合微调/0.5%数据+1%参数/Early Filter推理缩放/超越GPT-4o ID保持/4GB MoE版)+Flux Fill高级(InpaintModelConditioning源码/Outpainting/自动Mask管线)+Flux Kontext(上下文感知编辑/多图输入/多轮迭代/prompt技巧)+VACE视频编辑(8种任务/WanVaceToVideo/视频Inpainting+Outpainting)+Qwen-Image-Edit(20B/双通路VLM+VAE/中英文精确文字编辑SOTA/Lightning 4步加速/Layered分层编辑)+OmniGen2(7B VLM+DiT统一/多图组合)+ComfyUI编辑节点体系总览+全方法9维对比+决策树+4种生产级工作流模式+实验#54-#56(概念图+风格编辑+Qwen编辑/¥0.11) | day31-image-editing-workflows.md |
+| 40 | 2026-03-23 10:03 | Day32-3D生成与多视角 | 3D生成技术全景(三大技术路线对比)+五种3D表示深度(NeRF/3DGS/Mesh/Triplane/O-Voxel)+3DGS原理(高斯属性59浮点/Tile-based光栅化/自适应密度控制)+Mesh提取(MarchingCubes/DMTet/FlexiCubes)+TripoSR(LRM架构/<0.5s)+TripoSG(1.5B/Rectified Flow/草图输入)+Zero123++(6固定视图/SD2.1微调)+InstantMesh(Zero123++→LRM重建/FlexiCubes/~10s)+TRELLIS(CVPR'25 Spotlight/SLAT统一潜空间)+TRELLIS.2(O-Voxel/SC-VAE 16×/4B DiT/3-60s/1536³)+Hunyuan3D全版本(v1→v3.1/两阶段DiT+ShapeVAE+Paint/PBR/quad拓扑)+ComfyUI-3D-Pack节点(TripoSG/InstantMesh/TRELLIS/Hunyuan3D/3DGS/FlexiCubes)+5种工作流模式(快速重建/多视图/两阶段/高分辨率/3D→2D渲染回路)+3D辅助角色一致性+产品展示管线+商业平台对比+决策树+实验#57-#59(参考图+图生3D+文生3D/¥1.23) | day32-3d-generation-multiview.md |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
@@ -1109,3 +1110,51 @@
   - [x] 实验 #54: 图像编辑技术全景概念图（rhart-image-n-pro T2I, 35s/¥0.03）
   - [x] 实验 #55: 图生图风格编辑（rhart-image-n-pro edit, 30s/¥0.03）
   - [x] 实验 #56: Qwen 2.0 Pro 图像编辑（qwen-image-2.0-pro, 20s/¥0.05）
+
+## Day 32 进度 (3D 生成与多视角 — 3D Generation & Multi-View) ✅
+
+- [x] 3D 生成技术全景
+  - [x] 核心范式演进时间线（NeRF 2020 → 3DGS 2023 → Feed-Forward 2024 → DiT 3D 2025 → 统一潜空间 2026）
+  - [x] 三大技术路线分类（多视图扩散+重建 / 直接3D生成 / 前馈重建）
+- [x] 五种核心 3D 表示深度对比
+  - [x] NeRF（隐式函数 F(x,y,z,θ,φ)→RGB,σ / 体积渲染 / 位置编码 / Instant-NGP/TensoRF 变体）
+  - [x] 3D Gaussian Splatting 深度解析（59 浮点属性/球谐函数/Tile-based光栅化/α-Blending/自适应密度控制 Clone/Split/Prune）
+  - [x] Mesh（顶点+边+面 / UV映射 / PBR材质 / 工业标准格式 .obj/.glb/.fbx/.stl）
+  - [x] Triplane（三正交平面特征图 / TripoSR/InstantMesh使用 / MarchingCubes转换）
+  - [x] O-Voxel/Sparse Voxels（TRELLIS.2 / field-free稀疏体素 / Flexible Dual Grids / PBR属性）
+  - [x] 5种表示全维度对比表（渲染速度/编辑性/工业兼容/内存/质量）
+- [x] Mesh 提取算法
+  - [x] Marching Cubes（1987经典 / 256构型查表 / 局限：分辨率/锐利特征）
+  - [x] DMTet Deep Marching Tetrahedra（NeurIPS 2021 / NVIDIA / 可微分/SDF+偏移联合优化）
+  - [x] FlexiCubes（SIGGRAPH 2023 / NVIDIA / 双网格 / 薄结构+锐利边缘 / InstantMesh使用）
+- [x] 核心 3D 生成模型深度分析（7个模型）
+  - [x] TripoSR（Tripo AI+Stability AI 2024 / LRM架构+DINOv2 / Triplane / <0.5s / 300M / MIT）
+  - [x] TripoSG（Tripo AI 2025.04 / 1.5B / Rectified Flow直接3D / 高保真形状 / CFG蒸馏草图版 / MIT）
+  - [x] Zero123++（SUDO-AI-3D 2023.10 / SD2.1微调 / 6固定视角一致多视图 / 条件机制 / 共享噪声）
+  - [x] InstantMesh（TencentARC 2024.04 / Zero123++→LRM重建 / FlexiCubes / 训练可扩展性 / ~10s）
+  - [x] TRELLIS（Microsoft CVPR'25 Spotlight / SLAT统一潜空间 / DINOv2特征 / TRELLIS-500K数据集）
+  - [x] TRELLIS.2（Microsoft 2025.12 / O-Voxel / SC-VAE 16×下采样~9.6K tokens / 4B DiT / 3-60s / 1536³ / 任意拓扑+PBR）
+  - [x] Hunyuan3D全系列（v1→v2→v2.1→v3→v3.1 / 两阶段DiT+ShapeVAE+Paint / 10B / PBR / quad拓扑 / 8视图重建）
+- [x] ComfyUI 3D 节点生态
+  - [x] ComfyUI-3D-Pack 核心节点（MrForExample / 10+生成模型 + 5算法 + 后处理 / 活跃维护）
+  - [x] ComfyUI-Sharp（Apple SHARP / 单图→3DGS <1s）
+  - [x] comfyui-3d-gs-renderer（3DGS渲染器节点）
+  - [x] VAST-AI ComfyUI-Tripo（Tripo API官方节点）
+  - [x] ComfyUI原生 Hunyuan3D 节点
+- [x] 5种 ComfyUI 3D 工作流模式
+  - [x] 模式一：单图快速重建（TripoSR/TripoSG, 1-5s）
+  - [x] 模式二：多视图重建（Zero123++→InstantMesh→FlexiCubes, ~10s）
+  - [x] 模式三：高质量两阶段（Hunyuan3D DiT+Paint, 20-60s）
+  - [x] 模式四：TRELLIS.2 高分辨率（512³-1536³, 3-60s）
+  - [x] 模式五：3D→2D渲染回路（3D辅助角色一致性/视频生成）
+- [x] 3D + 2D 管线整合
+  - [x] 3D辅助角色一致性（单图→mesh→多角度渲染→ControlNet参考）
+  - [x] 3D驱动视频生成（mesh→关键帧序列→I2V）
+  - [x] 产品展示管线（照片→RMBG→Hunyuan3D→PBR→360°视频）
+- [x] 商业 3D 生成平台对比（Tripo/Rodin/Meshy/Hunyuan3D/TRELLIS.2）
+- [x] 前沿方向（原生3D扩散/4D动画/PBR重光照）
+- [x] 模型选择决策树
+- [x] RunningHub 实验
+  - [x] 实验 #57: 龙虾厨师3D参考图生成（rhart-image-n-pro T2I, 20s/¥0.03）
+  - [x] 实验 #58: Hunyuan3D v3.1 图生3D（OBJ 34MB+纹理12.7MB+MTL, 180s/¥0.80）
+  - [x] 实验 #59: Hunyuan3D v3.1 文生3D（OBJ 34.4MB+纹理14.3MB+MTL, 205s/¥0.40）
