@@ -3,8 +3,8 @@
 ## 当前状态
 - **当前阶段**: 🎓 Post-Graduation Labs
 - **当前天数**: Day 36+ — 毕业后实操巩固
-- **上次学习时间**: 2026-03-23 16:03 UTC
-- **累计学习轮数**: 47
+- **上次学习时间**: 2026-03-23 18:03 UTC
+- **累计学习轮数**: 48
 - **状态**: 🎓 毕业！36天完整学习旅程结束 → 进入实操巩固阶段
 
 ## Day 1 进度 (SD 核心算法原理)
@@ -90,6 +90,7 @@
 | 45 | 2026-03-23 12:03 | PostGrad#1-新视频模型对比 | rhart-video-s(¥0.02/9.5s/704×1280)+rhart-v3.1-fast(¥0.04/8s/1280×720)+Seedance基准(¥0.30/5s/1280×720)+性价比分析(rhart系列15-30x便宜)+发现rhart-s竖屏行为+模型选择决策更新 | postgrad-01-new-video-model-comparison.md |
 | 46 | 2026-03-23 14:03 | PostGrad#2-Ref2V多模型对比 | 5模型Ref2V对比(Kling O3¥0.50/Wan2.6¥0.65/Seedance¥0.15/rhart V3.1¥1.36/Vidu余额不足)+Hailuo2.3 fast I2V(¥0.17)+性价比排名(Seedance>Kling O3>Wan>rhart)+ComfyUI Ref2V工作流JSON+混合管线设计(本地Flux+API Ref2V+本地后处理)+Partner Nodes源码分析 | postgrad-02-reference-to-video-comparison.md + kling-o3-ref2v-with-postprocess.json |
 | 47 | 2026-03-23 16:03 | PostGrad#3-音视频多模态管线 | 端到端多模态管线(关键帧→I2V→BGM→旁白→FFmpeg合成)+新模型对比(Hailuo 2.3 fast-pro ¥0.29 1934×1080最佳性价比/Vidu Q3 Pro ¥0.55/Seedance Fast ¥0.30)+Vidu Q3首尾帧生视频(双图上传/自带音频)+FFmpeg多镜头(xfade交叉淡化+amix多轨混音)+多镜头短视频成品7.38s+管线成本结构分析(视频80%/音频2%)+rhart-video-g参数调试(failed但记录差异) | postgrad-03-audio-video-multimodal-pipeline.md |
+| 48 | 2026-03-23 18:03 | PostGrad#4-Seedream+编辑→视频管线 | Seedream模型家族首测(v5-lite/v4.5/全部2048x2048/¥0.04)+Qwen-Image-2.0-Pro精确编辑(三项指令全部精准/ID保持极佳)+Seedream I2I场景变换(strength=0.65/厨房→海底宫殿)+T2I→Edit→I2V完整链式管线(¥0.39/95s)+编辑模型选择策略(精确用Qwen/变换用Seedream)+Seedance Fast动画化编辑图(960x960/5s/含音频) | postgrad-04-seedream-edit-to-video-pipeline.md |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
