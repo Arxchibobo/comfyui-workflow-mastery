@@ -1,0 +1,84 @@
+{
+  "_meta": {
+    "title": "Flux.1 Fill Dev Inpainting Workflow",
+    "description": "Inpainting workflow using flux1-fill-dev model. Day 29 学习工作流。",
+    "author": "bobo-learning",
+    "created": "2026-03-23"
+  },
+  "1": {
+    "class_type": "LoadDiffusionModel",
+    "inputs": {
+      "unet_name": "flux1-fill-dev.safetensors"
+    },
+    "_comment": "Flux Fill Dev - dedicated inpainting/outpainting model"
+  },
+  "2": {
+    "class_type": "DualCLIPLoader",
+    "inputs": {
+      "clip_name1": "t5xxl_fp16.safetensors",
+      "clip_name2": "clip_l.safetensors",
+      "type": "flux"
+    }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "A golden retriever sitting on the grass, looking happy, sunlight, detailed fur",
+      "clip": ["2", 0]
+    },
+    "_comment": "Describe what should fill the masked area"
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input_with_mask.png"
+    },
+    "_comment": "Image with alpha channel as mask, or use MaskEditor to draw mask"
+  },
+  "5": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    }
+  },
+  "6": {
+    "class_type": "InpaintModelConditioning",
+    "inputs": {
+      "positive": ["3", 0],
+      "negative": ["3", 0],
+      "vae": ["5", 0],
+      "pixels": ["4", 0],
+      "mask": ["4", 1]
+    },
+    "_comment": "InpaintModelConditioning handles mask extraction and conditioning setup"
+  },
+  "7": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["6", 0],
+      "negative": ["6", 1],
+      "latent_image": ["6", 2],
+      "seed": 123456,
+      "steps": 30,
+      "cfg": 3.5,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1.0
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["7", 0],
+      "vae": ["5", 0]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["8", 0],
+      "filename_prefix": "flux_fill_inpaint"
+    }
+  }
+}

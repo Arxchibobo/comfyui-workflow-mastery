@@ -1,10 +1,10 @@
 # ComfyUI 学习进度追踪
 
 ## 当前状态
-- **当前阶段**: Phase 8 进行中
-- **当前天数**: Day 28 — SD 微调技术全景 + ComfyUI 工作流工程化（完成）
-- **上次学习时间**: 2026-03-23 02:05 UTC
-- **累计学习轮数**: 36
+- **当前阶段**: Phase 9 进行中
+- **当前天数**: Day 29 — Flux 实战工作流生态（完成）
+- **上次学习时间**: 2026-03-23 04:03 UTC
+- **累计学习轮数**: 37
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -956,3 +956,46 @@
 - [x] ComfyUI 生态系统全景 2026 Q1（开发层 + 平台层 + 用户层）
 - [x] RunningHub 实验
   - [x] 实验 #50: 微调技术全景信息图（35s/¥0.03）
+
+## Day 29 进度 (Flux 实战工作流生态) ✅
+
+- [x] Flux 模型家族全景梳理
+  - [x] FLUX.1 系列（pro/dev/schnell/Ultra）版本对比
+  - [x] FLUX.1 Tools 套件（Fill/Depth/Canny/Redux）四大工具深度解析
+  - [x] FLUX.1 Kontext（2025-05）— 上下文感知编辑模型
+  - [x] FLUX.2 Klein（2026-01）— 4B/9B 紧凑高速模型（Apache 2.0）
+  - [x] Flux 生态演进路线（2024-08 → 2026-01）
+- [x] Flux ControlNet 生态深度解析
+  - [x] BFL 官方 Canny Dev（完整模型 12B）
+  - [x] BFL 官方 Depth Dev LoRA（适配器版）
+  - [x] 完整版 vs LoRA 版对比（大小/质量/灵活性）
+  - [x] Shakker-Labs ControlNet-Union-Pro-2.0（3.98GB/5 种模式/推荐参数）
+  - [x] XLabs-AI ControlNet（Canny V3/Depth/HED + IP-Adapter beta）
+  - [x] InstantX 独立 ControlNet + IP-Adapter
+  - [x] ComfyUI 三种使用模式（完整/LoRA/Union）
+- [x] Flux Fill 工作流详解
+  - [x] Inpainting 核心节点链路（InpaintModelConditioning）
+  - [x] Outpainting（Pad Image for Outpainting）
+  - [x] Flux Fill vs 传统 SD Inpainting 对比
+- [x] Flux Redux 工作流详解
+  - [x] Redux 架构（SigLIP → Style Adapter）
+  - [x] ComfyUI 节点链路（LoadStyleModel + CLIPVisionEncode + StyleModelApply）
+  - [x] AdvancedRefluxControl 自定义节点（解决过强问题）
+  - [x] Redux vs IP-Adapter 对比（6 个维度）
+- [x] FLUX.2 Klein ComfyUI 工作流
+  - [x] T2I / 图像编辑 / 多参考图编辑 三种工作流
+  - [x] 4B vs 9B / base vs distilled 选型
+- [x] Flux 量化方案与低 VRAM 实践
+  - [x] BF16/NF4/GGUF Q5/Q4/FP8/NVFP4 六种方案对比
+  - [x] NF4 工作流模式（UnetLoaderGGUF + guidance 参数调整）
+- [x] Flux 工作流最佳实践
+  - [x] Flux vs SD/SDXL 5 大工作流差异
+  - [x] 组合模式（ControlNet+Redux / ControlNet+LoRA / Fill+ControlNet）
+  - [x] 5 阶段生产级管线推荐
+  - [x] 选型决策树
+- [x] ComfyUI 工作流 JSON 编写
+  - [x] flux-controlnet-canny-basic.json（Canny ControlNet 基础工作流）
+  - [x] flux-fill-inpainting-basic.json（Fill Inpainting 基础工作流）
+- [x] RunningHub 实验
+  - [x] 实验 #51: T2I 日式庭园基准（rhart-image-n-pro, 20s/¥0.03）
+  - [x] 实验 #52: I2I 风格迁移（写实→魔幻, 20s/¥0.03）

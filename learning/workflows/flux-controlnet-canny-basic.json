@@ -1,0 +1,85 @@
+{
+  "_meta": {
+    "title": "Flux.1 Canny ControlNet Basic Workflow",
+    "description": "Uses flux1-canny-dev full model for edge-guided image generation. Day 29 学习工作流。",
+    "author": "bobo-learning",
+    "created": "2026-03-23"
+  },
+  "1": {
+    "class_type": "LoadDiffusionModel",
+    "inputs": {
+      "unet_name": "flux1-canny-dev.safetensors"
+    },
+    "_comment": "Load Flux Canny Dev full model (12B). Place in models/diffusion_models/"
+  },
+  "2": {
+    "class_type": "DualCLIPLoader",
+    "inputs": {
+      "clip_name1": "t5xxl_fp16.safetensors",
+      "clip_name2": "clip_l.safetensors",
+      "type": "flux"
+    },
+    "_comment": "Flux requires dual text encoders: T5-XXL + CLIP-L"
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "A beautiful cyberpunk cityscape at night, neon lights reflecting on wet streets, flying cars, holographic advertisements, cinematic lighting, 8k",
+      "clip": ["2", 0]
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "canny_edge_input.png"
+    },
+    "_comment": "Load pre-processed Canny edge map. Use ComfyUI-Advanced-ControlNet or comfyui_controlnet_aux for preprocessing."
+  },
+  "5": {
+    "class_type": "InpaintModelConditioning",
+    "inputs": {
+      "positive": ["3", 0],
+      "negative": ["3", 0],
+      "vae": ["8", 0],
+      "pixels": ["4", 0]
+    },
+    "_comment": "Flux official ControlNet models use InpaintModelConditioning for control image injection"
+  },
+  "6": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["5", 0],
+      "negative": ["5", 1],
+      "latent_image": ["5", 2],
+      "seed": 42,
+      "steps": 30,
+      "cfg": 3.5,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1.0
+    },
+    "_comment": "Flux uses lower CFG (3.5) vs SD's typical 7.5. Steps 20-30 for dev model."
+  },
+  "7": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["6", 0],
+      "vae": ["8", 0]
+    }
+  },
+  "8": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    },
+    "_comment": "Flux uses its own VAE (ae.safetensors), not standard SD VAE"
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["7", 0],
+      "filename_prefix": "flux_canny_output"
+    }
+  }
+}
