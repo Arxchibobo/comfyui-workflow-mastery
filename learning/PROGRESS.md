@@ -2,9 +2,9 @@
 
 ## 当前状态
 - **当前阶段**: Phase 10 进行中
-- **当前天数**: Day 30 — 快速推理与蒸馏技术（完成）
-- **上次学习时间**: 2026-03-23 06:03 UTC
-- **累计学习轮数**: 38
+- **当前天数**: Day 31 — 图像编辑工作流（完成）
+- **上次学习时间**: 2026-03-23 08:03 UTC
+- **累计学习轮数**: 39
 
 ## Day 1 进度 (SD 核心算法原理)
 - [x] DDPM 扩散模型原理（前向/反向、重参数化）
@@ -80,6 +80,7 @@
 | 36 | 2026-03-23 02:05 | Day28-微调技术全景+工作流工程化 | SD微调5方法全景(TI/HN/LoRA/DreamBooth/Full)+Textual Inversion数学原理(仅优化embedding向量/冻结全模型/多token机制)+DreamBooth深度(Prior Preservation Loss防遗忘/稀有token绑定/+LoRA最佳实践)+Hypernetwork原理与弃用(CrossAttn K/V修改/被LoRA全面替代)+5方法全维度对比表+ComfyUI Subgraph系统(vs Legacy Group Nodes/嵌套图/参数面板)+App Mode+App Builder+ComfyHub(workflow→app转化/URL分享)+Node Registry发布流程(pyproject.toml/comfy-cli/CI-CD)+5种工作流设计模式(管线/分支合并/多阶段精炼/条件路由/迭代循环)+工作流最佳实践+实验#50信息图(35s/¥0.03) | day28-finetuning-ecosystem-workflow-engineering.md |
 | 37 | 2026-03-23 04:03 | Day29-Flux实战工作流生态 | Flux模型家族全景(FLUX.1 pro/dev/schnell/Ultra+Tools套件Fill/Depth/Canny/Redux+Kontext+FLUX.2 Klein)+Flux ControlNet生态(BFL官方Canny/Depth+Shakker-Labs Union-Pro-2.0+XLabs-AI+InstantX)+Flux Fill工作流(Inpainting/Outpainting)+Redux工作流(SigLIP→Style Adapter/AdvancedRefluxControl)+FLUX.2 Klein(4B/9B)+量化方案(BF16/NF4/GGUF/FP8/NVFP4)+最佳实践5大差异+2个工作流JSON+实验#51-#52(¥0.06) | day29-flux-practical-workflow-ecosystem.md |
 | 38 | 2026-03-23 06:03 | Day30-快速推理与蒸馏技术 | 四大蒸馏家族(一致性/对抗/分布匹配/混合)+12+方法体系(CM/LCM/PCM/ECM/ADD/LADD/Lightning/DMD2/Hyper-SD/SANA-Sprint/AnimateLCM/CausVid)+CM原理(PF-ODE轨迹一致性/CD vs CT)+LCM潜空间蒸馏(增广PF-ODE/LCM-LoRA即插即用)+PCM分段解决三缺陷(NeurIPS 2024)+ADD→LADD演进(pixel→latent/噪声级别控制判别器/Flux Schnell)+Lightning渐进+对抗组合+DMD2分布匹配(NeurIPS Oral/FID 1.28超教师)+Hyper-SD(TSCD+Score Distillation覆盖4模型)+SANA-Sprint(0.03s/1024²)+ComfyUI 10方法配置速查+决策树+2工作流JSON+实验#53概念图(¥0.03) | day30-fast-inference-distillation-techniques.md |
+| 39 | 2026-03-23 08:03 | Day31-图像编辑工作流 | 图像编辑三大范式(Training-Free/Fine-tuning/Hybrid)+InstructPix2Pix深度(双CFG机制/数据生成管线GPT-3+P2P/U-Net通道扩展)+CosXL Edit(SDXL版)+ICEdit(NeurIPS 2025/Diptych范式/LoRA-MoE混合微调/0.5%数据+1%参数/Early Filter推理缩放/超越GPT-4o ID保持/4GB MoE版)+Flux Fill高级(InpaintModelConditioning源码/Outpainting/自动Mask管线)+Flux Kontext(上下文感知编辑/多图输入/多轮迭代/prompt技巧)+VACE视频编辑(8种任务/WanVaceToVideo/视频Inpainting+Outpainting)+Qwen-Image-Edit(20B/双通路VLM+VAE/中英文精确文字编辑SOTA/Lightning 4步加速/Layered分层编辑)+OmniGen2(7B VLM+DiT统一/多图组合)+ComfyUI编辑节点体系总览+全方法9维对比+决策树+4种生产级工作流模式+实验#54-#56(概念图+风格编辑+Qwen编辑/¥0.11) | day31-image-editing-workflows.md |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
@@ -1043,3 +1044,68 @@
   - [x] lcm-lora-sdxl.json（LCM-LoRA 即插即用快速工作流）
 - [x] RunningHub 实验
   - [x] 实验 #53: 蒸馏技术全景概念信息图（rhart-image-n-pro, 30s/¥0.03）
+
+## Day 31 进度 (图像编辑工作流 — Image Editing Workflows) ✅
+
+- [x] 图像编辑技术全景
+  - [x] 三大编辑范式对比（Training-Free / Fine-tuning / Hybrid-InContext）
+  - [x] 编辑任务分类（局部/全局/结构/文本/语义 5 大类）
+  - [x] 技术演进时间线（2022.11 InstructPix2Pix → 2025.12 Qwen-Image-Layered）
+- [x] InstructPix2Pix 深度解析
+  - [x] 训练数据生成管线（GPT-3 + Prompt-to-Prompt + CLIP 过滤，454K 三元组）
+  - [x] 架构修改（U-Net 输入通道 4→8，额外 4 通道零初始化）
+  - [x] 双 Classifier-Free Guidance 机制（s_I 图像引导 + s_T 文本引导，三次前向传播）
+  - [x] CosXL Edit（SDXL 版本，EDM2 cosine schedule）
+  - [x] ComfyUI InstructPixToPixConditioning 节点分析
+  - [x] 局限性分析（数据偏差/指令理解/ID保持/分辨率/不可逆编辑）
+- [x] ICEdit In-Context 编辑新范式（NeurIPS 2025）
+  - [x] Diptych 范式原理（左面板源图 + 右面板编辑结果 + IC Prompt 构造）
+  - [x] DiT 原生上下文感知能力利用（零样本 baseline）
+  - [x] LoRA-MoE 混合微调策略（多 Expert 动态路由 / 0.5% 数据 + 1% 参数）
+  - [x] Early Filter 推理时间缩放（VLM-based 噪声筛选）
+  - [x] 性能对比（超越 InstructPix2Pix/UltraEdit / VIE-Score 78.2 超商业系统 / ID 超 GPT-4o）
+  - [x] ComfyUI 集成（ICEditNode / MoE 4GB VRAM / 高分辨率精炼模块）
+  - [x] 与传统方法的本质区别（通道拼接 vs DiT 自注意力）
+- [x] Flux Fill 高级 Inpainting/Outpainting
+  - [x] 与传统 SD Inpainting 的区别（DiT 12B / 原生高分辨率 / 上下文理解）
+  - [x] InpaintModelConditioning 源码分析（mask 置零 / latent 空间 mask / concat 注入）
+  - [x] Inpainting 工作流（guidance=30.0 / euler+simple / 28步）
+  - [x] Outpainting 工作流（PadImageForOutpainting / feathering / 分步扩展策略）
+  - [x] 自动 Mask 生成管线（GroundingDINO + SAM2 + Flux Fill）
+  - [x] 多区域迭代编辑模式
+- [x] Flux Kontext 上下文感知编辑
+  - [x] 模型版本（Pro/Max/Dev / arXiv:2506.15742）
+  - [x] 五大核心能力（角色一致性/精确编辑/风格参考/多图输入/多轮迭代）
+  - [x] 架构原理（image tokens + text tokens → joint attention → 编辑输出）
+  - [x] ComfyUI Dev 工作流（FluxKontextImageEncode / guidance 2.5-10.0）
+  - [x] Prompt 技巧（指令式 vs 描述式 / 负面约束 / 精确修改）
+  - [x] Kontext vs Fill vs ICEdit 三方对比（6 维度）
+- [x] VACE 统一视频/图像编辑框架
+  - [x] 8 种任务覆盖（T2V/I2V/V2V/Motion/Replace/Extend/Background/Reference）
+  - [x] 视频 Inpainting 工作流（WanVaceToVideo / mask 序列 / 动态编辑区域）
+  - [x] 视频 Outpainting 工作流（WanVacePadAndMask）
+  - [x] 图像编辑视角下的 VACE（单帧 V2V / 语义理解强 / 但 overkill）
+- [x] Qwen-Image-Edit 双语文本编辑专家
+  - [x] 20B 模型双通路架构（Qwen2.5-VL 语义控制 + VAE 外观控制）
+  - [x] 文本编辑能力（添加/修改/删除 / 中英双语 / 保持字体样式）
+  - [x] ComfyUI 原生集成（fp8 / Lightning 4步加速 / ScaleImageToTotalPixels）
+  - [x] Qwen-Image-Layered 分层编辑扩展（RGBA 图层独立编辑）
+- [x] OmniGen2 统一多模态
+  - [x] 7B 架构（3B VLM + 4B DiT）
+  - [x] 编辑能力（6 种操作 / 多图引用语法 <image_N>）
+  - [x] ComfyUI 原生支持（2025-07+）
+  - [x] 与专用编辑模型全维度对比
+- [x] ComfyUI 编辑节点体系总览
+  - [x] 内置节点（InstructPixToPix/InpaintModel/SetMask/PadImage/FluxGuidance/FluxKontextImageEncode）
+  - [x] 第三方节点（ICEdit/QwenEditUtils/OmniGen2/Impact Pack/RMBG/SAM/Florence2）
+  - [x] 9 种编辑任务推荐方案对照表
+- [x] 全方法 9 维度对比 + 方法选择决策树
+- [x] 4 种生产级编辑工作流模式
+  - [x] 精确局部编辑管线（GroundingDINO+SAM2+Flux Fill+FaceDetailer）
+  - [x] 多轮迭代编辑（Kontext→Fill→Qwen-Edit 链式）
+  - [x] 批量产品图编辑（RMBG+Fill+Qwen-Edit 自动化）
+  - [x] 图像→视频编辑管线（ICEdit→I2V→VACE）
+- [x] RunningHub 实验
+  - [x] 实验 #54: 图像编辑技术全景概念图（rhart-image-n-pro T2I, 35s/¥0.03）
+  - [x] 实验 #55: 图生图风格编辑（rhart-image-n-pro edit, 30s/¥0.03）
+  - [x] 实验 #56: Qwen 2.0 Pro 图像编辑（qwen-image-2.0-pro, 20s/¥0.05）

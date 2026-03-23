@@ -53,7 +53,7 @@
 
 ### Phase 10: 推理加速与前沿（Day 30+）🔧 进行中
 - [x] **Day 30**: 快速推理与蒸馏技术（四大蒸馏家族 + 12+ 方法 + ComfyUI 配置速查 + 决策树）
-- [ ] **Day 31**: 图像编辑工作流（InstructPix2Pix / IC-Edit / Flux Fill 高级 / VACE 编辑）
+- [x] **Day 31**: 图像编辑工作流（InstructPix2Pix / ICEdit / Flux Fill / Flux Kontext / VACE / Qwen-Image-Edit / OmniGen2）
 - [ ] **Day 32**: 3D 生成与多视角（TripoSR / InstantMesh / Zero123++ / ComfyUI 3D 节点）
 
 ## 📊 每日学习记录
@@ -81,3 +81,4 @@
 | 3/23 | Day28 微调技术全景+工作流工程化 | ~1h | 1个实验(¥0.03) | 1个笔记 |
 | 3/23 | Day29 Flux实战工作流生态 | ~1h | 2个实验(¥0.06) | 1个笔记+2个工作流JSON |
 | 3/23 | Day30 快速推理与蒸馏技术 | ~1h | 1个实验(¥0.03) | 1个笔记+2个工作流JSON |
+| 3/23 | Day31 图像编辑工作流 | ~1h | 3个实验(¥0.11) | 1个笔记 |
