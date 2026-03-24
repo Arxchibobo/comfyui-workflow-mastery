@@ -1,0 +1,110 @@
+{
+  "_meta": {
+    "title": "T2V Multi-Model Comparison Workflow",
+    "description": "Generate videos from the same prompt using multiple T2V models for side-by-side comparison. Uses Kling V3, Seedance, Wan 2.6, and Vidu in parallel.",
+    "author": "ComfyUI Learning PostGrad#8",
+    "created": "2026-03-24"
+  },
+  "1": {
+    "class_type": "PrimitiveNode",
+    "inputs": {},
+    "widgets_values": ["A majestic red lobster chef in a traditional Japanese kitchen, skillfully preparing sushi with precise knife movements. Steam rises from a pot. Warm golden lighting, cinematic."],
+    "_meta": {
+      "title": "Shared Prompt (connect to all T2V nodes)"
+    }
+  },
+  "10": {
+    "class_type": "KlingTextToVideoNode",
+    "inputs": {
+      "prompt": ["1", 0],
+      "negative_prompt": "blurry, low quality",
+      "duration": "5",
+      "cfg_scale": 0.5,
+      "aspect_ratio": "16:9",
+      "model_name": "kling-v3-0",
+      "mode": "std"
+    },
+    "_meta": {
+      "title": "Kling V3.0 Std T2V",
+      "note": "¥0.55 | 1280x720 | 5s | 24fps | Audio included"
+    }
+  },
+  "20": {
+    "class_type": "SeedanceTextToVideoNode",
+    "inputs": {
+      "prompt": ["1", 0],
+      "duration": 5,
+      "aspect_ratio": "16:9",
+      "model": "seedance-1-5-pro"
+    },
+    "_meta": {
+      "title": "Seedance V1.5 Pro T2V",
+      "note": "¥0.30 | 834x1112 default | 5s | 24fps | Audio included"
+    }
+  },
+  "30": {
+    "class_type": "WanTextToVideoNode",
+    "inputs": {
+      "prompt": ["1", 0],
+      "duration": 5,
+      "resolution": "720p",
+      "model": "wan-2.6"
+    },
+    "_meta": {
+      "title": "Wan 2.6 T2V",
+      "note": "¥0.63 | 1080x1920 竖屏默认 | 5s | 30fps | Audio included"
+    }
+  },
+  "40": {
+    "class_type": "KlingTextToVideoNode",
+    "inputs": {
+      "prompt": ["1", 0],
+      "negative_prompt": "blurry, low quality",
+      "duration": "5",
+      "cfg_scale": 0.5,
+      "aspect_ratio": "16:9",
+      "model_name": "kling-video-o3",
+      "mode": "std"
+    },
+    "_meta": {
+      "title": "Kling O3 Std T2V",
+      "note": "¥0.50 | 1280x720 | 5s | 24fps | Audio included | Best prompt understanding"
+    }
+  },
+  "50": {
+    "class_type": "ViduTextToVideoNode",
+    "inputs": {
+      "prompt": ["1", 0],
+      "duration": 5,
+      "resolution": "720p",
+      "model": "vidu-q3-pro"
+    },
+    "_meta": {
+      "title": "Vidu Q3 Pro T2V",
+      "note": "¥0.55 | 1280x720 | 5s | 24fps | Audio included"
+    }
+  },
+  "60": {
+    "class_type": "HailuoTextToVideoNode",
+    "inputs": {
+      "prompt": ["1", 0],
+      "duration": 6,
+      "resolution": "1080p",
+      "model": "hailuo-02-pro"
+    },
+    "_meta": {
+      "title": "Hailuo 02 T2V Pro",
+      "note": "¥0.44 | 1920x1080 | 5.9s | 24fps | Best resolution"
+    }
+  },
+  "99": {
+    "class_type": "Note",
+    "inputs": {},
+    "widgets_values": [
+      "=== T2V Model Comparison Results ===\n\nModel        | Cost  | Resolution  | Duration | Audio | FPS\n-------------|-------|-------------|----------|-------|----\nrhart-s      | ¥0.02 | 704x1280(V) | 10.0s    | Yes   | 30\nKling V3 Std | ¥0.55 | 1280x720    | 5.0s     | Yes   | 24\nSeedance     | ¥0.30 | 834x1112(V) | 5.0s     | Yes   | 24\nHailuo 02 Pro| ¥0.44 | 1920x1080   | 5.9s     | No    | 24\nWan 2.6      | ¥0.63 | 1080x1920(V)| 5.0s     | Yes   | 30\nKling O3 Std | ¥0.50 | 1280x720    | 5.0s     | Yes   | 24\nrhart V3.1 F | ¥0.04 | 720x1280(V) | 8.0s     | Yes   | 24\nVidu Q3 Pro  | ¥0.55 | 1280x720    | 5.0s     | Yes   | 24"
+    ],
+    "_meta": {
+      "title": "Comparison Results Summary"
+    }
+  }
+}

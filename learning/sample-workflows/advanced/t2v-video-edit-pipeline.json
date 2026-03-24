@@ -1,0 +1,89 @@
+{
+  "_meta": {
+    "title": "T2V + Video Edit Pipeline (Kling V3 → O3 Edit)",
+    "description": "Generate video from text with Kling V3.0, then apply scene transformation with Kling O3 Video Edit. Demonstrates two-stage video generation with API Partner Nodes.",
+    "author": "ComfyUI Learning PostGrad#8",
+    "created": "2026-03-24"
+  },
+  "1": {
+    "class_type": "KlingTextToVideoNode",
+    "inputs": {
+      "prompt": "A majestic red lobster chef in a traditional Japanese kitchen, skillfully preparing sushi with precise knife movements. Steam rises from a pot in the background. Warm golden lighting, cinematic composition.",
+      "negative_prompt": "blurry, low quality, distorted, deformed",
+      "duration": "5",
+      "cfg_scale": 0.5,
+      "aspect_ratio": "16:9",
+      "model_name": "kling-v3-0",
+      "mode": "std"
+    },
+    "_meta": {
+      "title": "Stage 1: Kling V3.0 Text-to-Video",
+      "note": "Generates base video from text prompt. 5s, 16:9, std mode for cost efficiency."
+    }
+  },
+  "2": {
+    "class_type": "VHS_LoadVideoFromURL",
+    "inputs": {
+      "video": ["1", 0],
+      "force_rate": 24,
+      "force_size": "Disabled"
+    },
+    "_meta": {
+      "title": "Load Generated Video",
+      "note": "Extracts frames from Stage 1 output for display/processing"
+    }
+  },
+  "3": {
+    "class_type": "KlingVideoEditNode",
+    "inputs": {
+      "video": ["1", 0],
+      "prompt": "Transform the kitchen into an underwater coral reef palace. The lobster chef cooks surrounded by colorful tropical fish and bioluminescent coral.",
+      "model_name": "kling-video-o3",
+      "mode": "std",
+      "keep_original_sound": false
+    },
+    "_meta": {
+      "title": "Stage 2: Kling O3 Video Edit",
+      "note": "Applies scene transformation while preserving motion and composition. O3 model for best quality editing."
+    }
+  },
+  "4": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["2", 0],
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "t2v_base",
+      "format": "video/h264-mp4",
+      "crf": 19
+    },
+    "_meta": {
+      "title": "Save Base Video (Stage 1 Output)"
+    }
+  },
+  "5": {
+    "class_type": "VHS_LoadVideoFromURL",
+    "inputs": {
+      "video": ["3", 0],
+      "force_rate": 24,
+      "force_size": "Disabled"
+    },
+    "_meta": {
+      "title": "Load Edited Video"
+    }
+  },
+  "6": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["5", 0],
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "t2v_edited",
+      "format": "video/h264-mp4",
+      "crf": 19
+    },
+    "_meta": {
+      "title": "Save Edited Video (Stage 2 Output)"
+    }
+  }
+}
