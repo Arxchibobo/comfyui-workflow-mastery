@@ -1,0 +1,125 @@
+{
+  "_meta": {
+    "title": "Video Extend + Edit Pipeline (Veo 3.1 + Kling O3)",
+    "description": "5-stage pipeline: T2I → I2V → Video Extend → Video Edit → Output. Uses Veo 3.1 Fast for I2V/Extend and Kling O3 for Edit with auto-upscale.",
+    "author": "ComfyUI Learning PostGrad#15",
+    "version": "1.0",
+    "created": "2026-03-24"
+  },
+  "1": {
+    "class_type": "DualCLIPLoader",
+    "inputs": {
+      "clip_name1": "clip_l.safetensors",
+      "clip_name2": "t5xxl_fp16.safetensors",
+      "type": "flux"
+    },
+    "_comment": "Stage 0: Load Flux text encoders"
+  },
+  "2": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "A majestic red lobster samurai standing in a moonlit bamboo forest, wearing ornate silver armor with cherry blossom engravings, holding a katana, dramatic volumetric lighting, cinematic composition, 8K ultra-detailed",
+      "clip": ["1", 0]
+    },
+    "_comment": "Stage 1: Encode prompt for keyframe generation"
+  },
+  "3": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "flux1-dev.safetensors"
+    },
+    "_comment": "Load Flux model for keyframe T2I"
+  },
+  "4": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 1280,
+      "height": 720,
+      "batch_size": 1
+    },
+    "_comment": "16:9 aspect ratio for video"
+  },
+  "5": {
+    "class_type": "FluxGuidance",
+    "inputs": {
+      "guidance": 3.5,
+      "conditioning": ["2", 0]
+    }
+  },
+  "6": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["3", 0],
+      "positive": ["5", 0],
+      "negative": ["2", 0],
+      "latent_image": ["4", 0],
+      "seed": 42,
+      "steps": 28,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_comment": "Stage 1: Generate keyframe with Flux"
+  },
+  "7": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["6", 0],
+      "vae": ["3", 2]
+    }
+  },
+  "8": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["7", 0],
+      "filename_prefix": "keyframe"
+    },
+    "_comment": "Save keyframe for review"
+  },
+  "10": {
+    "class_type": "Veo3ImageToVideoNode",
+    "inputs": {
+      "image": ["7", 0],
+      "prompt": "The lobster samurai slowly draws the katana, moonlight gleams off the blade, bamboo leaves fall gently, dramatic cinematic motion",
+      "duration": 8,
+      "enhance_prompt": true,
+      "generate_audio": true
+    },
+    "_comment": "Stage 2: Veo 3.1 I2V - generates 8s video with audio"
+  },
+  "20": {
+    "class_type": "Note",
+    "inputs": {
+      "text": "=== VIDEO EXTEND STAGE ===\nVeo 3.1 Video Extend is NOT yet available as a Partner Node.\nThis would need a custom API node or RunningHub integration.\n\nAPI endpoint: rhart-video-v3.1-fast-official/video-extend\nParams: video (VIDEO), prompt (STRING), resolution (720p/1080p)\nAdds ~7s to input video. Cost: ¥0.95 (fast) / ¥2.52 (pro)\n\n--- Pseudo-node below for pipeline planning ---"
+    },
+    "_comment": "Stage 3: Video Extend placeholder"
+  },
+  "21": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["10", 0],
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "extended_video",
+      "format": "video/h264-mp4",
+      "save_output": true,
+      "crf": 18
+    },
+    "_comment": "Stage 3 output: Save extended video (placeholder - in production this would be the extend output)"
+  },
+  "30": {
+    "class_type": "Note",
+    "inputs": {
+      "text": "=== VIDEO EDIT STAGE ===\nKling O3 Pro Video Edit: Edits scene + auto-upscales 720p→1080p\nKling O3 Std Video Edit: Edits scene, maintains resolution\n\nAPI params:\n  - prompt: edit instruction (max 5000 chars)\n  - videoUrl: source video (max 50MB)\n  - imageUrls: up to 4 reference images (optional)\n  - keepOriginalSound: boolean\n\nO3 Pro: ¥1.20, 175s, auto-upscale to 1080p\nO3 Std: ¥0.88, 300s, maintains resolution\n\nKey finding: O3 Pro = Edit + Upscale in one step!"
+    },
+    "_comment": "Stage 4: Video Edit placeholder"
+  },
+  "40": {
+    "class_type": "Note",
+    "inputs": {
+      "text": "=== PRODUCTION PIPELINE COST BREAKDOWN ===\n\nMinimal Pipeline (15s/720p):\n  T2I:        ¥0.03 (30s)\n  I2V 8s:     ¥0.04 (130s) \n  Extend +7s: ¥0.95 (115s)\n  Total:      ¥1.02 / ~5min\n\nPremium Pipeline (15s/1080p edited):\n  T2I:        ¥0.03 (30s)\n  I2V 8s:     ¥0.04 (130s)\n  Extend +7s: ¥0.95 (115s)\n  Edit+Upscale:¥1.20 (175s)\n  Total:      ¥2.22 / ~8min"
+    },
+    "_comment": "Cost analysis"
+  }
+}
