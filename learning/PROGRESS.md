@@ -3,8 +3,8 @@
 ## 当前状态
 - **当前阶段**: 🎓 Post-Graduation Labs
 - **当前天数**: Day 36+ — 毕业后实操巩固
-- **上次学习时间**: 2026-03-24 12:03 UTC
-- **累计学习轮数**: 57
+- **上次学习时间**: 2026-03-24 14:04 UTC
+- **累计学习轮数**: 58
 - **状态**: 🎓 毕业！36天完整学习旅程结束 → 进入实操巩固阶段
 
 ## Day 1 进度 (SD 核心算法原理)
@@ -100,6 +100,7 @@
 | 55 | 2026-03-24 08:03 | PostGrad#11-Budget Video Pipeline+Kling V2A架构 | 五低成本I2V模型对比(Wan2.6Flash¥0.20/25s最快+ViduQ3Turbo¥0.20/55s含音频+Hailuo2.3Std¥0.25/1376×768最高分辨率无音频+SeedanceFast¥0.30/125s+Veo3.1Fast¥0.04/8s⭐极致性价比¥0.005/秒)+ComfyUI Kling Partner Node完整源码分析(136KB/30个节点/sync_op→poll_op→download统一模式)+Kling 2.6 Audio集成(sound参数/开启成本翻倍)+LipSync双模式(Audio2Video+Text2Video/56个语音角色含方言)+Avatar 2.0(单照片+音频/max_poll=800)+MotionControl(characterOrientation:video vs image)+Omni Prompt规范化(@image→<<<image_1>>>)+Price Badge JSONata系统+三种低成本管线设计(¥0.07/¥0.23/¥1.30)+2个工作流JSON | postgrad11-budget-pipeline-kling-v2a.md + budget-video-pipeline.json + budget-i2v-comparison.json |
 | 56 | 2026-03-24 10:03 | PostGrad#12-Turbo/Fast模型层级+工作流编排 | 六模型Turbo/Fast层级对比(KlingV2.5TurboPro¥0.30/75s最快1080p+KlingV2.5TurboStd¥0.18/720p最便宜Kling+Wan2.6FlashI2V¥0.30/50s极速1080p30fps🔊+Wan2.6FlashRef2V¥0.30/1080p5图3视频音频+Hailuo2.3Pro¥0.44/1934×1080+Hailuo2.3FastPro¥0.29/1934×1080)+Kling版本×层级矩阵(V2.5Turbo/V3.0/O1/O3全定价)+Wan Flash系列(I2V 50s+Ref2V 5图3视频+多镜头shotType)+Hailuo层级体系(Std/Pro/Fast/FastPro)+API参数名差异速查(firstImageUrl vs imageUrl)+ComfyUI工作流JSON编排5种Pattern+多模型对比工作流JSON+I2V性价比排名更新+速度排名 | postgrad-12-turbo-fast-tier-workflow-patterns.md + multi-model-i2v-comparison-v2.json + kling-v25-turbo-flf2v.json |
 | 57 | 2026-03-24 12:03 | PostGrad#13-AudioVideo+V2Flash+TextRefine | rhart-image V2 Flash首测(Gemini3.1Flash/¥0.02/25s/比Pro便宜33%/复杂文字prompt偶尔失败)+Kling V3.0 std I2V+Audio首测(sound=true/960×960/5s/AAC44100Hz立体声/¥0.55/音频免费不加价)+Kling V3.0 FLF+Audio首测(首尾帧+音频组合/140s/¥0.55/过渡+同步音效)+V3.0 duration扩展3-15s发现+Topaz Text Refine首测(文字专用放大/896→1792/15s/¥0.10/文字边缘锐利)+五种Topaz变体选择指南更新+ComfyUI KlingImageToVideoWithAudioNode映射验证+Audio I2V管线工作流JSON | postgrad-13-audio-video-v2flash-text-refine.md + kling-v3-audio-i2v-flf-pipeline.json |
+| 58 | 2026-03-24 14:04 | PostGrad#14-Ultra8K+BudgetRef2V+FLF | Ultra 8K T2I首测(rhart-official/10965×6120=67.1MP/89.5MB/105s/¥0.16/真8K+)+Ultra 4K Edit首测(5483×3060/16.8MP/10图输入/85s/¥0.14)+Ultra按像素成本仅Pro的34%+Seedance V1 Lite Ref2V首测(1248×704/24fps/5s/60s/¥0.15/半价Pro)+Hailuo02 Standard FLF确认(firstImageUrl+lastImageUrl隐藏参数/768×768/5.9s/¥0.25)+Pro 2K基线对比(2752×1536/4.2MP/¥0.03)+分辨率-成本决策树+Ref2V性价比排名更新 | postgrad-14-ultra-resolution-budget-video.md |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
