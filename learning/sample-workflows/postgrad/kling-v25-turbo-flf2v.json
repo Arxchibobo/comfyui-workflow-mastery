@@ -1,0 +1,50 @@
+{
+  "_comment": "Kling V2.5 Turbo Pro — Start-End Frame I2V Workflow",
+  "_description": "利用 V2.5 Turbo 的 firstImageUrl + lastImageUrl 实现低成本首尾帧生视频",
+  "_cost": "¥0.30 / 5s | ¥0.60 / 10s",
+  "_key_insight": "V2.5 Turbo 用 firstImageUrl 而不是 imageUrl（与 V3 参数名不同）",
+  "_author": "大波比 PostGrad#12 2026-03-24",
+
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "start_frame.png" },
+    "_meta": { "title": "📷 Start Frame" }
+  },
+
+  "2": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "end_frame.png" },
+    "_meta": { "title": "📷 End Frame" }
+  },
+
+  "10": {
+    "_comment": "Kling V2.5 Turbo 使用不同的参数名",
+    "class_type": "KlingImageToVideoNode",
+    "inputs": {
+      "prompt": "Smooth cinematic transition from start to end scene, natural motion",
+      "negative_prompt": "jump cut, sudden change, blurry",
+      "cfg_scale": 0.5,
+      "mode": "pro",
+      "duration": "5",
+      "model_version": "kling-v2-5",
+      "start_image": ["1", 0],
+      "end_image": ["2", 0]
+    },
+    "_meta": {
+      "title": "🎬 Kling V2.5 Turbo Pro FLF2V",
+      "note": "ComfyUI Partner Node 可能使用 start_image/end_image 映射到 API 的 firstImageUrl/lastImageUrl"
+    }
+  },
+
+  "20": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["10", 0],
+      "frame_rate": 24,
+      "format": "video/h264-mp4",
+      "filename_prefix": "kling-v25-turbo-flf",
+      "crf": 19
+    },
+    "_meta": { "title": "💾 Save Video" }
+  }
+}

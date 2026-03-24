@@ -1,0 +1,107 @@
+{
+  "_comment": "ComfyUI Multi-Model I2V Comparison Workflow v2 — PostGrad#12",
+  "_description": "同一输入图并行送入 4 个视频 API 模型进行 I2V 对比，各自独立输出",
+  "_models": ["Kling V3.0 Pro", "Seedance 1.5 Pro", "Wan 2.6 (via API)", "Veo 3.1 Pro"],
+  "_author": "大波比 PostGrad#12 2026-03-24",
+
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input_reference.png"
+    },
+    "_meta": { "title": "📷 Input Reference Image" }
+  },
+
+  "10": {
+    "class_type": "KlingImageToVideoNode",
+    "inputs": {
+      "prompt": "The character in the image performs a graceful action, cinematic camera movement, golden hour lighting",
+      "negative_prompt": "blurry, distorted, low quality",
+      "cfg_scale": 0.5,
+      "mode": "pro",
+      "duration": "5",
+      "aspect_ratio": "16:9",
+      "image": ["1", 0]
+    },
+    "_meta": { "title": "🎬 Kling V3.0 Pro I2V" }
+  },
+
+  "11": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["10", 0],
+      "frame_rate": 24,
+      "format": "video/h264-mp4",
+      "filename_prefix": "comparison/kling-v3-pro",
+      "crf": 19
+    },
+    "_meta": { "title": "💾 Save Kling V3 Output" }
+  },
+
+  "20": {
+    "class_type": "SeedanceImageToVideoNode",
+    "inputs": {
+      "prompt": "The character in the image performs a graceful action, cinematic camera movement, golden hour lighting",
+      "seed": 42,
+      "image": ["1", 0]
+    },
+    "_meta": { "title": "🎬 Seedance 1.5 Pro I2V" }
+  },
+
+  "21": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["20", 0],
+      "frame_rate": 24,
+      "format": "video/h264-mp4",
+      "filename_prefix": "comparison/seedance-pro",
+      "crf": 19
+    },
+    "_meta": { "title": "💾 Save Seedance Output" }
+  },
+
+  "30": {
+    "class_type": "VeoImageToVideoNode",
+    "inputs": {
+      "prompt": "The character in the image performs a graceful action, cinematic camera movement, golden hour lighting",
+      "image": ["1", 0]
+    },
+    "_meta": { "title": "🎬 Veo 3.1 Pro I2V" }
+  },
+
+  "31": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["30", 0],
+      "frame_rate": 24,
+      "format": "video/h264-mp4",
+      "filename_prefix": "comparison/veo31-pro",
+      "crf": 19
+    },
+    "_meta": { "title": "💾 Save Veo 3.1 Output" }
+  },
+
+  "40": {
+    "_comment": "Wan 2.6 通过 fal-API 或自定义节点调用",
+    "class_type": "Wan26ImageToVideo",
+    "inputs": {
+      "prompt": "The character in the image performs a graceful action, cinematic camera movement, golden hour lighting",
+      "size": "1280*720",
+      "duration": "5",
+      "image": ["1", 0]
+    },
+    "_meta": { "title": "🎬 Wan 2.6 I2V" }
+  },
+
+  "41": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["40", 0],
+      "frame_rate": 30,
+      "format": "video/h264-mp4",
+      "filename_prefix": "comparison/wan26",
+      "crf": 19
+    },
+    "_meta": { "title": "💾 Save Wan 2.6 Output" }
+  }
+}
