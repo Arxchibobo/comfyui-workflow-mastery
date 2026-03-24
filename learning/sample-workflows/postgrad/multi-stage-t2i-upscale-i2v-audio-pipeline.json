@@ -1,0 +1,255 @@
+{
+  "_meta": {
+    "title": "Multi-Stage Production Pipeline: T2I → Upscale → I2V + Audio → Video Edit",
+    "description": "PostGrad#17: 完整四阶段 ComfyUI 工作流 — 文生图 → 超分放大 → 图生视频(含音频) → 视频编辑",
+    "author": "PostGrad#17 Learning Session",
+    "version": "1.0",
+    "architecture_notes": [
+      "Stage 1: Flux Dev T2I — 本地生成 1280x720 关键帧",
+      "Stage 2: ImageUpscaleWithModel — 本地 ESRGAN 2x 放大到 2560x1440",
+      "Stage 3: Kling V3.0 I2V + Audio — Partner Node API 图生视频(含自动配音)",
+      "Stage 4: Kling O3 Video Edit — Partner Node API 风格化编辑",
+      "总成本: 本地推理(GPU时间) + ¥0.55(I2V) + ¥0.88(Edit) = ~¥1.43 API 成本"
+    ],
+    "requirements": [
+      "flux1-dev checkpoint (fp8 or full)",
+      "t5xxl + clip_l text encoders",
+      "ae.safetensors Flux VAE",
+      "RealESRGAN_x2plus.pth upscale model",
+      "Comfy Org Partner Nodes (AUTH_TOKEN_COMFY_ORG)",
+      "Kling API access via Partner Nodes"
+    ]
+  },
+
+  "_comment_stage1": "========== STAGE 1: Flux Dev Text-to-Image ==========",
+  
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "flux1-dev-fp8.safetensors",
+      "weight_dtype": "fp8_e4m3fn"
+    },
+    "_meta": { "title": "S1: Load Flux Model" }
+  },
+  "2": {
+    "class_type": "DualCLIPLoader",
+    "inputs": {
+      "clip_name1": "t5xxl_fp16.safetensors",
+      "clip_name2": "clip_l.safetensors",
+      "type": "flux"
+    },
+    "_meta": { "title": "S1: Load CLIP Encoders" }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    },
+    "_meta": { "title": "S1: Load Flux VAE" }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "A majestic red lobster samurai standing in a moonlit bamboo forest, wearing ornate armor with gold accents, holding a glowing katana, mist swirling around its claws, dramatic cinematic lighting, ultra detailed, 8k quality, wide shot, 16:9 cinematic frame",
+      "clip": ["2", 0]
+    },
+    "_meta": { "title": "S1: Encode Prompt" }
+  },
+  "5": {
+    "class_type": "FluxGuidance",
+    "inputs": {
+      "guidance": 3.5,
+      "conditioning": ["4", 0]
+    },
+    "_meta": { "title": "S1: Flux Guidance" }
+  },
+  "6": {
+    "class_type": "EmptySD3LatentImage",
+    "inputs": {
+      "width": 1280,
+      "height": 720,
+      "batch_size": 1
+    },
+    "_meta": { "title": "S1: Empty Latent (1280x720)" }
+  },
+  "7": {
+    "class_type": "KSampler",
+    "inputs": {
+      "seed": 42,
+      "steps": 28,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "model": ["1", 0],
+      "positive": ["5", 0],
+      "negative": ["10", 0],
+      "latent_image": ["6", 0]
+    },
+    "_meta": { "title": "S1: KSampler (Flux: cfg=1, euler, simple)" }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["7", 0],
+      "vae": ["3", 0]
+    },
+    "_meta": { "title": "S1: VAE Decode → Image" }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "pipeline_s1_keyframe",
+      "images": ["8", 0]
+    },
+    "_meta": { "title": "S1: Save Keyframe (checkpoint)" }
+  },
+  "10": {
+    "class_type": "ConditioningZeroOut",
+    "inputs": {
+      "conditioning": ["4", 0]
+    },
+    "_meta": { "title": "S1: Zero Negative (Flux pattern)" }
+  },
+
+  "_comment_stage2": "========== STAGE 2: ESRGAN 2x Upscale ==========",
+
+  "20": {
+    "class_type": "UpscaleModelLoader",
+    "inputs": {
+      "model_name": "RealESRGAN_x2plus.pth"
+    },
+    "_meta": { "title": "S2: Load ESRGAN Model" }
+  },
+  "21": {
+    "class_type": "ImageUpscaleWithModel",
+    "inputs": {
+      "upscale_model": ["20", 0],
+      "image": ["8", 0]
+    },
+    "_meta": { "title": "S2: ESRGAN 2x Upscale (1280x720 → 2560x1440)" }
+  },
+  "22": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": ["21", 0],
+      "upscale_method": "lanczos",
+      "width": 1920,
+      "height": 1080,
+      "crop": "center"
+    },
+    "_meta": { "title": "S2: Downscale to 1920x1080 (clean 1080p for I2V input)" }
+  },
+  "23": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "pipeline_s2_upscaled",
+      "images": ["22", 0]
+    },
+    "_meta": { "title": "S2: Save Upscaled Image (checkpoint)" }
+  },
+
+  "_comment_stage3": "========== STAGE 3: Kling V3.0 I2V with Audio ==========",
+  "_comment_stage3_note": "Partner Node: KlingImageToVideoNode (comfyui_kling from Comfy Org)",
+
+  "30": {
+    "class_type": "KlingImageToVideoNode",
+    "inputs": {
+      "image": ["22", 0],
+      "prompt": "The armored lobster samurai slowly draws its glowing katana in the moonlit bamboo forest, wind rustling through bamboo leaves, mist swirling around its clawed feet, dramatic cinematic camera slowly pushing in, 5 seconds, high quality",
+      "negative_prompt": "blurry, low quality, distorted, deformed",
+      "duration": "5",
+      "aspect_ratio": "16:9",
+      "model_name": "kling-v3-0",
+      "mode": "std",
+      "cfg_scale": 0.5,
+      "sound": true,
+      "seed": 42
+    },
+    "_meta": { 
+      "title": "S3: Kling V3.0 Std I2V + Audio",
+      "notes": [
+        "sound=true enables automatic audio generation",
+        "cfg_scale 0.5 = balanced creativity vs image fidelity",
+        "mode: std (¥0.55) vs pro (¥0.75)",
+        "duration: '5' = 5 seconds, range 5-10s",
+        "Partner Node auto-handles: upload → poll → download"
+      ]
+    }
+  },
+  "31": {
+    "class_type": "SaveAnimatedWEBP",
+    "inputs": {
+      "images": ["30", 0],
+      "filename_prefix": "pipeline_s3_video",
+      "fps": 24,
+      "lossless": false,
+      "quality": 85,
+      "method": "default"
+    },
+    "_meta": { "title": "S3: Save Video Output (preview)" }
+  },
+
+  "_comment_stage4": "========== STAGE 4: Kling O3 Video Edit (Optional) ==========",
+  "_comment_stage4_note": "Apply style transformation to the generated video",
+
+  "40": {
+    "class_type": "KlingVideoEditNode",
+    "inputs": {
+      "video": ["30", 0],
+      "prompt": "Transform the scene into a Studio Ghibli anime art style, with soft watercolor textures, warm magical lighting, and dreamy atmosphere, keep the lobster samurai character and action intact",
+      "model_name": "kling-o3",
+      "mode": "std",
+      "keepOriginalSound": true,
+      "seed": 42
+    },
+    "_meta": { 
+      "title": "S4: Kling O3 Std Video Edit (Ghibli Style)",
+      "notes": [
+        "keepOriginalSound=true preserves the auto-generated audio",
+        "O3 Std: ¥0.88, O3 Pro: ¥1.20 (with auto-upscale to 1080p)",
+        "Video Edit works best with clear style transformation prompts",
+        "Can also pass imageUrls for multi-reference style transfer"
+      ]
+    }
+  },
+  "41": {
+    "class_type": "SaveAnimatedWEBP",
+    "inputs": {
+      "images": ["40", 0],
+      "filename_prefix": "pipeline_s4_edited",
+      "fps": 24,
+      "lossless": false,
+      "quality": 85,
+      "method": "default"
+    },
+    "_meta": { "title": "S4: Save Edited Video (final output)" }
+  },
+
+  "_comment_pipeline_notes": {
+    "execution_flow": "1→2→3→4→5→6→7→8→9(save) + 10(neg) | 8→20→21→22→23(save) | 22→30→31(save) | 30→40→41(save)",
+    "total_nodes": 16,
+    "stages": 4,
+    "estimated_cost": {
+      "stage1_flux_t2i": "free (local GPU)",
+      "stage2_esrgan_upscale": "free (local GPU)",
+      "stage3_kling_i2v": "¥0.55 (std) or ¥0.75 (pro)",
+      "stage4_kling_edit": "¥0.88 (std) or ¥1.20 (pro)",
+      "total_api": "¥1.43 - ¥1.95"
+    },
+    "timing": {
+      "stage1": "~30s (4090 fp8)",
+      "stage2": "~5s (ESRGAN + resize)",
+      "stage3": "~60-150s (API wait)",
+      "stage4": "~120-300s (API wait)",
+      "total": "~3.5-8 minutes end-to-end"
+    },
+    "key_patterns": [
+      "Pattern 1: Checkpoint saves between stages for debugging/resumption",
+      "Pattern 2: Local compute (Flux+ESRGAN) → API compute (Kling) hybrid",
+      "Pattern 3: Resolution management: generate@1280→upscale@2560→downscale@1920 for quality",
+      "Pattern 4: VIDEO type propagation: I2V output→Video Edit input (native ComfyUI VIDEO type)",
+      "Pattern 5: Audio passthrough: sound=true in I2V → keepOriginalSound=true in Edit"
+    ]
+  }
+}

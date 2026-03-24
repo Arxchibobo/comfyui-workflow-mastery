@@ -1,0 +1,144 @@
+{
+  "_meta": {
+    "title": "Reference-to-Video Multi-Model Comparison Pipeline",
+    "description": "PostGrad#17: 同一参考图 → 多模型 Ref2V 并行对比工作流 (Wan 2.6 Flash + Kling O3 + Seedance)",
+    "author": "PostGrad#17 Learning Session",
+    "version": "1.0",
+    "architecture_notes": [
+      "共享输入层: 同一张参考图 + 统一 prompt",
+      "三路并行: Wan 2.6 Flash Ref2V / Kling O3 Ref2V / Seedance Lite Ref2V",
+      "成本对比: ¥0.20 / ¥0.50 / ¥0.15 = ¥0.85 总计",
+      "用途: 模型选型评估 / A-B-C测试 / 质量-成本权衡分析"
+    ],
+    "requirements": [
+      "Comfy Org Partner Nodes (AUTH_TOKEN_COMFY_ORG)",
+      "Kling + Seedance + Wan API credits"
+    ]
+  },
+
+  "_comment_shared": "========== SHARED INPUT LAYER ==========",
+
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "lobster-samurai-ref.png"
+    },
+    "_meta": { "title": "Shared: Load Reference Image" }
+  },
+
+  "_comment_branch_a": "========== BRANCH A: Wan 2.6 Flash Ref2V (¥0.20) ==========",
+  "_comment_branch_a_note": "最低成本方案 — 30fps + 原生音频, 75s 生成",
+
+  "10": {
+    "class_type": "WanReferenceToVideoNode",
+    "inputs": {
+      "image": ["1", 0],
+      "prompt": "The lobster samurai walks through a misty bamboo forest at dawn, katana sheathed at its side, each step deliberate and powerful, mist parting before it, golden sunlight filtering through bamboo, cinematic tracking shot",
+      "negative_prompt": "blurry, distorted, low quality",
+      "size": "1280*720",
+      "duration": "5",
+      "shot_type": "single",
+      "audio": true,
+      "model_variant": "flash"
+    },
+    "_meta": { 
+      "title": "Branch A: Wan 2.6 Flash Ref2V",
+      "notes": "¥0.20 | 1280x720 | 30fps | audio | ~75s"
+    }
+  },
+  "11": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["10", 0],
+      "frame_rate": 30,
+      "filename_prefix": "compare_A_wan26flash",
+      "format": "video/h264-mp4",
+      "crf": 20
+    },
+    "_meta": { "title": "Branch A: Save Wan 2.6 Flash Output" }
+  },
+
+  "_comment_branch_b": "========== BRANCH B: Kling O3 Std Ref2V (¥0.50) ==========",
+  "_comment_branch_b_note": "最高质量方案 — 7图引用 + 声音克隆 + 最强运动理解",
+
+  "20": {
+    "class_type": "KlingOmniEditModelNode",
+    "inputs": {
+      "image": ["1", 0],
+      "prompt": "The lobster samurai walks through a misty bamboo forest at dawn, katana sheathed at its side, each step deliberate and powerful, mist parting before it, golden sunlight filtering through bamboo, cinematic tracking shot",
+      "model_name": "kling-o3",
+      "mode": "std",
+      "duration": "5",
+      "aspect_ratio": "16:9",
+      "seed": 42
+    },
+    "_meta": { 
+      "title": "Branch B: Kling O3 Std Ref2V",
+      "notes": "¥0.50 | 1280x720 | 24fps | ~100-180s | 最强 ID 保持"
+    }
+  },
+  "21": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["20", 0],
+      "frame_rate": 24,
+      "filename_prefix": "compare_B_klingo3",
+      "format": "video/h264-mp4",
+      "crf": 20
+    },
+    "_meta": { "title": "Branch B: Save Kling O3 Output" }
+  },
+
+  "_comment_branch_c": "========== BRANCH C: Seedance V1 Lite Ref2V (¥0.15) ==========",
+  "_comment_branch_c_note": "极致性价比方案 — Pro 半价, 24fps, 快速迭代首选",
+
+  "30": {
+    "class_type": "SeedanceReferenceToVideoNode",
+    "inputs": {
+      "image": ["1", 0],
+      "prompt": "The lobster samurai walks through a misty bamboo forest at dawn, katana sheathed at its side, each step deliberate and powerful, mist parting before it, golden sunlight filtering through bamboo, cinematic tracking shot",
+      "duration": "5",
+      "aspect_ratio": "16:9",
+      "model_variant": "lite"
+    },
+    "_meta": { 
+      "title": "Branch C: Seedance V1 Lite Ref2V",
+      "notes": "¥0.15 | ~1248x704 | 24fps | ~60s | 半价 Pro"
+    }
+  },
+  "31": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["30", 0],
+      "frame_rate": 24,
+      "filename_prefix": "compare_C_seedancelite",
+      "format": "video/h264-mp4",
+      "crf": 20
+    },
+    "_meta": { "title": "Branch C: Save Seedance Lite Output" }
+  },
+
+  "_comment_pipeline_notes": {
+    "execution_pattern": "Fan-out from shared LoadImage → 3 parallel API branches → 3 independent saves",
+    "comfyui_execution_behavior": [
+      "ComfyUI 的 topological sort 会识别三条独立分支",
+      "默认串行执行（单 GPU/单 API），但无数据依赖可安全并行",
+      "Partner Nodes 的 PollingOperation 是异步的 — 提交后 poll 等待",
+      "三个分支总等待时间 ≈ max(75s, 150s, 60s) = ~150s（如能并行）",
+      "串行时 ≈ 75 + 150 + 60 = ~285s"
+    ],
+    "cost_comparison": {
+      "wan_26_flash": "¥0.20 — 最便宜, 30fps, 有音频, 1280x720",
+      "kling_o3_std": "¥0.50 — 最强质量, 24fps, 最好ID保持",
+      "seedance_lite": "¥0.15 — 最便宜, 24fps, ~1248x704",
+      "total": "¥0.85 三模型对比"
+    },
+    "selection_guidance": {
+      "budget_priority": "Seedance Lite (¥0.15) > Wan Flash (¥0.20) > Kling O3 (¥0.50)",
+      "quality_priority": "Kling O3 > Wan Flash ≈ Seedance Lite",
+      "speed_priority": "Seedance Lite (~60s) > Wan Flash (~75s) > Kling O3 (~150s)",
+      "audio_needed": "Wan Flash (原生30fps+audio) > Kling O3 (需额外V2A)",
+      "recommendation": "快速迭代用 Seedance Lite → 确定方向后用 Kling O3 出片"
+    }
+  }
+}

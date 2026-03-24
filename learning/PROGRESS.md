@@ -3,8 +3,8 @@
 ## 当前状态
 - **当前阶段**: 🎓 Post-Graduation Labs
 - **当前天数**: Day 36+ — 毕业后实操巩固
-- **上次学习时间**: 2026-03-24 18:03 UTC
-- **累计学习轮数**: 60
+- **上次学习时间**: 2026-03-24 20:04 UTC
+- **累计学习轮数**: 61
 - **状态**: 🎓 毕业！36天完整学习旅程结束 → 进入实操巩固阶段
 
 ## Day 1 进度 (SD 核心算法原理)
@@ -103,6 +103,7 @@
 | 58 | 2026-03-24 14:04 | PostGrad#14-Ultra8K+BudgetRef2V+FLF | Ultra 8K T2I首测(rhart-official/10965×6120=67.1MP/89.5MB/105s/¥0.16/真8K+)+Ultra 4K Edit首测(5483×3060/16.8MP/10图输入/85s/¥0.14)+Ultra按像素成本仅Pro的34%+Seedance V1 Lite Ref2V首测(1248×704/24fps/5s/60s/¥0.15/半价Pro)+Hailuo02 Standard FLF确认(firstImageUrl+lastImageUrl隐藏参数/768×768/5.9s/¥0.25)+Pro 2K基线对比(2752×1536/4.2MP/¥0.03)+分辨率-成本决策树+Ref2V性价比排名更新 | postgrad-14-ultra-resolution-budget-video.md |
 | 59 | 2026-03-24 16:03 | PostGrad#15-VideoExtend+O3ProEdit | Veo3.1 Fast vs Pro Video Extend直接对比(Fast¥0.95/115s+Pro¥2.52/135s/同为+7s扩展/Pro贵2.65x不推荐)+⭐Kling O3 Pro Edit首测(720p→1080p自动超分!175s/¥1.20/比Std更快)+O3 Std Edit对比(保持720p/300s/¥0.88)+Video Extend固定+7s与输入时长无关+O3 Pro Edit=编辑+超分二合一+多图参考编辑(imageUrls最多4张)+keepOriginalSound音频保留+Grok Edit分析(720p/480p仅风格转换)+O1 Edit发现mode参数(std/pro切换)+完整管线成本(15s/720p=¥1.00/15s/1080p编辑=¥2.22)+ComfyUI Video Extend/Edit节点缺口分析+管线工作流JSON | postgrad-15-video-extend-edit-deep-dive.md + video-extend-edit-pipeline.json |
 | 60 | 2026-03-24 18:03 | PostGrad#16-KlingElements+GrokEdit | ⭐Kling Elements角色嵌入系统首测(创建¥0.01/10秒极快极便宜/element_id=865483337346322457)+Elements返回数据结构(frontal_image+refer_images+空video_list)+Element绑定T2V首测(elementId隐藏参数/1280×720/5s/¥0.55/角色特征保持)+Grok Video Edit首测(rhart-video-g/吉卜力风格转换/712×1294/8.7s/¥0.54/继承竖屏/时长缩短9%/性价比低于Kling O3)+HiTem3D Portrait v21第4次失败确认(服务不可靠)+角色一致性方案选择决策树更新+视频编辑模型定价对比+ComfyUI Element绑定工作流映射 | postgrad-16-kling-elements-grok-edit.md |
+| 61 | 2026-03-24 20:04 | PostGrad#17-WorkflowOrchestration+NewModels | ComfyUI多阶段工作流JSON编排5种模式(线性管线/扇出对比/钻石合并/迭代精炼/条件路由)+VIDEO类型链式传播规则+Partner Node链式调用模式+⭐Vidu Q3 Pro FLF首测(1284×716/4s/24fps/¥0.44/65s/比Q2便宜20%速度快1.9x/最大16s)+⭐Wan 2.6 Flash Ref2V首测(1280×720/5s/30fps/¥0.20/75s/比Full便宜69%/帧率更高)+完整管线T2I→Upscale→I2V+Audio(¥0.71)+分辨率管理策略+Ref2V性价比排名更新+2个生产级工作流JSON | postgrad-17-workflow-orchestration-new-models.md + multi-stage-t2i-upscale-i2v-audio-pipeline.json + ref2v-multi-model-comparison.json |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
