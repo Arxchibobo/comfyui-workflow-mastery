@@ -1,0 +1,130 @@
+{
+  "_meta": {
+    "title": "Budget I2V Model Comparison Pipeline",
+    "description": "并行对比五种低成本I2V模型：Wan2.6Flash / Vidu Q3 Turbo / Hailuo 2.3 Std / Seedance Fast / Veo3.1 Fast",
+    "author": "PostGrad#11 Session",
+    "version": "1.0",
+    "notes": "This workflow demonstrates how to compare multiple budget video models from a single keyframe"
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "samurai-lobster-keyframe.jpg"
+    },
+    "_meta": { "title": "Shared Keyframe Input" }
+  },
+  "10": {
+    "class_type": "RunningHubAPI_I2V",
+    "_meta": {
+      "title": "Wan 2.6 Flash I2V",
+      "endpoint": "alibaba/wan-2.6/image-to-video-flash",
+      "cost": "¥0.20 / 5s @ 720p",
+      "speed": "25s generation",
+      "resolution": "1284x716",
+      "fps": 30,
+      "audio": "Yes (built-in)",
+      "notes": "Fastest model. Has audio. Cheapest per-second. Good for rapid iteration."
+    },
+    "inputs": {
+      "image": ["1", 0],
+      "prompt": "The samurai lobster draws katana, bamboo leaves swirl in moonlight",
+      "resolution": "720p",
+      "duration": "5",
+      "enableAudio": true
+    }
+  },
+  "20": {
+    "class_type": "RunningHubAPI_I2V",
+    "_meta": {
+      "title": "Vidu Q3 Turbo I2V",
+      "endpoint": "vidu/image-to-video-q3-turbo",
+      "cost": "¥0.20 / 5s",
+      "speed": "55s generation",
+      "resolution": "1284x716",
+      "fps": 24,
+      "audio": "Yes (AAC 48kHz stereo)",
+      "notes": "Good quality-to-cost. Has audio. Moderate speed. Higher bitrate than Wan Flash."
+    },
+    "inputs": {
+      "image": ["1", 0],
+      "prompt": "The samurai lobster draws katana, bamboo leaves swirl in moonlight"
+    }
+  },
+  "30": {
+    "class_type": "RunningHubAPI_I2V",
+    "_meta": {
+      "title": "Hailuo 2.3 Standard I2V",
+      "endpoint": "minimax/hailuo-2.3/i2v-standard",
+      "cost": "¥0.25 / ~6s",
+      "speed": "85s generation",
+      "resolution": "1376x768",
+      "fps": 24,
+      "audio": "No",
+      "notes": "Highest resolution of budget tier. No audio. Slowest. Slightly higher cost."
+    },
+    "inputs": {
+      "image": ["1", 0],
+      "prompt": "The samurai lobster draws katana, bamboo leaves swirl in moonlight"
+    }
+  },
+  "40": {
+    "class_type": "RunningHubAPI_I2V",
+    "_meta": {
+      "title": "Seedance v1.5 Pro Fast I2V",
+      "endpoint": "seedance-v1.5-pro/image-to-video-fast",
+      "cost": "¥0.30 / 5s",
+      "speed": "125s generation",
+      "resolution": "1280x720",
+      "fps": 24,
+      "audio": "Yes (AAC 44.1kHz stereo)",
+      "notes": "Most expensive budget tier. Has audio. Highest file size. Slowest of the group."
+    },
+    "inputs": {
+      "image": ["1", 0],
+      "prompt": "The samurai lobster draws katana, bamboo leaves swirl in moonlight"
+    }
+  },
+  "50": {
+    "class_type": "RunningHubAPI_I2V",
+    "_meta": {
+      "title": "Veo 3.1 Fast I2V (rhart-video-v3.1-fast)",
+      "endpoint": "rhart-video-v3.1-fast/image-to-video",
+      "cost": "¥0.04 / 8s ⭐ BEST VALUE",
+      "speed": "110s generation",
+      "resolution": "1280x720",
+      "fps": 24,
+      "audio": "Yes (AAC 48kHz stereo)",
+      "notes": "EXTREME value: 8 seconds for only ¥0.04! Has audio. Best cost-per-second by far."
+    },
+    "inputs": {
+      "image": ["1", 0],
+      "prompt": "The samurai lobster draws katana, bamboo leaves swirl in moonlight"
+    }
+  },
+  "_comparison_summary": {
+    "rankings": {
+      "cost_per_second": [
+        "1. Veo 3.1 Fast: ¥0.005/s ⭐⭐⭐",
+        "2. Wan 2.6 Flash: ¥0.040/s",
+        "3. Vidu Q3 Turbo: ¥0.040/s",
+        "4. Hailuo 2.3 Std: ¥0.043/s",
+        "5. Seedance Fast: ¥0.060/s"
+      ],
+      "generation_speed": [
+        "1. Wan 2.6 Flash: 25s ⭐⭐⭐",
+        "2. Vidu Q3 Turbo: 55s",
+        "3. Hailuo 2.3 Std: 85s",
+        "4. Veo 3.1 Fast: 110s",
+        "5. Seedance Fast: 125s"
+      ],
+      "has_audio": [
+        "✅ Wan 2.6 Flash",
+        "✅ Vidu Q3 Turbo",
+        "✅ Seedance Fast",
+        "✅ Veo 3.1 Fast",
+        "❌ Hailuo 2.3 Std"
+      ],
+      "recommendation": "For budget production: Veo 3.1 Fast (best cost-per-second, 8s output, has audio). For rapid iteration: Wan 2.6 Flash (fastest, 25s generation). For resolution priority: Hailuo 2.3 Std (1376x768)."
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "_meta": {
+    "title": "Budget Video Production Pipeline",
+    "description": "低成本视频生产管线：T2I → I2V(Budget) → LipSync/Audio",
+    "author": "PostGrad#11 Session",
+    "version": "1.0",
+    "notes": "Uses Kling 2.6 + budget-tier models for cost-effective video production"
+  },
+  "1": {
+    "class_type": "KlingOmniProImageNode",
+    "inputs": {
+      "model_name": "kling-v3-omni",
+      "prompt": "A professional spokesperson in a modern office, clean background, facing camera, neutral expression, studio lighting, photorealistic, 4K",
+      "aspect_ratio": "16:9",
+      "resolution": "1080p",
+      "n": 1
+    },
+    "_meta": {
+      "title": "Step 1: Generate Keyframe (Kling 3.0 Omni Image)",
+      "cost_estimate": "$0.04"
+    }
+  },
+  "2": {
+    "class_type": "KlingImageToVideoWithAudio",
+    "inputs": {
+      "model_name": "kling-v2-6",
+      "start_frame": ["1", 0],
+      "prompt": "The spokesperson slightly nods and begins to speak naturally, subtle hand gestures, professional demeanor, smooth camera, cinematic quality",
+      "mode": "pro",
+      "duration": 5,
+      "generate_audio": false
+    },
+    "_meta": {
+      "title": "Step 2: I2V with Kling 2.6 (Budget Pro)",
+      "cost_estimate": "$0.35",
+      "notes": "Kling 2.6 pro is $0.07/sec, 5s = $0.35. Audio off to add LipSync later."
+    }
+  },
+  "3": {
+    "class_type": "KlingLipSyncTextToVideoNode",
+    "inputs": {
+      "video": ["2", 0],
+      "text": "Welcome to our product launch. Today I'm excited to show you something revolutionary.",
+      "voice": "Anchor",
+      "voice_speed": 1.0
+    },
+    "_meta": {
+      "title": "Step 3: Lip Sync with TTS",
+      "cost_estimate": "~$0.10",
+      "notes": "Kling LipSync syncs mouth to generated speech. Max 120 chars text."
+    }
+  },
+  "10": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["3", 0],
+      "filename_prefix": "budget-pipeline-output"
+    },
+    "_meta": {
+      "title": "Output: Save Final Video",
+      "total_cost_estimate": "~$0.49 for complete T2I→I2V→LipSync pipeline"
+    }
+  }
+}
