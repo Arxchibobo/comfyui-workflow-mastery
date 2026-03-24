@@ -1,0 +1,77 @@
+{
+  "_meta": {
+    "title": "Kling V3.0 Motion Control - Complete Pipeline",
+    "description": "角色参考图 + 动作参考视频 → Kling V3.0 Motion Control → 视频输出",
+    "author": "ComfyUI Learning PostGrad#7",
+    "version": "1.0",
+    "created": "2026-03-24",
+    "requires": ["comfyui-video-helper-suite", "comfy-org partner nodes (kling)"]
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Character Reference Image"
+    },
+    "inputs": {
+      "image": "character_reference.png",
+      "upload": "image"
+    }
+  },
+  "2": {
+    "class_type": "VHS_LoadVideo",
+    "_meta": {
+      "title": "Load Motion Reference Video"
+    },
+    "inputs": {
+      "video": "motion_reference.mp4",
+      "force_rate": 0,
+      "force_size": "Disabled",
+      "custom_width": 0,
+      "custom_height": 0,
+      "frame_load_cap": 0,
+      "skip_first_frames": 0,
+      "select_every_nth": 1
+    }
+  },
+  "3": {
+    "class_type": "KlingMotionControlNode",
+    "_meta": {
+      "title": "Kling V3.0 Motion Control",
+      "notes": "Partner Node - 需要 Comfy.org 账号和 credits. characterOrientation: image=保持参考图朝向, video=跟随动作视频朝向"
+    },
+    "inputs": {
+      "image": ["1", 0],
+      "video": ["2", 0],
+      "character_orientation": "image",
+      "prompt": "A martial arts warrior performing graceful movements, flowing silk outfit, dynamic poses, high quality",
+      "negative_prompt": "blurry, distorted face, low quality, deformed hands, extra limbs",
+      "keep_original_sound": false
+    }
+  },
+  "4": {
+    "class_type": "VHS_VideoCombine",
+    "_meta": {
+      "title": "Save Output Video"
+    },
+    "inputs": {
+      "images": ["3", 0],
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "kling_motion_control",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "crf": 19,
+      "save_output": true,
+      "pingpong": false
+    }
+  },
+  "10": {
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Character Reference"
+    },
+    "inputs": {
+      "images": ["1", 0]
+    }
+  }
+}

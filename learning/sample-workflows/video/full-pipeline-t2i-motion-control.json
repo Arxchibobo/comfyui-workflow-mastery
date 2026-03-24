@@ -1,0 +1,139 @@
+{
+  "_meta": {
+    "title": "Full Pipeline: Local T2I → Kling Motion Control → Post-Processing",
+    "description": "完整管线: 本地 Flux/SDXL 生成角色 → Kling V3.0 Motion Control → 本地放大",
+    "author": "ComfyUI Learning PostGrad#7",
+    "version": "1.0",
+    "created": "2026-03-24",
+    "requires": [
+      "comfyui-video-helper-suite",
+      "comfy-org partner nodes (kling)",
+      "ComfyUI-Frame-Interpolation (optional)"
+    ],
+    "cost_estimate": "¥0.50-0.75 (only Motion Control API costs)"
+  },
+
+  "comment_stage1": "=== Stage 1: Local Character Generation (Free) ===",
+
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": { "title": "Load SDXL / Flux Model" },
+    "inputs": {
+      "ckpt_name": "flux1-dev-fp8.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "DualCLIPLoader",
+    "_meta": { "title": "Load CLIP (Flux)" },
+    "inputs": {
+      "clip_name1": "clip_l.safetensors",
+      "clip_name2": "t5xxl_fp8_e4m3fn.safetensors",
+      "type": "flux"
+    }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "_meta": { "title": "Positive Prompt" },
+    "inputs": {
+      "text": "A young female martial arts warrior, full body, dynamic kung fu stance, flowing red silk outfit with gold dragon embroidery, high ponytail, athletic build, studio lighting, white background, 8K ultra detailed, photorealistic",
+      "clip": ["2", 0]
+    }
+  },
+  "4": {
+    "class_type": "EmptySD3LatentImage",
+    "_meta": { "title": "Empty Latent (9:16 portrait)" },
+    "inputs": {
+      "width": 768,
+      "height": 1344,
+      "batch_size": 1
+    }
+  },
+  "5": {
+    "class_type": "FluxGuidance",
+    "_meta": { "title": "Flux Guidance" },
+    "inputs": {
+      "conditioning": ["3", 0],
+      "guidance": 3.5
+    }
+  },
+  "6": {
+    "class_type": "KSampler",
+    "_meta": { "title": "Sample (Flux)" },
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["5", 0],
+      "negative": ["3", 0],
+      "latent_image": ["4", 0],
+      "seed": 42,
+      "steps": 28,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "7": {
+    "class_type": "VAEDecode",
+    "_meta": { "title": "Decode to Image" },
+    "inputs": {
+      "samples": ["6", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "8": {
+    "class_type": "SaveImage",
+    "_meta": { "title": "Save Character Reference" },
+    "inputs": {
+      "images": ["7", 0],
+      "filename_prefix": "character_ref"
+    }
+  },
+
+  "comment_stage2": "=== Stage 2: Motion Control (API Cost: ¥0.50-0.75) ===",
+
+  "20": {
+    "class_type": "VHS_LoadVideo",
+    "_meta": { "title": "Load Motion Reference Video" },
+    "inputs": {
+      "video": "motion_reference.mp4",
+      "force_rate": 0,
+      "force_size": "Disabled",
+      "frame_load_cap": 0,
+      "skip_first_frames": 0,
+      "select_every_nth": 1
+    }
+  },
+  "21": {
+    "class_type": "KlingMotionControlNode",
+    "_meta": {
+      "title": "Kling V3.0 Motion Control",
+      "notes": "image from Stage 1 output + video from motion reference"
+    },
+    "inputs": {
+      "image": ["7", 0],
+      "video": ["20", 0],
+      "character_orientation": "image",
+      "prompt": "A martial arts warrior performing graceful tai chi movements, flowing silk outfit, smooth natural motion, high quality cinematic",
+      "negative_prompt": "blurry, distorted, low quality, deformed, extra limbs",
+      "keep_original_sound": false
+    }
+  },
+
+  "comment_stage3": "=== Stage 3: Post-Processing (Free, Local) ===",
+
+  "30": {
+    "class_type": "VHS_VideoCombine",
+    "_meta": { "title": "Save Final Video" },
+    "inputs": {
+      "images": ["21", 0],
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "motion_control_final",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "crf": 17,
+      "save_output": true,
+      "pingpong": false
+    }
+  }
+}

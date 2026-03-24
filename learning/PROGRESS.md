@@ -3,8 +3,8 @@
 ## 当前状态
 - **当前阶段**: 🎓 Post-Graduation Labs
 - **当前天数**: Day 36+ — 毕业后实操巩固
-- **上次学习时间**: 2026-03-23 22:03 UTC
-- **累计学习轮数**: 50
+- **上次学习时间**: 2026-03-24 00:03 UTC
+- **累计学习轮数**: 51
 - **状态**: 🎓 毕业！36天完整学习旅程结束 → 进入实操巩固阶段
 
 ## Day 1 进度 (SD 核心算法原理)
@@ -93,6 +93,7 @@
 | 48 | 2026-03-23 18:03 | PostGrad#4-Seedream+编辑→视频管线 | Seedream模型家族首测(v5-lite/v4.5/全部2048x2048/¥0.04)+Qwen-Image-2.0-Pro精确编辑(三项指令全部精准/ID保持极佳)+Seedream I2I场景变换(strength=0.65/厨房→海底宫殿)+T2I→Edit→I2V完整链式管线(¥0.39/95s)+编辑模型选择策略(精确用Qwen/变换用Seedream)+Seedance Fast动画化编辑图(960x960/5s/含音频) | postgrad-04-seedream-edit-to-video-pipeline.md |
 | 49 | 2026-03-23 20:03 | PostGrad#5-视频编辑+扩展+新模型 | rhart-image-g-4首测(¥1.00/电影级真实感/偏写实不适合创意)+Hailuo 02 I2V(1376x768/5.9s/¥0.25/正确横屏)+Veo 3.1 fast Video Extend(5.9→12.9s/¥0.95/风格一致/自带音频)+Kling O3 std Video Edit(日→夜场景转换/樱花→萤火虫/¥0.55/效果惊艳)+Veo 3.1 fast首尾帧过渡(日→夜/8s/¥0.04/极致性价比/支持4K)+rhart-video-s竖屏bug第3次确认+视频编辑/扩展ComfyUI工作流映射 | postgrad-05-video-editing-extension-new-models.md |
 | 50 | 2026-03-23 22:03 | PostGrad#6-VoiceClone+悠船MJ系+多模态 | 悠船v7/niji7首测(v7偏写实¥0.09/niji7拟人化极强¥0.09)+三模型Prompt理解差异对比(v7人类厨师/niji7龙虾角色/rhart龙虾本体)+悠船I2V(1264×704/5.2s/205s/¥0.27/无音频/支持首尾帧+循环)+Voice Clone声音克隆首测(MiniMax引擎/accuracy=0.8/15s/¥0.45/比普通TTS贵75x)+rhart-video-s realistic首测(30fps/1280×720/4.3s/¥0.50/支持真人)+FFmpeg多模态合成(视频+克隆音频→最终产品)+完整管线成本分析(¥0.786含VoiceClone/¥0.336不含)+模型选择策略更新(T2I 6选/I2V 4选/Audio 4选) | postgrad-06-voice-clone-youchuan-multimodal.md |
+| 51 | 2026-03-24 00:03 | PostGrad#7-Motion Control实战+ComfyUI工作流 | Kling V3.0 Std Motion Control首次实测(角色图+太极动作视频→720x1280/4.8s/165s/¥0.55)+characterOrientation双模式对比(image成功/video超时)+Motion Control API参数深度解析+ComfyUI KlingMotionControlNode工作流JSON编写(基础版+全管线版)+Kling Elements API分析(预计算角色嵌入/element ID)+Topaz Low Res V2放大首测(768→1536/2x/15s/¥0.10)+rhart-image-g-3首测(模型繁忙)+5种Topaz变体选择指南+Motion Control vs Ref2V vs S2E vs I2V技术对比 | postgrad-07-motion-control-workflow-deep-dive.md + kling-v3-motion-control.json + full-pipeline-t2i-motion-control.json |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
