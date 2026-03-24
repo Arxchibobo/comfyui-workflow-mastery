@@ -3,8 +3,8 @@
 ## 当前状态
 - **当前阶段**: 🎓 Post-Graduation Labs
 - **当前天数**: Day 36+ — 毕业后实操巩固
-- **上次学习时间**: 2026-03-24 04:03 UTC
-- **累计学习轮数**: 53
+- **上次学习时间**: 2026-03-24 06:03 UTC
+- **累计学习轮数**: 54
 - **状态**: 🎓 毕业！36天完整学习旅程结束 → 进入实操巩固阶段
 
 ## Day 1 进度 (SD 核心算法原理)
@@ -96,6 +96,7 @@
 | 51 | 2026-03-24 00:03 | PostGrad#7-Motion Control实战+ComfyUI工作流 | Kling V3.0 Std Motion Control首次实测(角色图+太极动作视频→720x1280/4.8s/165s/¥0.55)+characterOrientation双模式对比(image成功/video超时)+Motion Control API参数深度解析+ComfyUI KlingMotionControlNode工作流JSON编写(基础版+全管线版)+Kling Elements API分析(预计算角色嵌入/element ID)+Topaz Low Res V2放大首测(768→1536/2x/15s/¥0.10)+rhart-image-g-3首测(模型繁忙)+5种Topaz变体选择指南+Motion Control vs Ref2V vs S2E vs I2V技术对比 | postgrad-07-motion-control-workflow-deep-dive.md + kling-v3-motion-control.json + full-pipeline-t2i-motion-control.json |
 | 52 | 2026-03-24 02:03 | PostGrad#8-T2V多模型对比+Video Edit | 8模型T2V系统性对比(同prompt/rhart-s¥0.02/KlingV3¥0.55/Seedance¥0.30/Hailuo02¥0.44/Wan2.6¥0.63/KlingO3¥0.50/rhartV3.1¥0.04/ViduQ3¥0.55)+竖屏问题系统性分析(4模型默认竖屏/T2V必须显式指定aspectRatio)+Kling O3 Video Edit首测(日式厨房→水下珊瑚礁/180s/¥0.55)+rhart-video-g参数Bug记录(API与info不一致)+T2V vs I2V决策树+模型选择心智模型+2个ComfyUI工作流JSON(T2V+Edit管线/多模型对比) | postgrad-08-t2v-multi-model-comparison-video-edit.md + t2v-video-edit-pipeline.json + t2v-multi-model-comparison.json |
 | 53 | 2026-03-24 04:03 | PostGrad#9-3D对比+多图编辑+Ultra | HiTem3D全系列测试(v15/v2全超时不可用)+GPT Image 1.5多图编辑首测(¥0.01/龙虾+庭园合成/角色ID完美保持)+Qwen 2.0非Pro编辑(¥0.02/三指令全精确/性价比超Pro)+Gemini Ultra Edit首测(10图输入+4000字符/5483×3060输出/场景完全变换/¥0.14)+Topaz CGI放大首测(3D渲染专用/1024→2048/¥0.10)+端到端管线T2I→Edit→Ultra→I2V(¥0.51)+图像编辑模型选择策略更新+rhart-video-s超时记录 | postgrad-09-3d-comparison-multi-image-edit-ultra.md |
+| 54 | 2026-03-24 06:03 | PostGrad#10-FLF三模型对比+视频扩展 | 首尾帧生视频三模型对比(Hailuo02Std¥0.25/1376×768无音频+Veo3.1Pro¥0.13/8s含音频最佳+ViduQ3Pro¥0.88/8s含音频最贵)+Hailuo02三模式发现(standard支持FLF隐藏能力/pro仅6s/fast¥0.08低分辨率I2V)+Veo3.1FastVideoExtend首测(5.9s→12.9s/自动补音频/¥0.95)+跨分辨率兼容(1376×768→1280×720自动缩放)+Video Extend自动配音关键发现+长视频成本分析(Vidu16s¥0.88比Extend¥1.20更划算)+ComfyUI工作流映射 | postgrad-10-flf-comparison-video-extend.md |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
