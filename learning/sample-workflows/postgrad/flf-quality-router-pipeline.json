@@ -1,0 +1,68 @@
+{
+  "metadata": {
+    "title": "FLF Quality Router Pipeline",
+    "description": "Conditional routing pipeline that selects optimal FLF model based on budget tier. Demonstrates ComfyUI multi-path video generation pattern.",
+    "author": "comfyui-workflow-mastery postgrad-18",
+    "version": "1.0",
+    "notes": "This workflow shows how Partner Nodes for different video APIs can be organized in a quality-tiered pipeline. In production, use API-level routing outside ComfyUI."
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {},
+    "_meta": {"title": "Load First Frame"}
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "inputs": {},
+    "_meta": {"title": "Load Last Frame"}
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "The character transitions smoothly between poses, cinematic lighting, professional quality",
+      "clip": ["10", 0]
+    },
+    "_meta": {"title": "FLF Prompt"}
+  },
+  "10": {
+    "class_type": "DualCLIPLoader",
+    "inputs": {
+      "clip_name1": "clip_l.safetensors",
+      "clip_name2": "t5xxl_fp8_e4m3fn.safetensors",
+      "type": "flux"
+    },
+    "_meta": {"title": "CLIP Loader (for T2I keyframe generation)"}
+  },
+  "20": {
+    "class_type": "Note",
+    "inputs": {},
+    "widgets_values": [
+      "=== FLF MODEL SELECTION GUIDE ===\n\nBudget Tier → Model Selection:\n\n💰 Ultra-Budget (¥0.04/8s):\n  → Veo 3.1 Fast FLF\n  → 1280×720, 24fps, with audio\n  → Best: batch production, prototyping\n\n💰 Standard (¥0.16/4s):\n  → Vidu Q3 Turbo FLF\n  → 1284×716, 24fps, with audio\n  → Best: flexible duration (1-16s)\n\n💰 Premium (¥0.44/4s):\n  → Vidu Q3 Pro FLF\n  → Same resolution, faster generation\n  → Best: time-critical production\n\n💰 Max Quality (¥2.52/8s):\n  → Veo 3.1 Pro FLF\n  → Highest visual quality\n  → Best: hero shots, final delivery\n\n=== KEY PARAMETERS ===\n\nVeo 3.1: aspectRatio + resolution (720p/1080p/4K)\nVidu Q3: duration (1-16s) + resolution + movementAmplitude\n\nAll models support audio output."
+    ],
+    "_meta": {"title": "FLF Model Selection Guide"}
+  },
+  "30": {
+    "class_type": "Note",
+    "inputs": {},
+    "widgets_values": [
+      "=== AUDIO-VIDEO SYNC PATTERNS ===\n\nPattern 1: Native Audio (Zero Cost)\n  Video Model (sound=true) → Output\n  Models: Kling V3+, Veo 3.1, Vidu Q3, rhart-s\n\nPattern 2: Post-Production Mix\n  Silent Video → BGM + TTS → FFmpeg amix\n  Cost: +¥0.09 (BGM ¥0.07 + TTS ¥0.02)\n\nPattern 3: Audio-Driven\n  TTS/Music → Kling Audio2Video → Output\n  Use for: lip sync, music visualization\n\n=== FFMPEG MIXING COMMAND ===\nffmpeg -i video.mp4 -i bgm.mp3 -i narration.mp3 \\\n  -filter_complex \"[1:a]volume=0.3[bg];[2:a]volume=0.8[voice];[bg][voice]amix=inputs=2[mixed]\" \\\n  -map 0:v -map \"[mixed]\" -c:v copy -c:a aac -shortest output.mp4"
+    ],
+    "_meta": {"title": "Audio-Video Sync Patterns Reference"}
+  },
+  "40": {
+    "class_type": "Note",
+    "inputs": {},
+    "widgets_values": [
+      "=== COMFYUI PARTNER NODE: Veo 3.1 FLF ===\n\nNode: Veo3_1StartEndToVideoNode (hypothetical)\nInputs:\n  - first_frame: IMAGE (required)\n  - last_frame: IMAGE (optional!)\n  - prompt: STRING\n  - aspect_ratio: ['16:9', '9:16']\n  - duration: 8 (fixed)\n  - resolution: ['720p', '1080p', '4k']\n\nKey Insight: lastFrame is OPTIONAL\n  → Can be used as enhanced I2V (just first frame)\n  → Or true FLF (first + last frame)\n\nVs Vidu Q3:\n  - Vidu: flexible duration 1-16s\n  - Veo: fixed 8s but 10x cheaper\n  - Vidu: movementAmplitude control\n  - Veo: resolution up to 4K\n\n=== COMFYUI PARTNER NODE: Vidu Q3 FLF ===\n\nNode: ViduStartEndToVideoNode\nInputs:\n  - first_frame: IMAGE (required)\n  - last_frame: IMAGE (required)\n  - prompt: STRING\n  - duration: INT [1-16]\n  - resolution: ['540p', '720p', '1080p']\n  - movement_amplitude: ['auto', 'small', 'medium', 'large']\n  - audio: BOOLEAN"
+    ],
+    "_meta": {"title": "Partner Node Reference: FLF Endpoints"}
+  },
+  "50": {
+    "class_type": "Note",
+    "inputs": {},
+    "widgets_values": [
+      "=== SORA 2 PRO (rhart-s Pro) ===\n\nKey Discovery: Long-form I2V Champion\n\nSpecs:\n  - Duration: 15s or 25s ONLY\n  - Resolution: 1792×1024 (auto-upscaled)\n  - Frame Rate: 30fps (higher than industry 24fps)\n  - Audio: AAC 96kHz stereo (industry highest)\n  - Cost: ¥0.30 (15s) = ¥0.02/second\n\nStoryboard Parameter:\n  - storyboard: BOOLEAN (default=false)\n  - Potential: multi-scene structured generation\n  - TODO: Test with storyboard=true\n\nBest For:\n  - Long-form content (15-25s single shot)\n  - High resolution needs (1.84MP)\n  - Cost-sensitive batch production\n  - When audio quality matters (96kHz)\n\nNOT For:\n  - Short clips (<10s) → use cheaper models\n  - Real-time needs (generation takes 8+ minutes)\n  - Square format (only 16:9 or 9:16)"
+    ],
+    "_meta": {"title": "Sora 2 Pro Discovery Notes"}
+  }
+}
