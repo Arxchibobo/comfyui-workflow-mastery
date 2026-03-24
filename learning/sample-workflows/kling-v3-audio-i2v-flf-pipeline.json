@@ -1,0 +1,164 @@
+{
+  "_meta": {
+    "title": "Kling V3.0 Audio I2V + FLF Pipeline",
+    "description": "Complete pipeline: T2I (Flux/Flash) → Kling V3.0 I2V with Audio → Optional FLF mode. First workflow to integrate Kling's native audio generation with first-last-frame video control.",
+    "author": "ComfyUI Learning PostGrad#13",
+    "created": "2026-03-24",
+    "tags": ["kling", "audio", "i2v", "flf", "pipeline"]
+  },
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "flux1-dev.safetensors"
+    },
+    "_meta": { "title": "Load Flux Model" }
+  },
+  "2": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "A cute cartoon lobster wearing a white chef hat and apron, cooking enthusiastically in a professional kitchen. Warm lighting, vibrant cartoon illustration style.",
+      "clip": ["1", 1]
+    },
+    "_meta": { "title": "First Frame Prompt" }
+  },
+  "3": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 960,
+      "height": 960,
+      "batch_size": 1
+    },
+    "_meta": { "title": "960x960 Latent (Match Kling)" }
+  },
+  "4": {
+    "class_type": "FluxGuidance",
+    "inputs": {
+      "guidance": 3.5,
+      "conditioning": ["2", 0]
+    },
+    "_meta": { "title": "Flux Guidance" }
+  },
+  "5": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["4", 0],
+      "negative": ["2", 0],
+      "latent_image": ["3", 0],
+      "seed": 42,
+      "steps": 20,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_meta": { "title": "Generate First Frame" }
+  },
+  "6": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["5", 0],
+      "vae": ["1", 2]
+    },
+    "_meta": { "title": "Decode First Frame" }
+  },
+  "10": {
+    "class_type": "KlingImageToVideoWithAudioNode",
+    "inputs": {
+      "image": ["6", 0],
+      "prompt": "The cartoon lobster chef cooks enthusiastically, flipping food in a sizzling pan. Steam rises. Kitchen sounds: sizzling oil, chopping, gentle background music.",
+      "negative_prompt": "blurry, distorted, static, no movement",
+      "duration": "5",
+      "cfg_scale": 0.8,
+      "sound": true,
+      "seed": 0,
+      "model_name": "kling-v3-0",
+      "mode": "std"
+    },
+    "_meta": { 
+      "title": "Kling V3.0 I2V + Audio",
+      "notes": "sound=true enables native audio generation. Duration supports 3-15s. Cost: ~¥0.55 for std tier (audio included free). Audio is generated in-sync with video content based on prompt description."
+    }
+  },
+  "11": {
+    "class_type": "KlingDownloadAndLoadVideoNode",
+    "inputs": {
+      "video_task": ["10", 0]
+    },
+    "_meta": { "title": "Download Audio Video" }
+  },
+  "12": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["11", 0],
+      "audio": ["11", 1],
+      "frame_rate": 24,
+      "format": "video/h264-mp4",
+      "filename_prefix": "kling-audio-i2v",
+      "crf": 18
+    },
+    "_meta": { "title": "Save Video with Audio" }
+  },
+
+  "_comment_flf": "=== FLF (First-Last-Frame) Extension ===",
+  "_comment_flf2": "To use FLF mode, generate a second frame and connect to KlingStartEndToVideoNode",
+  
+  "20": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "A cute cartoon lobster wearing a white chef hat, proudly presenting a beautifully plated gourmet dish. Confetti and sparkles, celebration mood, same professional kitchen. Vibrant cartoon illustration style.",
+      "clip": ["1", 1]
+    },
+    "_meta": { "title": "Last Frame Prompt (for FLF)" }
+  },
+  "21": {
+    "class_type": "FluxGuidance",
+    "inputs": {
+      "guidance": 3.5,
+      "conditioning": ["20", 0]
+    },
+    "_meta": { "title": "Flux Guidance (Last Frame)" }
+  },
+  "22": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["21", 0],
+      "negative": ["20", 0],
+      "latent_image": ["3", 0],
+      "seed": 123,
+      "steps": 20,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_meta": { "title": "Generate Last Frame" }
+  },
+  "23": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["22", 0],
+      "vae": ["1", 2]
+    },
+    "_meta": { "title": "Decode Last Frame" }
+  },
+  "30": {
+    "class_type": "KlingStartEndToVideoNode",
+    "inputs": {
+      "first_image": ["6", 0],
+      "last_image": ["23", 0],
+      "prompt": "The lobster chef cooks enthusiastically, transitions from cooking to proudly presenting the finished dish. Kitchen sounds: sizzling, chopping, triumphant bell ding, celebratory music.",
+      "negative_prompt": "static, blurry, distorted",
+      "duration": "5",
+      "cfg_scale": 0.8,
+      "sound": true,
+      "model_name": "kling-v3-0",
+      "mode": "std"
+    },
+    "_meta": { 
+      "title": "Kling V3.0 FLF + Audio",
+      "notes": "First-Last-Frame with audio. Uses same endpoint as I2V but with lastImageUrl parameter. Verified working via RunningHub API in PostGrad#13 experiment #63."
+    }
+  }
+}

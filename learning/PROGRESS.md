@@ -3,8 +3,8 @@
 ## 当前状态
 - **当前阶段**: 🎓 Post-Graduation Labs
 - **当前天数**: Day 36+ — 毕业后实操巩固
-- **上次学习时间**: 2026-03-24 10:03 UTC
-- **累计学习轮数**: 56
+- **上次学习时间**: 2026-03-24 12:03 UTC
+- **累计学习轮数**: 57
 - **状态**: 🎓 毕业！36天完整学习旅程结束 → 进入实操巩固阶段
 
 ## Day 1 进度 (SD 核心算法原理)
@@ -99,6 +99,7 @@
 | 54 | 2026-03-24 06:03 | PostGrad#10-FLF三模型对比+视频扩展 | 首尾帧生视频三模型对比(Hailuo02Std¥0.25/1376×768无音频+Veo3.1Pro¥0.13/8s含音频最佳+ViduQ3Pro¥0.88/8s含音频最贵)+Hailuo02三模式发现(standard支持FLF隐藏能力/pro仅6s/fast¥0.08低分辨率I2V)+Veo3.1FastVideoExtend首测(5.9s→12.9s/自动补音频/¥0.95)+跨分辨率兼容(1376×768→1280×720自动缩放)+Video Extend自动配音关键发现+长视频成本分析(Vidu16s¥0.88比Extend¥1.20更划算)+ComfyUI工作流映射 | postgrad-10-flf-comparison-video-extend.md |
 | 55 | 2026-03-24 08:03 | PostGrad#11-Budget Video Pipeline+Kling V2A架构 | 五低成本I2V模型对比(Wan2.6Flash¥0.20/25s最快+ViduQ3Turbo¥0.20/55s含音频+Hailuo2.3Std¥0.25/1376×768最高分辨率无音频+SeedanceFast¥0.30/125s+Veo3.1Fast¥0.04/8s⭐极致性价比¥0.005/秒)+ComfyUI Kling Partner Node完整源码分析(136KB/30个节点/sync_op→poll_op→download统一模式)+Kling 2.6 Audio集成(sound参数/开启成本翻倍)+LipSync双模式(Audio2Video+Text2Video/56个语音角色含方言)+Avatar 2.0(单照片+音频/max_poll=800)+MotionControl(characterOrientation:video vs image)+Omni Prompt规范化(@image→<<<image_1>>>)+Price Badge JSONata系统+三种低成本管线设计(¥0.07/¥0.23/¥1.30)+2个工作流JSON | postgrad11-budget-pipeline-kling-v2a.md + budget-video-pipeline.json + budget-i2v-comparison.json |
 | 56 | 2026-03-24 10:03 | PostGrad#12-Turbo/Fast模型层级+工作流编排 | 六模型Turbo/Fast层级对比(KlingV2.5TurboPro¥0.30/75s最快1080p+KlingV2.5TurboStd¥0.18/720p最便宜Kling+Wan2.6FlashI2V¥0.30/50s极速1080p30fps🔊+Wan2.6FlashRef2V¥0.30/1080p5图3视频音频+Hailuo2.3Pro¥0.44/1934×1080+Hailuo2.3FastPro¥0.29/1934×1080)+Kling版本×层级矩阵(V2.5Turbo/V3.0/O1/O3全定价)+Wan Flash系列(I2V 50s+Ref2V 5图3视频+多镜头shotType)+Hailuo层级体系(Std/Pro/Fast/FastPro)+API参数名差异速查(firstImageUrl vs imageUrl)+ComfyUI工作流JSON编排5种Pattern+多模型对比工作流JSON+I2V性价比排名更新+速度排名 | postgrad-12-turbo-fast-tier-workflow-patterns.md + multi-model-i2v-comparison-v2.json + kling-v25-turbo-flf2v.json |
+| 57 | 2026-03-24 12:03 | PostGrad#13-AudioVideo+V2Flash+TextRefine | rhart-image V2 Flash首测(Gemini3.1Flash/¥0.02/25s/比Pro便宜33%/复杂文字prompt偶尔失败)+Kling V3.0 std I2V+Audio首测(sound=true/960×960/5s/AAC44100Hz立体声/¥0.55/音频免费不加价)+Kling V3.0 FLF+Audio首测(首尾帧+音频组合/140s/¥0.55/过渡+同步音效)+V3.0 duration扩展3-15s发现+Topaz Text Refine首测(文字专用放大/896→1792/15s/¥0.10/文字边缘锐利)+五种Topaz变体选择指南更新+ComfyUI KlingImageToVideoWithAudioNode映射验证+Audio I2V管线工作流JSON | postgrad-13-audio-video-v2flash-text-refine.md + kling-v3-audio-i2v-flf-pipeline.json |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
