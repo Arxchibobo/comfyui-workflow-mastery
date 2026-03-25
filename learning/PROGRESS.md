@@ -3,8 +3,8 @@
 ## 当前状态
 - **当前阶段**: 🎓 Post-Graduation Labs
 - **当前天数**: Day 36+ — 毕业后实操巩固
-- **上次学习时间**: 2026-03-24 22:03 UTC
-- **累计学习轮数**: 62
+- **上次学习时间**: 2026-03-25 00:03 UTC
+- **累计学习轮数**: 63
 - **状态**: 🎓 毕业！36天完整学习旅程结束 → 进入实操巩固阶段
 
 ## Day 1 进度 (SD 核心算法原理)
@@ -105,6 +105,7 @@
 | 60 | 2026-03-24 18:03 | PostGrad#16-KlingElements+GrokEdit | ⭐Kling Elements角色嵌入系统首测(创建¥0.01/10秒极快极便宜/element_id=865483337346322457)+Elements返回数据结构(frontal_image+refer_images+空video_list)+Element绑定T2V首测(elementId隐藏参数/1280×720/5s/¥0.55/角色特征保持)+Grok Video Edit首测(rhart-video-g/吉卜力风格转换/712×1294/8.7s/¥0.54/继承竖屏/时长缩短9%/性价比低于Kling O3)+HiTem3D Portrait v21第4次失败确认(服务不可靠)+角色一致性方案选择决策树更新+视频编辑模型定价对比+ComfyUI Element绑定工作流映射 | postgrad-16-kling-elements-grok-edit.md |
 | 61 | 2026-03-24 20:04 | PostGrad#17-WorkflowOrchestration+NewModels | ComfyUI多阶段工作流JSON编排5种模式(线性管线/扇出对比/钻石合并/迭代精炼/条件路由)+VIDEO类型链式传播规则+Partner Node链式调用模式+⭐Vidu Q3 Pro FLF首测(1284×716/4s/24fps/¥0.44/65s/比Q2便宜20%速度快1.9x/最大16s)+⭐Wan 2.6 Flash Ref2V首测(1280×720/5s/30fps/¥0.20/75s/比Full便宜69%/帧率更高)+完整管线T2I→Upscale→I2V+Audio(¥0.71)+分辨率管理策略+Ref2V性价比排名更新+2个生产级工作流JSON | postgrad-17-workflow-orchestration-new-models.md + multi-stage-t2i-upscale-i2v-audio-pipeline.json + ref2v-multi-model-comparison.json |
 | 62 | 2026-03-24 22:03 | PostGrad#18-Sora2Pro+FLFComparison+AudioPipeline | ⭐rhart-s Pro(Sora 2)首测(1792×1024/30fps/14.5s/🔊96kHz/¥0.30=¥0.02/秒/长视频之王)+rhart-s Realistic首测(1280×720/4.2s/🔊/¥0.50/真人优化)+FLF四模型对比(⭐Veo3.1Fast¥0.04/8s性价比王+ViduQ3Turbo¥0.16/70s+Q3Pro¥0.44/40s)+Vidu Q3全面超越Q2(16s/1080p/movementAmplitude)+96kHz音频rhart-s独有+ComfyUI音视频同步三模式(原生/后配音/音频驱动)+Sora2 storyboard参数发现+FLF模型选择决策树更新+生产级管线成本(完整¥0.77/极致¥0.07) | postgrad-18-sora2-flf-comparison-audio-pipeline.md + flf-quality-router-pipeline.json |
+| 63 | 2026-03-25 00:03 | PostGrad#19-UnifiedEndpoints+FLFDeepDive | ⭐Hailuo02统一API端点系统发现(video-other类别/standard+pro支持T2V+I2V+FLF三合一/参数组合动态切换/FLF只在统一端点可用)+Veo3.1FLF首测(Fast¥0.04/8s/🔊48kHz/Pro¥0.13/8s/🔊/生成速度几乎一样)+Hailuo02StdFLF(1376×768/5.9s/¥0.25/无音频)+Hailuo02ProFLF(1934×1080/5.9s/¥0.44/无音频最高分辨率)+Hailuo02StdT2V(1366×768/80s/¥0.25/T2V比FLF快)+⭐Seedance V1.5 Pro T2V首测(50s极快/6种宽高比含21:9/5000字符prompt/cameraFixed/¥0.30)+FLF性价比排名(Veo3.1Fast¥0.005/秒碾压)+统一vs专用API架构对比+ComfyUI动态路由节点设计 | postgrad-19-unified-endpoints-flf-deep-dive.md |
 
 ## Day 21 进度 (超分辨率与图像增强 — Upscaling & Super Resolution) ✅
 - [x] 超分辨率技术全景
